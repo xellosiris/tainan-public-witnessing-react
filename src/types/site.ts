@@ -1,6 +1,7 @@
 import * as z from "zod";
 
 export const siteShiftSchema = z.object({
+  id: z.uuid(),
   active: z.boolean(),
   attendeesLimit: z.number().positive(),
   startTime: z.string().nonempty(),
@@ -13,7 +14,7 @@ export const siteSchema = z.object({
   active: z.boolean(),
   name: z.string().nonempty("名稱不可空白"),
   description: z.string().optional(),
-  siteShifts: siteShiftSchema.array(),
+  shifts: siteShiftSchema.array(),
 });
 
 export type Site = z.infer<typeof siteSchema>;
