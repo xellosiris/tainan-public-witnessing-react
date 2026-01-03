@@ -6,11 +6,12 @@ const shiftSchema = z
     active: z.boolean(),
     date: z.string().nonempty(),
     yearMonth: z.string(),
-    siteUuid: z.uuid(),
+    siteId: z.uuid(),
     startTime: z.string().nonempty(),
     endTime: z.string().nonempty(),
     attendees: z.uuid().array(),
     attendeesLimit: z.number().positive(),
+    isFull: z.boolean(),
     requiredDeliverers: z.number().positive().default(2),
     expiredAt: z.date(),
   })

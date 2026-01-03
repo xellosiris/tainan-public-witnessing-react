@@ -13,7 +13,6 @@ export const siteSchema = z.object({
   active: z.boolean(),
   name: z.string().nonempty("名稱不可空白"),
   description: z.string().optional(),
-  googleLink: z.string().optional(),
   siteShifts: siteShiftSchema.array(),
 });
 
