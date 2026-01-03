@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import clsx from "clsx";
 import { MenuIcon } from "lucide-react";
 import { useState } from "react";
 import { Outlet } from "react-router";
@@ -14,7 +15,12 @@ export default function Layout() {
   };
   return (
     <Fragment>
-      <header className="relative z-50 flex items-center h-12 gap-2 px-2 text-base text-white lg:text-xl bg-primary">
+      <header
+        className={clsx(
+          "relative z-50 flex items-center h-12 gap-2 px-2 text-base text-white lg:text-xl",
+          import.meta.env.DEV ? "bg-destructive" : "bg-primary"
+        )}
+      >
         <Button onClick={() => setOpen(true)} variant="ghost" size={"icon"}>
           <MenuIcon color="white" className="size-6" />
         </Button>
@@ -51,7 +57,7 @@ export default function Layout() {
             </SheetFooter>
           </SheetContent>
         </Sheet>
-        台南都市公眾場所見證
+        台南都市公眾場所見證{import.meta.env.DEV && "（開發模式）"}
         <div className="flex-auto" />
         XXXX
       </header>
