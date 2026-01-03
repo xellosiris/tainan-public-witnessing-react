@@ -15,6 +15,7 @@ export const userSchema = z.object({
   gender: z.enum(["male", "female"]),
   congId: z.uuid(),
   permission: z.enum(Permission),
+  firebaseSub: z.string(),
   lineSub: z.string().optional(),
   bindCode: z.string().optional(),
   cellphone: z.string(),
