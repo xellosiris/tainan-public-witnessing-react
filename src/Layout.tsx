@@ -27,7 +27,7 @@ export default function Layout() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent
             side="left"
-            className="w-[300px] data-[state=closed]:duration-200 data-[state=open]:duration-300 top-12 h-[calc(100vh-3rem)] border-t-0 flex flex-col"
+            className="w-75 data-[state=closed]:duration-200 data-[state=open]:duration-300 top-12 h-[calc(100vh-3rem)] border-t-0 flex flex-col"
           >
             <SheetHeader>
               <SheetTitle>選單</SheetTitle>
@@ -38,8 +38,9 @@ export default function Layout() {
                 <label className="text-sm text-muted-foreground">一般功能</label>
                 <MenuItem url="/" label="首頁" onClick={onItemClick} />
                 <MenuItem url="/profile" label="我的檔案" onClick={onItemClick} />
-                <MenuItem url="/myShifts" label="我的排班" onClick={onItemClick} />
-                <MenuItem url="/vacant_shifts" label="空缺排班" onClick={onItemClick} />
+                <MenuItem url="/myShifts" label="我的班次" onClick={onItemClick} />
+                <MenuItem url="/myShifts" label="我的排班設定" onClick={onItemClick} />
+                <MenuItem url="/vacantShifts" label="報名空缺班次" onClick={onItemClick} />
                 <Separator className="my-2" />
                 <label className="text-sm text-muted-foreground">管理功能</label>
                 <MenuItem url="/overview" label="狀態一覽" onClick={onItemClick} />
