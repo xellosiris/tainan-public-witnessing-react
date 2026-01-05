@@ -1,6 +1,6 @@
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Switch } from "@/components/ui/switch";
 import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
-import { Field, FieldError, FieldLabel } from "../ui/field";
-import { Switch } from "../ui/switch";
 type SwitchFieldProps<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;

@@ -30,10 +30,10 @@ export function DatePicker({ date, onDateChange, id, "aria-invalid": ariaInvalid
           variant="outline"
           data-empty={!date}
           aria-invalid={ariaInvalid}
-          className="data-[empty=true]:text-muted-foreground w-full justify-start text-left font-normal"
+          className="data-[empty=true]:text-muted-foreground w-63 justify-start text-left font-normal"
           disabled={disabled}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="w-4 h-4 mr-2" />
           {date ? dayjs(date).format("YYYY-MM-DD") : <span>選擇日期</span>}
         </Button>
       </PopoverTrigger>

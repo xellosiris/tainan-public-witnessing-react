@@ -1,33 +1,34 @@
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
-import { Field, FieldError, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
 
-type TimeFieldProps<T extends FieldValues> = {
+type TextFieldProps<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   label?: string;
   placeholder?: string;
+  type?: "text" | "email" | "password" | "tel" | "url";
   disabled?: boolean;
 };
 
-export function TimeField<T extends FieldValues>({
+export function TextField<T extends FieldValues>({
   control,
   name,
-  label = "時間",
-  placeholder = "請選擇時間",
+  label = "文字",
+  placeholder,
+  type = "text",
   disabled,
-}: TimeFieldProps<T>) {
+}: TextFieldProps<T>) {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid}>
+        <Field className="gap-1.5" data-invalid={fieldState.invalid}>
           <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
           <Input
             {...field}
-            type="time"
-            className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+            type={type}
             id={field.name}
             aria-invalid={fieldState.invalid}
             placeholder={placeholder}

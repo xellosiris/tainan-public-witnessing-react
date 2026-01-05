@@ -21,25 +21,28 @@ export default function Layout() {
           import.meta.env.DEV ? "bg-destructive" : "bg-primary"
         )}
       >
-        <Button onClick={() => setOpen(true)} variant="ghost" size={"icon"}>
-          <MenuIcon color="white" className="size-6" />
+        <Button
+          className="hover:text-primary hover:bg-transparent"
+          onClick={() => setOpen(true)}
+          variant="ghost"
+          size={"icon"}
+        >
+          <MenuIcon className="size-5" />
         </Button>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent
             side="left"
-            className="w-75 data-[state=closed]:duration-200 data-[state=open]:duration-300 top-12 h-[calc(100vh-3rem)] border-t-0 flex flex-col"
+            className="w-70 data-[state=closed]:duration-200 data-[state=open]:duration-300 top-12 h-[calc(100vh-3rem)] border-t-0 flex flex-col"
           >
             <SheetHeader>
               <SheetTitle>選單</SheetTitle>
             </SheetHeader>
-
             <nav className="flex-1 py-4 overflow-y-auto">
-              <div className="grid gap-3 px-4">
+              <div className="px-4 grid gap-3">
                 <label className="text-sm text-muted-foreground">一般功能</label>
-                <MenuItem url="/" label="首頁" onClick={onItemClick} />
-                <MenuItem url="/profile" label="我的檔案" onClick={onItemClick} />
+                <MenuItem url="/" label="今明班表" onClick={onItemClick} />
                 <MenuItem url="/myShifts" label="我的班次" onClick={onItemClick} />
-                <MenuItem url="/myShifts" label="我的排班設定" onClick={onItemClick} />
+                <MenuItem url="/profile" label="我的設定" onClick={onItemClick} />
                 <MenuItem url="/vacantShifts" label="報名空缺班次" onClick={onItemClick} />
                 <Separator className="my-2" />
                 <label className="text-sm text-muted-foreground">管理功能</label>

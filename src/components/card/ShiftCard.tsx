@@ -1,14 +1,14 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSites } from "@/services/sites";
 import { getUserKeys } from "@/services/users";
 import type { Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { Clock, EditIcon, MapPin } from "lucide-react";
+import { Clock, EditIcon, MapPin, MinusCircle, PlusCircle } from "lucide-react";
 import React, { useState } from "react";
 import ShiftDialog from "../dialog/ShiftDialog";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 
 type Props = {
   shift: Shift;
@@ -30,13 +30,13 @@ export default function ShiftCard({ shift }: Props) {
         <CardHeader className="gap-1.5">
           <CardTitle className="text-2xl">
             {shift.date}
-            <span className="text-sm text-muted-foreground font-normal">（{dayjs(shift.date).format("dd")}）</span>
+            <span className="text-sm font-normal text-muted-foreground">（{dayjs(shift.date).format("dd")}）</span>
           </CardTitle>
-          <CardTitle className="flex gap-1 items-center text-base">
+          <CardTitle className="flex items-center text-base gap-1">
             <MapPin className="size-4" />
             {sites?.find((s) => s.id === shift.siteId)?.name ?? "未知"}
           </CardTitle>
-          <CardTitle className="flex gap-1 items-center text-base">
+          <CardTitle className="flex items-center text-base gap-1">
             <Clock className="size-4" />
             {shift.startTime} ～ {shift.endTime}
           </CardTitle>
@@ -60,6 +60,14 @@ export default function ShiftCard({ shift }: Props) {
         <CardFooter className="justify-end">
           <Button variant="ghost" size="icon" onClick={() => setEditObj(shift)}>
             <EditIcon className="size-5" />
+          </Button>
+          {!shift.isFull && (
+            <Button variant="ghost" size="icon">
+              <PlusCircle className="size-5" />
+            </Button>
+          )}
+          <Button variant="ghost" size="icon">
+            <MinusCircle className="size-5 text-destructive" />
           </Button>
         </CardFooter>
       </Card>

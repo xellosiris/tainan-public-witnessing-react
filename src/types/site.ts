@@ -13,7 +13,7 @@ export const siteSchema = z.object({
   id: z.uuid(),
   active: z.boolean(),
   name: z.string().nonempty("名稱不可空白"),
-  description: z.string().optional(),
+  description: z.string().optional().default(""),
   shifts: siteShiftSchema.array(),
 });
 

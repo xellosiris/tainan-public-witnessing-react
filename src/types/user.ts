@@ -1,11 +1,5 @@
+import { PERMISSION } from "@/assets/permission";
 import * as z from "zod";
-
-const Permission = {
-  Developer: 0,
-  CommitteeMember: 1,
-  Assistant: 2,
-  User: 3,
-};
 
 export const userSchema = z.object({
   id: z.uuid(),
@@ -14,13 +8,13 @@ export const userSchema = z.object({
   displayName: z.string().nonempty(),
   gender: z.enum(["male", "female"]),
   congId: z.uuid(),
-  permission: z.enum(Permission),
+  permission: z.enum(PERMISSION),
   firebaseSub: z.string(),
   lineSub: z.string().optional(),
   bindCode: z.string().optional(),
   cellphone: z.string(),
-  telephone: z.string().optional(),
-  note: z.string().optional(),
+  telephone: z.string().optional().default(""),
+  note: z.string().optional().default(""),
 });
 
 export const userKeySchema = userSchema.pick({ id: true, active: true, displayName: true });

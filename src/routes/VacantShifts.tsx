@@ -37,7 +37,7 @@ export default function VacantShifts() {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex flex-wrap gap-4">
         {shifts?.map((shift) => (
           <ShiftCard key={shift.id} shift={shift} />
         ))}

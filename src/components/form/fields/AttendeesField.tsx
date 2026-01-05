@@ -1,20 +1,20 @@
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { FieldError } from "@/components/ui/field";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import type { Shift } from "@/types/shift";
+import type { UserKey } from "@/types/user";
 import clsx from "clsx";
 import { Check, ChevronsUpDown, GripVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { type Control, Controller } from "react-hook-form";
 import { VList } from "virtua";
-import { Button } from "../ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/command";
-import { FieldError } from "../ui/field";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import type { ShiftFormType } from "../ShiftForm";
 
 type AttendeeFieldProps = {
-  control: Control<Shift>;
+  control: Control<ShiftFormType>;
   index: number;
-  userKeys?: Array<{ id: string; displayName: string }>;
-  watchAttendees: string[];
+  userKeys?: Array<UserKey>;
   onRemove: () => void;
   onDragStart: () => void;
   onDragOver: (e: React.DragEvent) => void;
@@ -26,7 +26,6 @@ export function AttendeeField({
   control,
   index,
   userKeys,
-  watchAttendees,
   onRemove,
   onDragStart,
   onDragOver,
@@ -39,7 +38,7 @@ export function AttendeeField({
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
-      className={`flex items-center gap-2 p-3 border rounded-lg bg-background transition-all ${
+      className={`flex items-center gap-2 p-1 border rounded-lg bg-background transition-all ${
         isDragging ? "opacity-30" : ""
       } cursor-move`}
     >
@@ -50,6 +49,7 @@ export function AttendeeField({
           control={control}
           render={({ field: userField, fieldState }) => {
             const [open, setOpen] = useState<boolean>(false);
+
             return (
               <div>
                 <Popover open={open} onOpenChange={setOpen}>
@@ -58,18 +58,13 @@ export function AttendeeField({
                       variant="outline"
                       role="combobox"
                       aria-expanded={open}
-                      className={cn("w-full justify-between", !userField.value && "text-muted-foreground")}
+                      className={cn("w-full justify-between", !userField.value?.id && "text-muted-foreground")}
                     >
-                      {userField.value
-                        ? userKeys?.find((user) => user.id === userField.value)?.displayName
-                        : "請選擇參與者"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      {userField.value?.displayName || "請選擇參與者"}
+                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent
-                    className="w-(--radix-popover-trigger-width) p-0 max-h-64 overflow-y-auto"
-                    align="start"
-                  >
+                  <PopoverContent className="w-[--radix-popover-trigger-width]! p-0" align="start">
                     <Command
                       filter={(value, search) => {
                         const displayName = userKeys?.find((user) => user.id === value)?.displayName ?? "未知";
@@ -85,9 +80,9 @@ export function AttendeeField({
                             <CommandItem
                               key={user.id}
                               value={user.id}
-                              disabled={watchAttendees.includes(user.id)}
                               onSelect={(value) => {
-                                userField.onChange(value);
+                                const selectedUser = userKeys.find((user) => user.id === value);
+                                userField.onChange(selectedUser);
                                 setOpen(false);
                               }}
                             >
@@ -95,7 +90,7 @@ export function AttendeeField({
                               <Check
                                 className={clsx(
                                   "ml-auto size-4",
-                                  userField.value === user.id ? "opacity-100" : "opacity-0"
+                                  userField.value?.id === user.id ? "opacity-100" : "opacity-0"
                                 )}
                               />
                             </CommandItem>

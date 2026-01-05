@@ -1,14 +1,9 @@
 import * as z from "zod";
 
 const scheduleSchema = z.object({
-  memberId: z.uuid(),
+  userId: z.uuid(),
   assign: z.boolean(),
-  availableShifts: z
-    .object({
-      id: z.uuid(),
-      limit: z.number(),
-    })
-    .array(),
+  availableShifts: z.record(z.uuid(), z.number().int().nonnegative()),
   unavailableDates: z.string().array(),
   partnerId: z.uuid(),
 });
