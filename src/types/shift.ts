@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-const shiftSchema = z
+export const shiftSchema = z
   .object({
     id: z.uuid(),
     active: z.boolean(),
@@ -10,14 +10,18 @@ const shiftSchema = z
     startTime: z.string().nonempty(),
     endTime: z.string().nonempty(),
     attendees: z.uuid().array(),
-    attendeesLimit: z.number().positive(),
+    attendeesLimit: z.number().int().positive(),
     isFull: z.boolean(),
-    requiredDeliverers: z.number().positive().default(2),
+    requiredDeliverers: z.number().int().nonnegative(),
     expiredAt: z.date(),
   })
   .refine((data) => data.attendees.length <= data.attendeesLimit, {
-    message: "參與人員的總人數不能超過參與上限",
-    path: ["crewUuids"],
+    message: "參與者超過上限",
+    path: ["attendees"],
+  })
+  .refine((data) => data.requiredDeliverers <= data.attendeesLimit, {
+    message: "搬運者超過上限",
+    path: ["requiredDeliverers"],
   });
 
 export type Shift = z.infer<typeof shiftSchema>;
