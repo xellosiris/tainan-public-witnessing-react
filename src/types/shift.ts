@@ -12,6 +12,7 @@ export const shiftSchema = z.object({
   endTime: z.string().nonempty(),
   attendees: z.uuid().array(),
   attendeesLimit: z.number().int().positive(),
+  attendeeCount: z.number().optional(),
   isFull: z.boolean(),
   requiredDeliverers: z.number().int().nonnegative(),
   expiredAt: z.date(),

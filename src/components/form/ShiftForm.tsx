@@ -86,7 +86,6 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
     console.log({ shift });
     onClose();
   };
-  console.log(form.formState.errors);
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup>

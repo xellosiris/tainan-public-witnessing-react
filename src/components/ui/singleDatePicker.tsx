@@ -13,7 +13,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export function DatePicker({ date, onDateChange, id, "aria-invalid": ariaInvalid, disabled }: Props) {
+export function SingleDatePicker({ date, onDateChange, id, "aria-invalid": ariaInvalid, disabled }: Props) {
   const dateObj = date ? dayjs(date).toDate() : undefined;
 
   const handleSelect = (selectedDate: Date | undefined) => {

@@ -10,28 +10,13 @@ export default function Home() {
     queryFn: () => getShiftsByDate(dayjs().format("YYYY-MM-DD")),
   });
 
-  const { data: tomorrowShifts } = useQuery({
-    queryKey: ["shifts", dayjs().add(1, "day").format("YYYY-MM-DD")],
-    queryFn: () => getShiftsByDate(dayjs().add(1, "day").format("YYYY-MM-DD")),
-  });
-
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label className="text-2xl">今日班表</Label>
-        <div className="flex flex-wrap gap-4">
-          {todayShifts?.map((shift) => (
-            <ShiftCard key={shift.id} shift={shift} />
-          ))}
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label className="text-2xl">明日班表</Label>
-        <div className="flex flex-wrap gap-4">
-          {tomorrowShifts?.map((shift) => (
-            <ShiftCard key={shift.id} shift={shift} />
-          ))}
-        </div>
+    <div className="space-y-2">
+      <Label className="text-2xl">今日班表</Label>
+      <div className="flex flex-wrap gap-4">
+        {todayShifts?.map((shift) => (
+          <ShiftCard key={shift.id} shift={shift} />
+        ))}
       </div>
     </div>
   );

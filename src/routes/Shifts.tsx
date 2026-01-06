@@ -1,8 +1,8 @@
 import ShiftCard from "@/components/card/ShiftCard";
 import ShiftDialog from "@/components/dialog/ShiftDialog";
 import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/datePicker";
 import { Loading } from "@/components/ui/loading";
+import { SingleDatePicker } from "@/components/ui/singleDatePicker";
 import { getShiftsByDate } from "@/services/shifts";
 import type { Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
@@ -28,7 +28,7 @@ export default function Shifts() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <DatePicker date={date} onDateChange={onDateChange} />
+        <SingleDatePicker date={date} onDateChange={onDateChange} />
         <Button onClick={() => setEditShiftObj(null)}>新增班次</Button>
       </div>
       <div className="flex flex-wrap gap-4">{shifts && shifts.map((shift) => <ShiftCard shift={shift} />)}</div>

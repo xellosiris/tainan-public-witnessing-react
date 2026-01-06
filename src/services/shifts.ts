@@ -1,7 +1,7 @@
 import { db } from "@/lib/firebase";
 import type { Shift } from "@/types/shift";
 import type { User } from "@/types/user";
-import { collection, getDocs, query, Timestamp, where } from "firebase/firestore/lite";
+import { collection, getDocs, orderBy, query, Timestamp, where } from "firebase/firestore/lite";
 
 const convertShiftTimestamps = (data: any): Shift => {
   return {
@@ -11,7 +11,7 @@ const convertShiftTimestamps = (data: any): Shift => {
 };
 
 export const getShiftsByDate = async (date: string): Promise<Shift[]> => {
-  const q = query(collection(db, "Shifts"), where("date", "==", date));
+  const q = query(collection(db, "Shifts"), where("date", "==", date), orderBy("startTime", "asc"));
   const docs = await getDocs(q);
   return docs.docs.map((d) => convertShiftTimestamps(d.data()));
 };

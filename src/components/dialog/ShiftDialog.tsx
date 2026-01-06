@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getSites } from "@/services/sites";
+import { getSiteKeys } from "@/services/sites";
 import { getUserKeys } from "@/services/users";
 import { type Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
@@ -13,8 +13,8 @@ type Props = {
 
 export default function ShiftDialog({ editShiftObj, onClose }: Props) {
   const { data: sites, isLoading: siteLoading } = useQuery({
-    queryKey: ["sites"],
-    queryFn: getSites,
+    queryKey: ["siteKeys"],
+    queryFn: getSiteKeys,
   });
   const { data: userKeys, isLoading: userKeysLoading } = useQuery({
     queryKey: ["userKeys"],

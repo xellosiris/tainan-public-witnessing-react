@@ -1,5 +1,5 @@
-import { DatePicker } from "@/components/ui/datePicker";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { SingleDatePicker } from "@/components/ui/singleDatePicker";
 import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
 
 type DateFieldProps<T extends FieldValues> = {
@@ -17,7 +17,7 @@ export function DateField<T extends FieldValues>({ control, name, label = "æ—¥æœ
       render={({ field, fieldState }) => (
         <Field className="gap-1.5" data-invalid={fieldState.invalid}>
           <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-          <DatePicker
+          <SingleDatePicker
             date={field.value}
             onDateChange={field.onChange}
             id={field.name}
