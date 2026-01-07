@@ -31,7 +31,7 @@ export function NumberField<T extends FieldValues>({
           <Input
             type="number"
             id={field.name}
-            value={field.value ?? ""}
+            value={field.value === null || field.value === undefined ? "" : field.value}
             onChange={(e) => {
               const val = e.target.value;
               field.onChange(val === "" ? 0 : parseInt(val, 10));

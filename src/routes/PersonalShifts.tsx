@@ -65,7 +65,7 @@ export default function PersonalShifts({ id }: Props) {
         }}
       />
 
-      <div className="space-y-2 mt-8">
+      <div className="mt-8 space-y-2">
         <h3 className="text-lg font-semibold">
           {selectedDate ? `${dayjs(selectedDate).format("MM月DD日")} 的班表` : "請選擇日期"}
           {filteredShifts && filteredShifts.length > 0 && ` (當天有${filteredShifts.length}個班次)`}

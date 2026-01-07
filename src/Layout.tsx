@@ -40,7 +40,7 @@ export default function Layout() {
             <nav className="flex-1 py-4 overflow-y-auto">
               <div className="px-4 grid gap-3">
                 <label className="text-sm text-muted-foreground">一般功能</label>
-                <MenuItem url="/" label="今明班表" onClick={onItemClick} />
+                <MenuItem url="/" label="今日班表" onClick={onItemClick} />
                 <MenuItem url="/myShifts" label="我的班次" onClick={onItemClick} />
                 <MenuItem url="/profile" label="我的設定" onClick={onItemClick} />
                 <MenuItem url="/vacantShifts" label="報名空缺班次" onClick={onItemClick} />
@@ -65,7 +65,6 @@ export default function Layout() {
         <div className="flex-auto" />
         XXXX
       </header>
-
       <main className="p-4">
         <Outlet />
       </main>

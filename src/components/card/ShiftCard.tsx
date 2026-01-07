@@ -1,15 +1,23 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSiteKeys } from "@/services/sites";
-import { getUserKeys } from "@/services/users";
+import { getSetting } from "@/services/settings";
 import type { Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { ClipboardEditIcon, Clock, EditIcon, EllipsisVerticalIcon, MapPin, PlusCircle, Trash2Icon } from "lucide-react";
+import {
+  ClipboardEditIcon,
+  Clock,
+  EditIcon,
+  EllipsisVerticalIcon,
+  MapPin,
+  PlusCircle,
+  Trash2Icon,
+  VanIcon,
+} from "lucide-react";
 import React, { useState } from "react";
 import ReportDialog from "../dialog/ReportDialog";
 import ShiftDialog from "../dialog/ShiftDialog";
+import { Loading } from "../ui/loading";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
 
@@ -20,31 +28,30 @@ type Props = {
 export default function ShiftCard({ shift }: Props) {
   const [openReport, setOpenReport] = useState<boolean>(false);
   const [editObj, setEditObj] = useState<null | undefined | Shift>(undefined);
-  const { data: userKeys } = useQuery({
-    queryKey: ["userkeys"],
-    queryFn: getUserKeys,
-  });
-  const { data: sites } = useQuery({
-    queryKey: ["siteKeys"],
-    queryFn: getSiteKeys,
+  const { data: setting, isLoading } = useQuery({
+    queryKey: ["setting"],
+    queryFn: getSetting,
   });
 
+  if (isLoading) return <Loading />;
+  if (!setting) return <div>找不到設定檔</div>;
+  const { userKeys, siteKeys } = setting;
   return (
     <React.Fragment>
-      <Card className="w-full max-w-xs relative gap-4">
+      <Card className="relative w-full max-w-xs gap-4">
         <Popover>
           <PopoverTrigger className="absolute top-2 right-2" asChild>
             <Button variant="ghost" size="icon">
               <EllipsisVerticalIcon className="size-6" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="flex flex-col w-23 items-start p-1">
-            <Button variant={"ghost"} className="font-normal w-full rounded-none" onClick={() => setEditObj(shift)}>
+          <PopoverContent className="flex flex-col items-start p-1 w-23">
+            <Button variant={"ghost"} className="w-full font-normal rounded-none" onClick={() => setEditObj(shift)}>
               <EditIcon />
               編輯
             </Button>
             <Separator />
-            <Button variant={"ghost"} className="font-normal text-destructive w-full rounded-none">
+            <Button variant={"ghost"} className="w-full font-normal rounded-none text-destructive">
               <Trash2Icon />
               刪除
             </Button>
@@ -57,7 +64,7 @@ export default function ShiftCard({ shift }: Props) {
           </CardTitle>
           <CardTitle className="flex items-center text-base gap-1">
             <MapPin className="size-4" />
-            {sites?.find((s) => s.id === shift.siteId)?.name ?? "未知"}
+            {siteKeys.find((s) => s.id === shift.siteId)?.name}
           </CardTitle>
           <CardTitle className="flex items-center text-base gap-1">
             <Clock className="size-4" />
@@ -65,13 +72,17 @@ export default function ShiftCard({ shift }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2 min-h-14">
-          {shift.attendees.map((attendee) => (
-            <Badge key={attendee} variant={"secondary"} className="h-7 text-sm">
-              {userKeys?.find((user) => user.id === attendee)?.displayName ?? "未知"}
-            </Badge>
+          {shift.attendees.map((attendee, index) => (
+            <div
+              key={attendee}
+              className="flex items-center justify-center px-3 text-base rounded-l-full rounded-r-full bg-secondary h-7 min-w-18 gap-1 "
+            >
+              {shift.requiredDeliverers > 0 && index < 2 && <VanIcon />}
+              {userKeys?.find((user) => user.id === attendee)?.displayName}
+            </div>
           ))}
         </CardContent>
-        <CardFooter className="flex gap-1 justify-end">
+        <CardFooter className="flex justify-end gap-1">
           <Button
             onClick={() => setOpenReport(true)}
             disabled={dayjs(`${shift.date} ${shift.endTime}`).isAfter(dayjs().subtract(5, "minutes"))}

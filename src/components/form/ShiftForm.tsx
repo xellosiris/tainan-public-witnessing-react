@@ -3,10 +3,19 @@ import { FieldGroup, FieldSeparator, FieldSet } from "@/components/ui/field";
 import { shiftFormSchema, type Shift, type ShiftForm } from "@/types/shift";
 import type { Site } from "@/types/site";
 import { type UserKey } from "@/types/user";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { AttendeeField } from "../form/fields/AttendeesField";
@@ -51,7 +60,17 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
     name: "attendees",
   });
 
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  // 設定拖移感應器
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 移動 8px 後才開始拖移，避免誤觸
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleAddAttendee = () => {
     const currentLimit = form.watch("attendeesLimit");
@@ -62,22 +81,19 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
     append({ id: "", displayName: "", active: false });
   };
 
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
+  // 處理拖移結束
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = fields.findIndex((field) => field.id === active.id);
+      const newIndex = fields.findIndex((field) => field.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        move(oldIndex, newIndex);
+      }
+    }
   };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === index) return;
-
-    move(draggedIndex, index);
-    setDraggedIndex(index);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-  };
-
   const onSubmit = (data: ShiftForm) => {
     const shift = {
       ...data,
@@ -86,6 +102,7 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
     console.log({ shift });
     onClose();
   };
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup>
@@ -102,7 +119,7 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <NumberField control={form.control} name="attendeesLimit" label="班次人數上限" />
+              <NumberField control={form.control} name="attendeesLimit" label="人數上限（0表示無限制)" />
               <NumberField control={form.control} name="requiredDeliverers" label="需要搬運人員" />
             </div>
           </FieldGroup>
@@ -114,19 +131,20 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
               {fields.length === 0 ? (
                 <p className="py-4 text-sm text-center text-muted-foreground">尚無參與者，點擊下方按鈕新增</p>
               ) : (
-                fields.map((field, index) => (
-                  <AttendeeField
-                    key={field.id}
-                    control={form.control}
-                    index={index}
-                    userKeys={userKeys}
-                    onRemove={() => remove(index)}
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDragEnd={handleDragEnd}
-                    isDragging={draggedIndex === index}
-                  />
-                ))
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  <SortableContext items={fields.map((field) => field.id)} strategy={verticalListSortingStrategy}>
+                    {fields.map((field, index) => (
+                      <AttendeeField
+                        key={field.id}
+                        id={field.id}
+                        control={form.control}
+                        index={index}
+                        userKeys={userKeys}
+                        onRemove={() => remove(index)}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
               )}
               <Button
                 type="button"

@@ -22,7 +22,7 @@ export function SwitchField<T extends FieldValues>({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <div className="space-y-0.5">
               <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
               {description && <p className="text-sm text-muted-foreground">{description}</p>}

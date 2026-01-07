@@ -31,7 +31,9 @@ export default function Shifts() {
         <SingleDatePicker date={date} onDateChange={onDateChange} />
         <Button onClick={() => setEditShiftObj(null)}>新增班次</Button>
       </div>
-      <div className="flex flex-wrap gap-4">{shifts && shifts.map((shift) => <ShiftCard shift={shift} />)}</div>
+      <div className="flex flex-wrap gap-4">
+        {shifts && shifts.map((shift) => <ShiftCard key={shift.id} shift={shift} />)}
+      </div>
       {editShiftObj !== undefined && <ShiftDialog editShiftObj={editShiftObj} onClose={onClose} />}
     </div>
   );

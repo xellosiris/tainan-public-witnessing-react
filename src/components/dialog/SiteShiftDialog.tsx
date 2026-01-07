@@ -22,22 +22,22 @@ const weekdayOptions = [
 ];
 
 type Props = {
-  open: boolean;
   onOpenChange: (open: boolean) => void;
-  shift: SiteShift | null;
+  siteShift: SiteShift | null;
   onSave: (shift: SiteShift) => void;
 };
 
-export default function SiteShiftFormDialog({ open, onOpenChange, shift, onSave }: Props) {
+export default function SiteShiftFormDialog({ onOpenChange, siteShift, onSave }: Props) {
   const form = useForm<SiteShift>({
     resolver: zodResolver(siteShiftSchema),
-    defaultValues: shift || {
+    defaultValues: siteShift || {
       id: v4(),
       active: true,
-      attendeesLimit: 1,
+      attendeesLimit: 4,
       startTime: "09:00",
       endTime: "17:00",
-      weekday: 1,
+      weekday: 6,
+      requiredDeliverers: 0,
     },
   });
 
@@ -50,12 +50,11 @@ export default function SiteShiftFormDialog({ open, onOpenChange, shift, onSave 
     onOpenChange(false);
     form.reset();
   };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-106 max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{shift ? "編輯班次" : "新增班次"}</DialogTitle>
+          <DialogTitle>{siteShift ? "編輯班次" : "新增班次"}</DialogTitle>
         </DialogHeader>
         <FieldGroup>
           <SwitchField name="active" label="啟用此班次" control={form.control} />
@@ -65,7 +64,7 @@ export default function SiteShiftFormDialog({ open, onOpenChange, shift, onSave 
             <TimeField name="endTime" label="結束時間" control={form.control} />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <NumberField name="attendeesLimit" label="人數上限" control={form.control} min={1} />
+            <NumberField name="attendeesLimit" label="人數上限（0表示無限制)" control={form.control} min={1} />
             <NumberField name="requiredDeliverers" label="參與運送人數" control={form.control} />
           </div>
         </FieldGroup>
