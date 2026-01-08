@@ -58,11 +58,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   return (
     <>
       <div className="flex items-center justify-between py-4 gap-4">
-        <InputGroup>
+        <InputGroup className="max-w-sm">
           <InputGroupInput
             value={globalFilter ?? ""}
             onChange={(event) => setGlobalFilter(event.target.value)}
-            className="max-w-sm"
             placeholder="請輸入姓名、會眾、性別、電話、權限..."
           />
           <InputGroupAddon>

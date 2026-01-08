@@ -1,11 +1,9 @@
 // SiteForm.tsx
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import { getSiteShift } from "@/services/siteShift";
 import { siteFormSchema, type Site, type SiteForm } from "@/types/site";
 import type { SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import SiteShiftCard from "../card/SiteShiftCard";
@@ -33,43 +31,33 @@ type EditingSiteShift = { mode: "create" } | { mode: "edit"; shift: SiteShift; i
 type Props = {
   siteEditObj: Site | null;
   onSubmit?: (data: Site) => void;
+  siteShifts: SiteShift[];
 };
 
-export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props) {
-  const siteId = siteEditObj?.id ?? v4();
-  const { data: siteShifts } = useQuery({
-    queryKey: ["siteShifts", siteId],
-    queryFn: () => getSiteShift(siteId),
-  });
-
+export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShifts }: Props) {
   const [filter, setFilter] = useState<boolean>(true);
   const [editingSiteShift, setEditingSiteShift] = useState<EditingSiteShift | null>(null);
-
+  const siteId = siteEditObj?.id ?? v4();
   const form = useForm<SiteForm>({
     resolver: zodResolver(siteFormSchema),
-    defaultValues: {
-      id: siteEditObj?.id ?? v4(),
-      active: siteEditObj?.active ?? true,
-      name: siteEditObj?.name ?? "",
-      description: siteEditObj?.description ?? "",
-      siteShifts: [],
-    },
+    defaultValues: !!siteEditObj
+      ? {
+          ...siteEditObj,
+          siteShifts,
+        }
+      : {
+          id: siteId,
+          active: true,
+          name: "",
+          description: "",
+          siteShifts: [],
+        },
   });
-
-  useEffect(() => {
-    if (siteEditObj && siteShifts) {
-      form.reset({
-        ...siteEditObj,
-        siteShifts: siteEditObj.siteShifts.map((id) => siteShifts.find((s) => s.id === id)).filter(Boolean),
-      });
-    }
-  }, [siteEditObj, siteShifts, form]);
 
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "siteShifts",
   });
-
   const groupedShifts = useMemo(() => {
     const filteredShifts = filter ? fields.filter((shift) => shift.active) : fields;
     // 按 weekday 分組
@@ -126,13 +114,13 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
         <FieldGroup>
           <FieldSet className="max-w-lg">
             <FieldLegend>基本資訊</FieldLegend>
-            <FieldGroup>
+            <FieldGroup className="bg-white p-4 rounded-md shadow-sm">
               <TextField name="name" label="地點名稱" control={form.control} />
               <TextAreaField name="description" label="地點描述" control={form.control} />
               <Item variant="outline">
                 <ItemContent>
                   <ItemTitle>啟用地點</ItemTitle>
-                  <ItemDescription>啟用後，一般成員可以看到且自動排班</ItemDescription>
+                  <ItemDescription>啟用後，一般成員可以看到且報名排班</ItemDescription>
                 </ItemContent>
                 <ItemActions>
                   <SwitchField name="active" label="啟用" control={form.control} />
@@ -156,7 +144,6 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
               </Label>
             </div>
 
-            {/* 班次列表 - 按星期分組 */}
             {!hasShifts ? (
               <div className="py-12 text-center">
                 <p className="text-sm text-muted-foreground">
@@ -174,7 +161,7 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
                       <h3 className="sticky top-0 z-20 px-4 pt-2 pb-2 -mx-4 text-lg font-semibold border-b bg-background text-foreground/80">
                         {WEEKDAY_NAMES[weekday]} ({shiftsForDay.length})
                       </h3>
-                      <div className="flex flex-wrap gap-4">
+                      <div className="flex flex-wrap gap-4 bg-white p-4 rounded-md shadow-sm">
                         {shiftsForDay.map((field) => {
                           const originalIndex = fields.findIndex((f) => f.id === field.id);
                           return (
@@ -218,6 +205,7 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
 
       {editingSiteShift && (
         <SiteShiftFormDialog
+          siteId={siteId}
           siteShift={editingSiteShift.mode === "edit" ? editingSiteShift.shift : null}
           onSave={handleSaveShift}
           onOpenChange={() => setEditingSiteShift(null)}

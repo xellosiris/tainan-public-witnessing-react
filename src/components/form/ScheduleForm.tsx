@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import SignupShiftDialog from "../dialog/SignupShiftDialog";
 import { Button } from "../ui/button";
-import { Field, FieldError, FieldGroup, FieldLegend, FieldSeparator, FieldSet } from "../ui/field";
+import { Field, FieldError, FieldGroup, FieldLegend, FieldSet } from "../ui/field";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { AttendeeField } from "./fields/AttendeeField";
 import { DateField } from "./fields/DateField";
@@ -35,11 +35,10 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="pb-24">
-      <FieldGroup className="gap-3">
+      <FieldGroup>
         <FieldSet className="max-w-lg">
           <FieldLegend>排班設定</FieldLegend>
-          <FieldSeparator />
-          <FieldGroup>
+          <FieldGroup className="bg-white p-4 rounded-md shadow-sm">
             <Item variant="outline">
               <ItemContent>
                 <ItemTitle>參與排班</ItemTitle>
@@ -55,8 +54,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
         </FieldSet>
 
         <FieldSet className="max-w-4xl">
-          <FieldSeparator />
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <FieldLegend>參與班次設定</FieldLegend>
             <Controller
               name="siteShiftLimits"
@@ -81,7 +79,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
                 return getEnrolledShifts(field.value, siteShifts).filter((shift) => shift.active);
               }, [field.value]);
               return (
-                <Field>
+                <Field className="bg-white p-4 rounded-md shadow-sm">
                   <ShiftGroupedView
                     siteShifts={enrolledShifts}
                     siteKeys={siteKeys}

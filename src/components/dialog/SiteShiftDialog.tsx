@@ -21,16 +21,18 @@ const weekdayOptions = [
 ];
 
 type Props = {
+  siteId: string;
   onOpenChange: (open: boolean) => void;
   siteShift: SiteShift | null;
   onSave: (shift: SiteShift) => void;
 };
 
-export default function SiteShiftFormDialog({ onOpenChange, siteShift, onSave }: Props) {
+export default function SiteShiftFormDialog({ siteId, onOpenChange, siteShift, onSave }: Props) {
   const form = useForm<SiteShift>({
     resolver: zodResolver(siteShiftSchema),
     defaultValues: siteShift || {
       id: v4(),
+      siteId,
       active: true,
       attendeesLimit: 4,
       startTime: "09:00",
@@ -41,10 +43,11 @@ export default function SiteShiftFormDialog({ onOpenChange, siteShift, onSave }:
   });
 
   const handleSubmit = (data: SiteShift) => {
+    console.log({ data });
     onSave(data);
     form.reset();
   };
-
+  console.log({ error: form.formState.errors });
   const handleCancel = () => {
     onOpenChange(false);
     form.reset();
