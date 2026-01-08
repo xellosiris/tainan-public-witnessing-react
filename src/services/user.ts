@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import type { Setting } from "@/types/settings";
+import type { Setting } from "@/types/setting";
 import type { User, UserKey } from "@/types/user";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore/lite";
 

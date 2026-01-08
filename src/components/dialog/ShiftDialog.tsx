@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getSetting } from "@/services/settings";
+import { getSetting } from "@/services/setting";
 import { type Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
 import ShiftForm from "../form/ShiftForm";

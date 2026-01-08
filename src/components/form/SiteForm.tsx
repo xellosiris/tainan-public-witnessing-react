@@ -1,8 +1,11 @@
 // SiteForm.tsx
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import { siteSchema, type Site, type SiteShift } from "@/types/site";
+import { getSiteShift } from "@/services/siteShift";
+import { siteFormSchema, type Site, type SiteForm } from "@/types/site";
+import type { SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import SiteShiftCard from "../card/SiteShiftCard";
@@ -25,42 +28,50 @@ export const WEEKDAY_NAMES: Record<number, string> = {
   6: "週日",
 };
 
+type EditingSiteShift = { mode: "create" } | { mode: "edit"; shift: SiteShift; index: number };
+
 type Props = {
   siteEditObj: Site | null;
   onSubmit?: (data: Site) => void;
 };
 
 export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props) {
-  const form = useForm<Site>({
-    resolver: zodResolver(siteSchema),
-    defaultValues: siteEditObj || {
-      id: v4(),
-      active: true,
-      name: "",
-      description: "",
+  const siteId = siteEditObj?.id ?? v4();
+  const { data: siteShifts } = useQuery({
+    queryKey: ["siteShifts", siteId],
+    queryFn: () => getSiteShift(siteId),
+  });
+
+  const [filter, setFilter] = useState<boolean>(true);
+  const [editingSiteShift, setEditingSiteShift] = useState<EditingSiteShift | null>(null);
+
+  const form = useForm<SiteForm>({
+    resolver: zodResolver(siteFormSchema),
+    defaultValues: {
+      id: siteEditObj?.id ?? v4(),
+      active: siteEditObj?.active ?? true,
+      name: siteEditObj?.name ?? "",
+      description: siteEditObj?.description ?? "",
       siteShifts: [],
     },
   });
+
+  useEffect(() => {
+    if (siteEditObj && siteShifts) {
+      form.reset({
+        ...siteEditObj,
+        siteShifts: siteEditObj.siteShifts.map((id) => siteShifts.find((s) => s.id === id)).filter(Boolean),
+      });
+    }
+  }, [siteEditObj, siteShifts, form]);
 
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "siteShifts",
   });
 
-  const [filter, setFilter] = useState<boolean>(true);
-  const [editingSiteShift, setEditingSiteShift] = useState<
-    | {
-        shift: SiteShift | null;
-        index: number;
-      }
-    | null
-    | undefined
-  >(undefined);
-
-  // 按星期分組的班次
   const groupedShifts = useMemo(() => {
     const filteredShifts = filter ? fields.filter((shift) => shift.active) : fields;
-
     // 按 weekday 分組
     const grouped = filteredShifts.reduce((acc, shift) => {
       if (!acc[shift.weekday]) {
@@ -78,21 +89,18 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
     return grouped;
   }, [fields, filter]);
 
-  const handleAddShift = () => {
-    setEditingSiteShift(null);
-  };
+  const handleAddShift = () => setEditingSiteShift({ mode: "create" });
 
-  const handleEditShift = (shift: SiteShift, index: number) => {
-    setEditingSiteShift({ shift, index });
-  };
+  const handleEditShift = (shift: SiteShift, index: number) => setEditingSiteShift({ mode: "edit", shift, index });
 
   const handleSaveShift = (shift: SiteShift) => {
-    if (editingSiteShift) {
+    if (editingSiteShift === null) return;
+    if (editingSiteShift.mode === "edit") {
       update(editingSiteShift.index, shift);
     } else {
       append(shift);
     }
-    setEditingSiteShift(undefined);
+    setEditingSiteShift(null);
   };
 
   const handleDeleteShift = (index: number) => {
@@ -104,10 +112,10 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
     update(index, { ...shift, active: !shift.active });
   };
 
-  const onSubmit = (data: Site) => {
+  const onSubmit = (data: SiteForm) => {
     console.log("提交資料:", data);
     if (onSubmitProp) {
-      onSubmitProp(data);
+      onSubmitProp({ ...data, siteShifts: data.siteShifts.map((s) => s.id) });
     }
   };
 
@@ -134,14 +142,14 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
           </FieldSet>
           <FieldSet className="max-w-4xl">
             <FieldSeparator />
-            <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:justify-between sm:items-center">
+            <div className="flex flex-col mb-4 gap-3 sm:flex-row sm:justify-between sm:items-center">
               <FieldLegend>班次設定</FieldLegend>
               <Button type="button" onClick={handleAddShift} size="sm">
                 新增班次
               </Button>
             </div>
 
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center mb-4 gap-3">
               <Checkbox id="filter" checked={filter} onCheckedChange={(checked) => setFilter(!!checked)} />
               <Label htmlFor="filter" className="text-sm cursor-pointer select-none">
                 隱藏未啟用的班次
@@ -208,12 +216,11 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp }: Props)
         </div>
       </div>
 
-      {/* Shift Form Dialog */}
-      {editingSiteShift !== undefined && (
+      {editingSiteShift && (
         <SiteShiftFormDialog
-          siteShift={editingSiteShift?.shift || null}
+          siteShift={editingSiteShift.mode === "edit" ? editingSiteShift.shift : null}
           onSave={handleSaveShift}
-          onOpenChange={() => setEditingSiteShift(undefined)}
+          onOpenChange={() => setEditingSiteShift(null)}
         />
       )}
     </>

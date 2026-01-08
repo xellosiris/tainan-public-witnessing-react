@@ -57,7 +57,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
   return (
     <>
-      <div className="flex items-center gap-4 py-4 justify-between">
+      <div className="flex items-center justify-between py-4 gap-4">
         <InputGroup>
           <InputGroupInput
             value={globalFilter ?? ""}
@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <Button>新增成員</Button>
       </div>
 
-      <div className="rounded-md border">
+      <div className="border rounded-md">
         <div className="max-h-[calc(100vh-200px)] overflow-auto">
           <Table>
             <TableHeader className="sticky top-0 bg-background">

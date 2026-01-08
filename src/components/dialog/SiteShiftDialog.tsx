@@ -1,5 +1,4 @@
-// SiteShiftFormDialog.tsx
-import { siteShiftSchema, type SiteShift } from "@/types/site";
+import { siteShiftSchema, type SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
@@ -64,7 +63,7 @@ export default function SiteShiftFormDialog({ onOpenChange, siteShift, onSave }:
             <TimeField name="endTime" label="結束時間" control={form.control} />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <NumberField name="attendeesLimit" label="人數上限（0表示無限制)" control={form.control} min={1} />
+            <NumberField name="attendeesLimit" label="人數上限" control={form.control} />
             <NumberField name="requiredDeliverers" label="參與運送人數" control={form.control} />
           </div>
         </FieldGroup>

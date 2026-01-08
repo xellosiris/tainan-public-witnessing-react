@@ -17,7 +17,7 @@ export default function AppRoutes() {
         <Route index element={<Home />} />
 
         {/* 需要一般使用者Routes */}
-        <Route path="schedule" element={<Profile />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="myShifts" element={<PersonalShifts id={"00cf91ce-f962-4025-837a-7b47453406dc"} />} />
         <Route path="vacantShifts" element={<VacantShifts />} />
 

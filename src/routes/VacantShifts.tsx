@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getVacantShiftByMonth } from "@/services/shifts";
+import { getVacantShiftByMonth } from "@/services/shift";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";

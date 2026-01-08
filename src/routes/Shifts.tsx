@@ -3,7 +3,7 @@ import ShiftDialog from "@/components/dialog/ShiftDialog";
 import { Button } from "@/components/ui/button";
 import { Loading } from "@/components/ui/loading";
 import { SingleDatePicker } from "@/components/ui/singleDatePicker";
-import { getShiftsByDate } from "@/services/shifts";
+import { getShiftsByDate } from "@/services/shift";
 import type { Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";

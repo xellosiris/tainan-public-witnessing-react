@@ -1,7 +1,7 @@
 import ShiftCard from "@/components/card/ShiftCard";
 import { Label } from "@/components/ui/label";
 import { Loading } from "@/components/ui/loading";
-import { getShiftsByDate } from "@/services/shifts";
+import { getShiftsByDate } from "@/services/shift";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 

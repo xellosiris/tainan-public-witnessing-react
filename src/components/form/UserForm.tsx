@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { Button } from "../ui/button";
-import { FieldGroup, FieldSet } from "../ui/field";
+import { FieldGroup } from "../ui/field";
 import { SelectField } from "./fields/SelectField";
 import { SwitchField } from "./fields/SwitchField";
 import { TextAreaField } from "./fields/TextAreaField";
 import { TextField } from "./fields/TextField";
-type Props = { editUserObj: User | null };
 
+type Props = { editUserObj: User | null };
 export default function UserForm({ editUserObj }: Props) {
   const form = useForm<User>({
     resolver: zodResolver(userSchema),
@@ -29,13 +29,14 @@ export default function UserForm({ editUserObj }: Props) {
           bindCode: "",
         },
   });
+
   const onSubmit = (data: User) => {
     console.log({ data });
   };
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <FieldSet>
+      <FieldGroup>
         <FieldGroup className="gap-3">
           <SwitchField name="active" label="啟用人員" control={form.control} />
           <div className="grid grid-cols-3 gap-1.5">
@@ -65,7 +66,7 @@ export default function UserForm({ editUserObj }: Props) {
           />
           <TextAreaField name="note" label="備註" control={form.control} />
         </FieldGroup>
-      </FieldSet>
+      </FieldGroup>
       <div className="fixed bottom-0 left-0 right-0 z-10 p-4 border-t shadow-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="max-w-2xl mx-auto">
           <Button type="button" onClick={form.handleSubmit(onSubmit)} className="w-full" size="lg">

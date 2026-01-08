@@ -9,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getSetting } from "@/services/settings";
-import { getSite } from "@/services/sites";
+import { getSetting } from "@/services/setting";
+import { getSite } from "@/services/site";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 

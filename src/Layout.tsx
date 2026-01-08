@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import clsx from "clsx";
 import { MenuIcon } from "lucide-react";
 import { useState } from "react";
 import { Outlet } from "react-router";
@@ -15,14 +14,9 @@ export default function Layout() {
   };
   return (
     <Fragment>
-      <header
-        className={clsx(
-          "relative z-50 flex items-center h-12 gap-2 px-2 text-base text-white lg:text-xl",
-          import.meta.env.DEV ? "bg-destructive" : "bg-primary"
-        )}
-      >
+      <header className={"relative z-50 flex items-center h-12 gap-2 px-2 text-base text-white lg:text-xl bg-primary"}>
         <Button
-          className="hover:text-primary hover:bg-transparent"
+          className="hover:text-secondary hover:bg-transparent"
           onClick={() => setOpen(true)}
           variant="ghost"
           size={"icon"}
@@ -42,7 +36,7 @@ export default function Layout() {
                 <label className="text-sm text-muted-foreground">一般功能</label>
                 <MenuItem url="/" label="今日班表" onClick={onItemClick} />
                 <MenuItem url="/myShifts" label="我的班次" onClick={onItemClick} />
-                <MenuItem url="/schedule" label="我的排班設定" onClick={onItemClick} />
+                <MenuItem url="/profile" label="我的設定" onClick={onItemClick} />
                 <MenuItem url="/vacantShifts" label="報名空缺" onClick={onItemClick} />
                 <Separator className="my-2" />
                 <label className="text-sm text-muted-foreground">管理功能</label>
@@ -61,7 +55,7 @@ export default function Layout() {
             </SheetFooter>
           </SheetContent>
         </Sheet>
-        台南都市公眾場所見證{import.meta.env.DEV && "（開發模式）"}
+        台南都市公眾場所見證 {import.meta.env.DEV && "(開發模式)"}
         <div className="flex-auto" />
         XXXX
       </header>

@@ -1,138 +1,121 @@
-// ScheduleForm.tsx
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import type { Schedule } from "@/types/schedule";
-import { scheduleSchema } from "@/types/schedule";
+import { getEnrolledShifts } from "@/lib/shiftUtils";
+import { scheduleSchema, type Schedule } from "@/types/schedule";
+import type { SiteKey } from "@/types/site";
+import type { SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
-import dayjs from "dayjs";
-import { useState } from "react";
-import { zhTW } from "react-day-picker/locale";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useMemo } from "react";
+import { Controller, useForm } from "react-hook-form";
+import SignupShiftDialog from "../dialog/SignupShiftDialog";
 import { Button } from "../ui/button";
-import { Calendar } from "../ui/calendar";
 import { Field, FieldError, FieldGroup, FieldLegend, FieldSeparator, FieldSet } from "../ui/field";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { AttendeeField } from "./fields/AttendeeField";
+import { DateField } from "./fields/DateField";
 import { SwitchField } from "./fields/SwitchField";
+import ShiftGroupedView from "./ShiftGroupedView";
 
-type Props = {
-  scheduleEditObj: Schedule | null;
-  onSubmit?: (data: Schedule) => void;
-};
+type Props = { editScheduleObj: Schedule | null; siteKeys: SiteKey[]; siteShifts: SiteShift[] };
 
-export default function ScheduleForm({ scheduleEditObj, onSubmit: onSubmitProp }: Props) {
+export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: Props) {
   const form = useForm<Schedule>({
     resolver: zodResolver(scheduleSchema),
-    defaultValues: !!scheduleEditObj
-      ? { ...scheduleEditObj }
+    defaultValues: editScheduleObj
+      ? { ...editScheduleObj }
       : {
           canSchedule: true,
-          availableSiteShifts: [],
+          siteShiftLimits: {},
           unavailableDates: [],
           partnerId: "",
         },
   });
 
-  const { fields, append, remove, update } = useFieldArray({
-    control: form.control,
-    name: "availableSiteShifts",
-  });
-
-  const [newSiteShiftId, setNewSiteShiftId] = useState("");
-  const [newTimes, setNewTimes] = useState(1);
-
-  const handleAddSiteShift = () => {
-    if (newSiteShiftId.trim()) {
-      append({ siteShiftId: newSiteShiftId, times: newTimes });
-      setNewSiteShiftId("");
-      setNewTimes(1);
-    }
-  };
-
   const onSubmit = (data: Schedule) => {
-    console.log("提交資料:", data);
-
-    if (onSubmitProp) {
-      onSubmitProp(data);
-    }
+    console.log({ data });
   };
 
   return (
-    <>
-      <div className="pb-20 space-y-6">
-        <FieldGroup>
-          <FieldSet className="max-w-lg">
-            <FieldLegend>基本設定</FieldLegend>
-            <FieldSeparator />
-            <FieldGroup>
-              <Item variant="outline">
-                <ItemContent>
-                  <ItemTitle>可以參與排班</ItemTitle>
-                  <ItemDescription>啟用後此排程可用於排班系統</ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                  <SwitchField name="canSchedule" label="啟用" control={form.control} />
-                </ItemActions>
-              </Item>
-              <AttendeeField name="partnerId" control={form.control} label="同伴" placeholder="請輸入同伴名字..." />
-            </FieldGroup>
-          </FieldSet>
-          <FieldSet>
-            <FieldSeparator />
-            <FieldLegend>無法參加的日期</FieldLegend>
-            <Controller
-              name="unavailableDates"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="gap-1.5" data-invalid={fieldState.invalid}>
-                  <Calendar
-                    classNames={{
-                      root: "shrink-0 w-full max-w-xs border rounded-md",
-                      day: "h-10 w-10 p-0 mx-auto",
-                      row: "mt-1",
-                      day_button: "rounded-full",
-                      caption_label: "text-xl",
-                    }}
-                    mode="multiple"
-                    selected={field.value.map((d) => dayjs(d).toDate())}
-                    onSelect={(selectedDates: Date[] | undefined) => {
-                      const dateStrings = selectedDates
-                        ? selectedDates.map((date) => dayjs(date).format("YYYY-MM-DD"))
-                        : [];
-                      field.onChange(dateStrings);
-                    }}
-                    locale={zhTW}
-                    footer={
-                      field.value.length > 0 && (
-                        <div className="text-sm text-center text-muted-foreground pt-3">
-                          共 {field.value.length} 個無法參與日期
-                        </div>
-                      )
-                    }
-                  />
+    <form onSubmit={form.handleSubmit(onSubmit)} className="pb-24">
+      <FieldGroup className="gap-3">
+        <FieldSet className="max-w-lg">
+          <FieldLegend>排班設定</FieldLegend>
+          <FieldSeparator />
+          <FieldGroup>
+            <Item variant="outline">
+              <ItemContent>
+                <ItemTitle>參與排班</ItemTitle>
+                <ItemDescription>啟用此排程可用於排班系統</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <SwitchField name="canSchedule" label="啟用" control={form.control} />
+              </ItemActions>
+            </Item>
+            <AttendeeField name="partnerId" control={form.control} label="同伴" placeholder="請輸入同伴名字..." />
+            <DateField name="unavailableDates" mode="multiple" control={form.control} label="無法參與日期" />
+          </FieldGroup>
+        </FieldSet>
 
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
-                </Field>
+        <FieldSet className="max-w-4xl">
+          <FieldSeparator />
+          <div className="flex items-center justify-between mb-4">
+            <FieldLegend>參與班次設定</FieldLegend>
+            <Controller
+              name="siteShiftLimits"
+              control={form.control}
+              render={({ field }) => (
+                <SignupShiftDialog
+                  siteShifts={siteShifts}
+                  siteKeys={siteKeys}
+                  currentLimits={field.value}
+                  onUpdateLimits={(newLimits) => {
+                    field.onChange(newLimits);
+                  }}
+                />
               )}
             />
-          </FieldSet>
-          <FieldSet className="max-w-4xl">
-            <FieldSeparator />
-            <FieldLegend>參與班次設定</FieldLegend>
+          </div>
+          <Controller
+            name="siteShiftLimits"
+            control={form.control}
+            render={({ field, fieldState }) => {
+              const enrolledShifts = useMemo(() => {
+                return getEnrolledShifts(field.value, siteShifts).filter((shift) => shift.active);
+              }, [field.value]);
+              return (
+                <Field>
+                  <ShiftGroupedView
+                    siteShifts={enrolledShifts}
+                    siteKeys={siteKeys}
+                    renderShift={(siteShift: SiteShift) => {
+                      const maxTimes = field.value[siteShift.id];
+                      return (
+                        <div className="flex items-center justify-between p-3 bg-white border border-secondary rounded-lg">
+                          <div className="flex-1">
+                            <h5 className="font-medium text-lg">
+                              {siteShift.startTime} ～ {siteShift.endTime}
+                            </h5>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-sm text-gray-500">報名次數</span>
+                            <p className="text-2xl font-semibold text-primary">{maxTimes}</p>
+                          </div>
+                        </div>
+                      );
+                    }}
+                    emptyState={
+                      <div className="text-center py-12 text-gray-500">
+                        <p>尚未報名任何班次</p>
+                        <p className="text-sm mt-2">請點擊上方「我要報名」按鈕新增</p>
+                      </div>
+                    }
+                  />
+                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              );
+            }}
+          />
+        </FieldSet>
+      </FieldGroup>
 
-            {/* 班次列表 */}
-            {fields.length === 0 && (
-              <div className="py-12 text-center">
-                <p className="text-sm text-muted-foreground">尚無設定班次，請使用上方表單新增班次</p>
-              </div>
-            )}
-
-            {fields.length > 0 && (
-              <div className="text-sm text-center text-muted-foreground">共 {fields.length} 個班次</div>
-            )}
-          </FieldSet>
-        </FieldGroup>
-      </div>
-
-      {/* Fixed submit button at bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-10 p-4 border-t shadow-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="max-w-2xl mx-auto">
           <Button type="button" onClick={form.handleSubmit(onSubmit)} className="w-full" size="lg">
@@ -140,6 +123,6 @@ export default function ScheduleForm({ scheduleEditObj, onSubmit: onSubmitProp }
           </Button>
         </div>
       </div>
-    </>
+    </form>
   );
 }

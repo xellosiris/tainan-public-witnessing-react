@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSetting } from "@/services/settings";
+import { getSetting } from "@/services/setting";
 import type { Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";

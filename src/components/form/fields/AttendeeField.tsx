@@ -4,7 +4,7 @@ import { FieldError } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { getSetting } from "@/services/settings";
+import { getSetting } from "@/services/setting";
 import type { UserKey } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
@@ -57,12 +57,13 @@ export function AttendeeField<T extends FieldValues>({
                 <div className="flex flex-col gap-1.5">
                   <Label>{label}</Label>
                   <Button
+                    type="button"
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className={cn("w-full justify-between", !userField.value?.id && "text-muted-foreground")}
+                    className={cn("w-full justify-between", !userField.value && "text-muted-foreground")}
                   >
-                    {userField.value?.displayName || placeholder}
+                    {userKeys.find((u) => u.id === userField.value)?.displayName || placeholder}
                     <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                   </Button>
                 </div>
@@ -86,7 +87,7 @@ export function AttendeeField<T extends FieldValues>({
                             key={user.id}
                             value={user.id}
                             onSelect={(value) => {
-                              const selectedUser = userKeys.find((user) => user.id === value);
+                              const selectedUser = userKeys.find((user) => user.id === value)?.id;
                               userField.onChange(selectedUser);
                               setOpen(false);
                             }}

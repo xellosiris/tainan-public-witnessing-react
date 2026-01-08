@@ -67,7 +67,7 @@ export const columns: ColumnDef<UserColsType>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="w-8 h-8 p-0">
               <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>

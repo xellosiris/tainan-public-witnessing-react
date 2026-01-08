@@ -15,6 +15,7 @@ export const userSchema = z.object({
   lineSub: z.string().optional(),
   bindCode: z.string().optional(),
   firebaseSub: z.string().optional(),
+  availableSiteShifts: z.uuid().array(),
 });
 
 export const userKeySchema = userSchema.pick({ id: true, active: true, displayName: true });

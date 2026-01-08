@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase";
-import type { Setting } from "@/types/settings";
+import type { Setting } from "@/types/setting";
 import { doc, getDoc } from "firebase/firestore/lite";
 
 export const getSetting = async () => {
