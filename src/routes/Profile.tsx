@@ -1,4 +1,4 @@
-import UserForm from "@/components/form/UserForm";
+import ScheduleForm from "@/components/form/ScheduleForm";
 import type { User } from "@/types/user";
 
 export default function Profile() {
@@ -17,8 +17,8 @@ export default function Profile() {
     permission: 3,
   };
   return (
-    <div className="max-w-lg">
-      <UserForm editUserObj={user} />
+    <div className="max-w-md">
+      <ScheduleForm scheduleEditObj={null} />
     </div>
   );
 }

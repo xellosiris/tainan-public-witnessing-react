@@ -6,19 +6,29 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { zhTW } from "react-day-picker/locale";
 
 type Props = {
-  date?: string;
-  onDateChange: (date: string | undefined) => void;
+  dates?: string[];
+  onDatesChange: (dates: string[]) => void;
   id?: string;
   "aria-invalid"?: boolean;
   disabled?: boolean;
 };
 
-export function SingleDatePicker({ date, onDateChange, id, "aria-invalid": ariaInvalid, disabled }: Props) {
-  const dateObj = date ? dayjs(date).toDate() : undefined;
+export function MultiDatePicker({ dates = [], onDatesChange, id, "aria-invalid": ariaInvalid, disabled }: Props) {
+  const dateObjs = dates.map((date) => dayjs(date).toDate());
 
-  const handleSelect = (selectedDate: Date | undefined) => {
-    const dateString = selectedDate ? dayjs(selectedDate).format("YYYY-MM-DD") : undefined;
-    onDateChange(dateString);
+  const handleSelect = (selectedDates: Date[] | undefined) => {
+    const dateStrings = selectedDates ? selectedDates.map((date) => dayjs(date).format("YYYY-MM-DD")) : [];
+    onDatesChange(dateStrings);
+  };
+
+  const displayText = () => {
+    if (dates.length === 0) {
+      return <span>選擇日期</span>;
+    }
+    if (dates.length === 1) {
+      return dayjs(dates[0]).format("YYYY-MM-DD");
+    }
+    return `已選擇 ${dates.length} 個日期`;
   };
 
   return (
@@ -28,20 +38,20 @@ export function SingleDatePicker({ date, onDateChange, id, "aria-invalid": ariaI
           id={id}
           type="button"
           variant="outline"
-          data-empty={!date}
+          data-empty={dates.length === 0}
           aria-invalid={ariaInvalid}
           className="data-[empty=true]:text-muted-foreground w-63 justify-start text-left font-normal"
           disabled={disabled}
         >
           <CalendarIcon className="w-4 h-4 mr-2" />
-          {date ? dayjs(date).format("YYYY-MM-DD") : <span>選擇日期</span>}
+          {displayText()}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
-          mode="single"
+          mode="multiple"
           locale={zhTW}
-          selected={dateObj}
+          selected={dateObjs}
           onSelect={handleSelect}
           classNames={{
             root: "shrink-0 w-full max-w-xs border rounded-md",

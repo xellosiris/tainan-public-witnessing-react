@@ -9,12 +9,12 @@ export const userSchema = z.object({
   gender: z.enum(["male", "female"]),
   congId: z.uuid(),
   permission: z.enum(PERMISSION),
-  firebaseSub: z.string(),
+  cellphone: z.string(),
+  telephone: z.string().optional(),
+  note: z.string().optional(),
   lineSub: z.string().optional(),
   bindCode: z.string().optional(),
-  cellphone: z.string(),
-  telephone: z.string().optional().default(""),
-  note: z.string().optional().default(""),
+  firebaseSub: z.string().optional(),
 });
 
 export const userKeySchema = userSchema.pick({ id: true, active: true, displayName: true });

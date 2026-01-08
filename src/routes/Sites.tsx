@@ -1,4 +1,5 @@
 import SiteForm from "@/components/form/SiteForm";
+import { Loading } from "@/components/ui/loading";
 import {
   Select,
   SelectContent,
@@ -8,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getSite, getSiteKeys } from "@/services/sites";
-import type { Site } from "@/types/site";
+import { getSetting } from "@/services/settings";
+import { getSite } from "@/services/sites";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -17,18 +18,19 @@ type Props = {};
 
 export default function Sites({}: Props) {
   const [siteId, setSiteId] = useState<string>("");
-  const [siteObj, setSiteObj] = useState<Site | null | undefined>(undefined);
-
-  const { data: siteKeys } = useQuery({
-    queryKey: ["siteKeys"],
-    queryFn: getSiteKeys,
+  const { data: setting, isLoading } = useQuery({
+    queryKey: ["setting"],
+    queryFn: getSetting,
   });
 
-  const { data: site } = useQuery({
+  const { data: site, isLoading: siteLoading } = useQuery({
     queryKey: ["sites", siteId],
     queryFn: () => getSite(siteId),
     enabled: !!siteId,
   });
+  if (siteLoading || isLoading) return <Loading />;
+  if (!setting) return <div>設定檔不存在</div>;
+  const { siteKeys } = setting;
 
   return (
     <div className="flex flex-col gap-8">

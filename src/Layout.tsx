@@ -42,12 +42,12 @@ export default function Layout() {
                 <label className="text-sm text-muted-foreground">一般功能</label>
                 <MenuItem url="/" label="今日班表" onClick={onItemClick} />
                 <MenuItem url="/myShifts" label="我的班次" onClick={onItemClick} />
-                <MenuItem url="/profile" label="我的設定" onClick={onItemClick} />
-                <MenuItem url="/vacantShifts" label="報名空缺班次" onClick={onItemClick} />
+                <MenuItem url="/schedule" label="我的排班設定" onClick={onItemClick} />
+                <MenuItem url="/vacantShifts" label="報名空缺" onClick={onItemClick} />
                 <Separator className="my-2" />
                 <label className="text-sm text-muted-foreground">管理功能</label>
                 <MenuItem url="/overview" label="狀態一覽" onClick={onItemClick} />
-                <MenuItem url="/members" label="成員管理" onClick={onItemClick} />
+                <MenuItem url="/users" label="成員管理" onClick={onItemClick} />
                 <MenuItem url="/shifts" label="班次管理" onClick={onItemClick} />
                 <MenuItem url="/sites" label="地點管理" onClick={onItemClick} />
                 <MenuItem url="/setting" label="基本設定" onClick={onItemClick} />

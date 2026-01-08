@@ -60,8 +60,8 @@ export default function PersonalShifts({ id }: Props) {
           root: "shrink-0 w-full max-w-xs border rounded-md",
           day: "h-10 w-10 p-0 mx-auto",
           row: "mt-1",
-          day_today: "rounded-full",
-          day_selected: "bg-primary text-primary-foreground rounded-full",
+          day_button: "rounded-full",
+          caption_label: "text-xl",
         }}
       />
 

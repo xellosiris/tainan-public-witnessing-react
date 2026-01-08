@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldSeparator, FieldSet } from "@/components/ui/field";
 import { shiftFormSchema, type Shift, type ShiftForm } from "@/types/shift";
-import type { Site } from "@/types/site";
+import type { SiteKey } from "@/types/site";
 import { type UserKey } from "@/types/user";
 import {
   closestCenter,
@@ -12,27 +12,27 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { v4 } from "uuid";
-import { AttendeeField } from "../form/fields/AttendeesField";
+import { AttendeesField } from "../form/fields/AttendeesField";
 import { DateField } from "../form/fields/DateField";
 import { NumberField } from "../form/fields/NumberInput";
 import { SelectField } from "../form/fields/SelectField";
 import { SwitchField } from "../form/fields/SwitchField";
 import { TimeField } from "../form/fields/TimeField";
-
 type Props = {
   editShiftObj: Shift | null;
-  sites: Site[];
+  siteKeys: SiteKey[];
   userKeys: UserKey[];
   onClose: () => void;
 };
 
-export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Props) {
+export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }: Props) {
   const form = useForm<ShiftForm>({
     resolver: zodResolver(shiftFormSchema),
     defaultValues: editShiftObj
@@ -111,7 +111,13 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
             <SwitchField control={form.control} name="active" label="啟用班次" />
             <div className="grid grid-cols-2 gap-4">
               <DateField control={form.control} name="date" label="日期" />
-              <SelectField control={form.control} name="siteId" label="地點" placeholder="選擇地點" options={sites} />
+              <SelectField
+                control={form.control}
+                name="siteId"
+                label="地點"
+                placeholder="選擇地點"
+                options={siteKeys}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <TimeField control={form.control} name="startTime" label="開始時間" placeholder="請輸入開始時間" />
@@ -131,10 +137,15 @@ export default function ShiftForm({ editShiftObj, sites, userKeys, onClose }: Pr
               {fields.length === 0 ? (
                 <p className="py-4 text-sm text-center text-muted-foreground">尚無參與者，點擊下方按鈕新增</p>
               ) : (
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  modifiers={[restrictToVerticalAxis]}
+                  onDragEnd={handleDragEnd}
+                >
                   <SortableContext items={fields.map((field) => field.id)} strategy={verticalListSortingStrategy}>
                     {fields.map((field, index) => (
-                      <AttendeeField
+                      <AttendeesField
                         key={field.id}
                         id={field.id}
                         control={form.control}

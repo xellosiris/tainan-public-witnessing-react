@@ -1,6 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getSiteKeys } from "@/services/sites";
-import { getUserKeys } from "@/services/users";
+import { getSetting } from "@/services/settings";
 import { type Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
 import ShiftForm from "../form/ShiftForm";
@@ -12,17 +11,14 @@ type Props = {
 };
 
 export default function ShiftDialog({ editShiftObj, onClose }: Props) {
-  const { data: sites, isLoading: siteLoading } = useQuery({
-    queryKey: ["siteKeys"],
-    queryFn: getSiteKeys,
-  });
-  const { data: userKeys, isLoading: userKeysLoading } = useQuery({
-    queryKey: ["userKeys"],
-    queryFn: getUserKeys,
+  const { data: setting, isLoading } = useQuery({
+    queryKey: ["setting"],
+    queryFn: getSetting,
   });
 
-  if (siteLoading || userKeysLoading) return <Loading />;
-  if (!sites || !userKeys) return <div>地點和使用者不存在</div>;
+  if (isLoading) return <Loading />;
+  if (!setting) return <div>地點和使用者不存在</div>;
+  const { userKeys, siteKeys } = setting;
 
   return (
     <Dialog open onOpenChange={onClose} modal={false}>
@@ -31,7 +27,7 @@ export default function ShiftDialog({ editShiftObj, onClose }: Props) {
           <DialogTitle>{editShiftObj ? "編輯" : "新增"}班次</DialogTitle>
           <DialogDescription>班次的設定與參與人員</DialogDescription>
         </DialogHeader>
-        <ShiftForm editShiftObj={editShiftObj} sites={sites} userKeys={userKeys} onClose={onClose} />
+        <ShiftForm editShiftObj={editShiftObj} siteKeys={siteKeys} userKeys={userKeys} onClose={onClose} />
       </DialogContent>
     </Dialog>
   );

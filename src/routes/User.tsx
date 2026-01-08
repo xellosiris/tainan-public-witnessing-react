@@ -1,5 +1,5 @@
 type Props = {};
 
-export default function Member({}: Props) {
+export default function User({}: Props) {
   return <div>Member</div>;
 }

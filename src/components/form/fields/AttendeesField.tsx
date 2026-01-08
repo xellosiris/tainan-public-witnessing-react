@@ -16,12 +16,12 @@ import { VList } from "virtua";
 type AttendeeFieldProps = {
   control: Control<ShiftForm>;
   index: number;
-  id: string; // 用於 dnd-kit 的唯一識別
+  id: string; // 用於 dnd-kit
   userKeys: Array<UserKey>;
   onRemove: () => void;
 };
 
-export function AttendeeField({ control, index, id, userKeys, onRemove }: AttendeeFieldProps) {
+export function AttendeesField({ control, index, id, userKeys, onRemove }: AttendeeFieldProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {
@@ -65,7 +65,7 @@ export function AttendeeField({ control, index, id, userKeys, onRemove }: Attend
                       aria-expanded={open}
                       className={cn("w-full justify-between", !userField.value?.id && "text-muted-foreground")}
                     >
-                      {userField.value?.displayName || "請選擇參與者"}
+                      {userField.value?.displayName || "請選擇人員"}
                       <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                     </Button>
                   </PopoverTrigger>

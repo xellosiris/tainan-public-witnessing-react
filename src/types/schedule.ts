@@ -1,11 +1,10 @@
 import * as z from "zod";
 
-const scheduleSchema = z.object({
-  userId: z.uuid(),
-  assign: z.boolean(),
-  availableShifts: z.record(z.uuid(), z.number().int().nonnegative()),
+export const scheduleSchema = z.object({
+  canSchedule: z.boolean(),
+  availableSiteShifts: z.object({ siteShiftId: z.uuid(), times: z.number().int().nonnegative() }).array(),
   unavailableDates: z.string().array(),
-  partnerId: z.uuid(),
+  partnerId: z.uuid().optional(),
 });
 
 export type Schedule = z.infer<typeof scheduleSchema>;

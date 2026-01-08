@@ -8,18 +8,23 @@ import {
   ClipboardEditIcon,
   Clock,
   EditIcon,
-  EllipsisVerticalIcon,
   MapPin,
+  MoreVertical,
   PlusCircle,
   Trash2Icon,
   VanIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import ReportDialog from "../dialog/ReportDialog";
-import ShiftDialog from "../dialog/ShiftDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Loading } from "../ui/loading";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Separator } from "../ui/separator";
+const ShiftDialog = React.lazy(() => import("../dialog/ShiftDialog"));
 
 type Props = {
   shift: Shift;
@@ -39,24 +44,25 @@ export default function ShiftCard({ shift }: Props) {
   return (
     <React.Fragment>
       <Card className="relative w-full max-w-xs gap-4">
-        <Popover>
-          <PopoverTrigger className="absolute top-2 right-2" asChild>
-            <Button variant="ghost" size="icon">
-              <EllipsisVerticalIcon className="size-6" />
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size={"icon"} className="absolute top-2 right-2">
+              <span className="sr-only">Open menu</span>
+              <MoreVertical className="size-4" />
             </Button>
-          </PopoverTrigger>
-          <PopoverContent className="flex flex-col items-start p-1 w-23">
-            <Button variant={"ghost"} className="w-full font-normal rounded-none" onClick={() => setEditObj(shift)}>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setEditObj(shift)}>
               <EditIcon />
               編輯
-            </Button>
-            <Separator />
-            <Button variant={"ghost"} className="w-full font-normal rounded-none text-destructive">
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive">
               <Trash2Icon />
               刪除
-            </Button>
-          </PopoverContent>
-        </Popover>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <CardHeader className="gap-1">
           <CardTitle className="flex items-center text-2xl">
             <span>{shift.date}</span>
@@ -99,7 +105,9 @@ export default function ShiftCard({ shift }: Props) {
           )}
         </CardFooter>
       </Card>
-      {editObj !== undefined && <ShiftDialog editShiftObj={editObj} onClose={() => setEditObj(undefined)} />}
+      <Suspense fallback={<Loading />}>
+        {editObj !== undefined && <ShiftDialog editShiftObj={editObj} onClose={() => setEditObj(undefined)} />}
+      </Suspense>
       {openReport && <ReportDialog onClose={() => setOpenReport(false)} shift={shift} />}
     </React.Fragment>
   );
