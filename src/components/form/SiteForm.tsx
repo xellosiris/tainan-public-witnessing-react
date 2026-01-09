@@ -35,7 +35,7 @@ type Props = {
 };
 
 export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShifts }: Props) {
-  const [filter, setFilter] = useState<boolean>(true);
+  const [filter, setFilter] = useState<boolean>(false);
   const [editingSiteShift, setEditingSiteShift] = useState<EditingSiteShift | null>(null);
   const siteId = siteEditObj?.id ?? v4();
   const form = useForm<SiteForm>({

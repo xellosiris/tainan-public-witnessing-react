@@ -42,7 +42,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
             <Item variant="outline">
               <ItemContent>
                 <ItemTitle>參與排班</ItemTitle>
-                <ItemDescription>啟用此排程可用於排班系統</ItemDescription>
+                <ItemDescription>啟用後，會參與自動排班。關閉後，使用者會暫停排班</ItemDescription>
               </ItemContent>
               <ItemActions>
                 <SwitchField name="canSchedule" label="啟用" control={form.control} />
@@ -87,7 +87,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
                       return (
                         <div className="flex items-center justify-between p-3 bg-white border rounded-lg border-secondary">
                           <div className="flex-1">
-                            <h5 className="text-lg font-medium">
+                            <h5 className="text-2xl font-medium">
                               {siteShift.startTime} ～ {siteShift.endTime}
                             </h5>
                           </div>

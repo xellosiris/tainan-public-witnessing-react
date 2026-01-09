@@ -1,8 +1,10 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FieldGroup } from "@/components/ui/field";
 import { siteShiftSchema, type SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertTriangleIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { NumberField } from "../form/fields/NumberInput";
@@ -58,6 +60,7 @@ export default function SiteShiftFormDialog({ siteId, onOpenChange, siteShift, o
         <DialogHeader>
           <DialogTitle>{siteShift ? "編輯班次" : "新增班次"}</DialogTitle>
         </DialogHeader>
+
         <FieldGroup>
           <SwitchField name="active" label="啟用此班次" control={form.control} />
           <SelectField name="weekday" label="星期" control={form.control} options={weekdayOptions} valueAsNumber />
@@ -70,6 +73,11 @@ export default function SiteShiftFormDialog({ siteId, onOpenChange, siteShift, o
             <NumberField name="requiredDeliverers" label="參與運送人數" control={form.control} />
           </div>
         </FieldGroup>
+        <Alert variant={"destructive"}>
+          <AlertTriangleIcon />
+          <AlertTitle>請確認</AlertTitle>
+          <AlertDescription>新增班次前，請先確認是否有重複時段的班次</AlertDescription>
+        </Alert>
         <DialogFooter className="gap-2">
           <Button type="button" variant="outline" onClick={handleCancel}>
             取消

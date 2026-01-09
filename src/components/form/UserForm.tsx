@@ -6,6 +6,7 @@ import { userSchema, type User } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { SelectField } from "./fields/SelectField";
 import { SwitchField } from "./fields/SwitchField";
 import { TextAreaField } from "./fields/TextAreaField";
@@ -39,7 +40,19 @@ export default function UserForm({ editUserObj }: Props) {
       <FieldSet>
         <FieldLegend>基本設定</FieldLegend>
         <FieldGroup className="p-4 bg-white gap-3 rounded-md shadow-sm">
-          <SwitchField name="active" label="啟用人員" control={form.control} />
+          <Item variant="outline">
+            <ItemContent>
+              <ItemTitle>人員啟用</ItemTitle>
+              <ItemDescription>
+                啟用後，使用者可以開始使用系統。
+                <br />
+                關閉後，使用者無法進入系統。若關閉達1年以上會自動刪除該成員資料
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <SwitchField name="active" label="啟用" control={form.control} />
+            </ItemActions>
+          </Item>
           <div className="grid grid-cols-3 gap-1.5">
             <TextField name="displayName" label="顯示名稱" control={form.control} />
             <TextField name="name" label="姓名" control={form.control} />
