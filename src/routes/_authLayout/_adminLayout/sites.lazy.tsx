@@ -1,7 +1,9 @@
 import SiteDialog from "@/components/dialog/SiteDialog";
 import SiteForm from "@/components/form/SiteForm";
+import ErrorComponent from "@/components/route/ErrorComponent";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Loading } from "@/components/ui/loading";
 import {
   Select,
   SelectContent,
@@ -14,7 +16,10 @@ import {
 import { getSetting } from "@/services/setting";
 import { getSite } from "@/services/site";
 import { getSiteShift } from "@/services/siteShift";
-import { useQueries } from "@tanstack/react-query";
+import type { Setting } from "@/types/setting";
+import type { Site } from "@/types/site";
+import type { SiteShift } from "@/types/siteShift";
+import { useQueries, type UseQueryResult } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -25,7 +30,12 @@ export const Route = createLazyFileRoute("/_authLayout/_adminLayout/sites")({
 function Sites() {
   const [siteId, setSiteId] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
-  const results = useQueries({
+
+  const results: [
+    UseQueryResult<Setting | undefined>,
+    UseQueryResult<Site | undefined>,
+    UseQueryResult<SiteShift[] | undefined>,
+  ] = useQueries({
     queries: [
       {
         queryKey: ["setting"],
@@ -45,6 +55,8 @@ function Sites() {
   });
 
   const [settingQuery, siteQuery, siteShiftsQuery] = results;
+  const isLoading = settingQuery.isLoading || siteQuery.isLoading || siteShiftsQuery.isLoading;
+  if (isLoading) return <Loading />;
   const setting = settingQuery.data;
   const site = siteQuery.data;
   const siteShifts = siteShiftsQuery.data;
@@ -53,6 +65,7 @@ function Sites() {
     setSiteId(siteId);
   };
 
+  if (!setting) return <ErrorComponent />;
   const { siteKeys } = setting;
 
   return (
@@ -67,7 +80,7 @@ function Sites() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>地點</SelectLabel>
-                {siteKeys?.map((site) => (
+                {siteKeys.map((site) => (
                   <SelectItem key={site.id} value={site.id}>
                     {site.name}
                   </SelectItem>
@@ -78,7 +91,13 @@ function Sites() {
         </div>
         <Button onClick={() => setOpen(true)}>新增</Button>
       </div>
-      {!!siteId && <SiteForm siteEditObj={site!} siteShifts={siteShifts || []} />}
+
+      {/* Show loading indicator for site-specific data */}
+      {siteId && siteQuery.isLoading && <div className="p-4">載入地點資料...</div>}
+
+      {/* Show form only when data is available */}
+      {siteId && site && <SiteForm siteEditObj={site} siteShifts={siteShifts!} />}
+
       {open && <SiteDialog onClose={() => setOpen(false)} />}
     </div>
   );
