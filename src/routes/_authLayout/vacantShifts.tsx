@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authLayout/vacantShifts")({
 
 function VacantShifts() {
   const [yearMonth, setYearMonth] = useState<string>(dayjs().format("YYYY-MM"));
-  const yearMonths = useMemo(() => [dayjs().subtract(1, "month"), dayjs(), dayjs().add(1, "month")], []);
+  const yearMonths = useMemo(() => [dayjs(), dayjs().add(1, "month")], []);
   const { data: shifts } = useSuspenseQuery({
     queryKey: ["vacantShift", yearMonth],
     queryFn: () => getVacantShiftByMonth(yearMonth),
