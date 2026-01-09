@@ -27,13 +27,13 @@ export default function ShiftSignupCard({ siteShift, maxTimes, onTimesChange }: 
 
   return (
     <Card className={cn("gap-1 p-1 w-full max-w-sm transition-all", !siteShift.active && "opacity-60 bg-muted/50")}>
-      <CardContent className="flex p-1 gap-2 justify-between">
-        <div className="flex items-center gap-3 justify-between w-full">
+      <CardContent className="flex justify-between p-1 gap-2">
+        <div className="flex items-center justify-between w-full gap-3">
           <h3 className="flex item-center gap-1.5 text-xl">
             {siteShift.startTime} ～ {siteShift.endTime}{" "}
             {!siteShift.active && <Badge variant={"destructive"}>已暫停</Badge>}
           </h3>
-          <div className="flex gap-1 items-center">
+          <div className="flex items-center gap-1">
             <Button
               onClick={handleDecrement}
               variant="ghost"

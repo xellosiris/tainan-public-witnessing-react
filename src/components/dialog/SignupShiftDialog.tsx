@@ -64,7 +64,7 @@ export default function SignupShiftDialog({ siteShifts, siteKeys, currentLimits,
       <DialogTrigger asChild>
         <Button type="button" variant="outline" size="sm" className="gap-2">
           <Plus className="size-4" />
-          我要報名
+          報名（修改）
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
@@ -88,13 +88,13 @@ export default function SignupShiftDialog({ siteShifts, siteKeys, currentLimits,
                   )}
                 >
                   <div className="flex-1">
-                    <h5 className="font-medium text-lg">
+                    <h5 className="text-lg font-medium">
                       {siteShift.startTime} ～ {siteShift.endTime}
                     </h5>
                     {!siteShift.active && <Badge variant={"secondary"}>停用中</Badge>}
                   </div>
 
-                  <div className="flex gap-1 items-center">
+                  <div className="flex items-center gap-1">
                     <Button
                       type="button"
                       onClick={() => updateShiftTimes(siteShift.id, currentTimes - 1)}
@@ -121,14 +121,14 @@ export default function SignupShiftDialog({ siteShifts, siteKeys, currentLimits,
               );
             }}
             emptyState={
-              <div className="text-center py-12 text-gray-500 bg-white rounded-lg border border-gray-200">
+              <div className="py-12 text-center text-gray-500 bg-white border border-gray-200 rounded-lg">
                 <p>此地點尚無可報名的班次</p>
               </div>
             }
           />
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
+        <div className="flex justify-end pt-4 border-t gap-2">
           <Button type="button" variant="outline" onClick={handleCancel}>
             取消
           </Button>

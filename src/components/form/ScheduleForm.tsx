@@ -38,7 +38,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
       <FieldGroup>
         <FieldSet>
           <FieldLegend>排班設定</FieldLegend>
-          <FieldGroup className="bg-white p-4 rounded-md shadow-sm">
+          <FieldGroup className="p-4 bg-white rounded-md shadow-sm">
             <Item variant="outline">
               <ItemContent>
                 <ItemTitle>參與排班</ItemTitle>
@@ -78,16 +78,16 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
                 return getEnrolledShifts(field.value, siteShifts).filter((shift) => shift.active);
               }, [field.value]);
               return (
-                <Field className="bg-white p-4 rounded-md shadow-sm">
+                <Field className="p-4 bg-white rounded-md shadow-sm">
                   <ShiftGroupedView
                     siteShifts={enrolledShifts}
                     siteKeys={siteKeys}
                     renderShift={(siteShift: SiteShift) => {
                       const maxTimes = field.value[siteShift.id];
                       return (
-                        <div className="flex items-center justify-between p-3 bg-white border border-secondary rounded-lg">
+                        <div className="flex items-center justify-between p-3 bg-white border rounded-lg border-secondary">
                           <div className="flex-1">
-                            <h5 className="font-medium text-lg">
+                            <h5 className="text-lg font-medium">
                               {siteShift.startTime} ～ {siteShift.endTime}
                             </h5>
                           </div>
@@ -99,9 +99,9 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
                       );
                     }}
                     emptyState={
-                      <div className="text-center py-12 text-gray-500">
+                      <div className="py-12 text-center text-gray-500">
                         <p>尚未報名任何班次</p>
-                        <p className="text-sm mt-2">請點擊上方「我要報名」按鈕新增</p>
+                        <p className="mt-2 text-sm">請點擊上方「我要報名」按鈕新增</p>
                       </div>
                     }
                   />
@@ -114,7 +114,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
       </FieldGroup>
 
       <div className="fixed bottom-0 left-0 right-0 z-10 p-4 border-t shadow-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-sm mx-auto">
           <Button type="submit" className="w-full" size="lg">
             儲存
           </Button>

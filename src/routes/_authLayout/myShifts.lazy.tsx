@@ -2,7 +2,7 @@ import ShiftCard from "@/components/card/ShiftCard";
 import { Calendar } from "@/components/ui/calendar";
 import { getPersonalShiftByMonth } from "@/services/shift";
 import type { User } from "@/types/user";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
@@ -18,7 +18,7 @@ function PersonalShifts(id: User["id"]) {
 
   const yearMonth = dayjs(month).format("YYYY-MM");
 
-  const { data: shifts } = useQuery({
+  const { data: shifts } = useSuspenseQuery({
     queryKey: ["shifts", id, yearMonth],
     queryFn: () => getPersonalShiftByMonth(id, yearMonth),
   });

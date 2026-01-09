@@ -60,7 +60,6 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
     name: "attendees",
   });
 
-  // 設定拖移感應器
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -81,7 +80,6 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
     append({ id: "", displayName: "", active: false });
   };
 
-  // 處理拖移結束
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -94,6 +92,7 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
       }
     }
   };
+
   const onSubmit = (data: ShiftForm) => {
     const shift = {
       ...data,

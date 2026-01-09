@@ -1,17 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { FieldError } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { getSetting } from "@/services/setting";
 import type { UserKey } from "@/types/user";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
-import { VList } from "virtua";
 
 type AttendeeFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -26,11 +25,11 @@ export function AttendeeField<T extends FieldValues>({
   label = "人員",
   placeholder = "請輸入人員...",
 }: AttendeeFieldProps<T>) {
-  const { data } = useQuery({
+  const { data: setting } = useSuspenseQuery({
     queryKey: ["setting"],
     queryFn: getSetting,
   });
-  const userKeys = data?.userKeys ?? [];
+  const { userKeys } = setting;
   return (
     <Controller
       name={name}
@@ -69,7 +68,7 @@ export function AttendeeField<T extends FieldValues>({
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width]! p-0" align="start">
-                <Command shouldFilter={false}>
+                <Command shouldFilter={false} className="**:[[cmdk-group]]:max-h-50 **:[[cmdk-group]]:overflow-y-auto">
                   <CommandInput value={query} onValueChange={setQuery} placeholder={placeholder} />
                   {!query && (
                     <CommandGroup>
@@ -79,7 +78,7 @@ export function AttendeeField<T extends FieldValues>({
                     </CommandGroup>
                   )}
                   {!!query && (
-                    <VList style={{ height: 180 }}>
+                    <CommandList style={{ height: 180 }}>
                       <CommandEmpty>找不到成員</CommandEmpty>
                       <CommandGroup>
                         {filterUsers?.map((user) => (
@@ -102,7 +101,7 @@ export function AttendeeField<T extends FieldValues>({
                           </CommandItem>
                         ))}
                       </CommandGroup>
-                    </VList>
+                    </CommandList>
                   )}
                 </Command>
               </PopoverContent>

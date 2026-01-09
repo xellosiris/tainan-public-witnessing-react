@@ -1,8 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loading } from "@/components/ui/loading";
 import { getSetting } from "@/services/setting";
 import { type Shift } from "@/types/shift";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import ShiftForm from "../form/ShiftForm";
 
 type Props = {
@@ -11,17 +10,15 @@ type Props = {
 };
 
 export default function ShiftDialog({ editShiftObj, onClose }: Props) {
-  const { data: setting, isLoading } = useQuery({
+  const { data: setting } = useSuspenseQuery({
     queryKey: ["setting"],
     queryFn: getSetting,
   });
 
-  if (isLoading) return <Loading />;
-  if (!setting) return <div>地點和使用者不存在</div>;
   const { userKeys, siteKeys } = setting;
 
   return (
-    <Dialog open onOpenChange={onClose} modal={false}>
+    <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editShiftObj ? "編輯" : "新增"}班次</DialogTitle>

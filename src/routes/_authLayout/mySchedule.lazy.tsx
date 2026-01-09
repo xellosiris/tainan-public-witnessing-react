@@ -1,9 +1,8 @@
 import { SCHEDULE } from "@/assets/mock";
 import ScheduleForm from "@/components/form/ScheduleForm";
-import { Loading } from "@/components/ui/loading";
 import { getSetting } from "@/services/setting";
 import { getSiteShifts } from "@/services/siteShift";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQueries } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/_authLayout/mySchedule")({
@@ -11,18 +10,22 @@ export const Route = createLazyFileRoute("/_authLayout/mySchedule")({
 });
 
 function PersonalSchedule() {
-  const { data: setting, isLoading } = useQuery({
-    queryKey: ["setting"],
-    queryFn: getSetting,
+  const results = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ["setting"],
+        queryFn: getSetting,
+      },
+      {
+        queryKey: ["siteShifts"],
+        queryFn: getSiteShifts,
+      },
+    ],
   });
 
-  const { data: siteShifts, isLoading: siteShiftsLoading } = useQuery({
-    queryKey: ["siteShifts"],
-    queryFn: getSiteShifts,
-  });
-  if (isLoading || siteShiftsLoading) return <Loading />;
-  if (!setting) return <div>找不到設定檔</div>;
-  if (!siteShifts) return <div>尚未設定任何班次</div>;
+  const [settingResult, siteShiftsResult] = results;
+  const setting = settingResult.data;
+  const siteShifts = siteShiftsResult.data;
   const { siteKeys } = setting;
 
   return (

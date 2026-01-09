@@ -1,7 +1,17 @@
 import { db } from "@/lib/firebase";
 import type { Shift } from "@/types/shift";
 import type { User } from "@/types/user";
-import { collection, getDocs, orderBy, query, Timestamp, where } from "firebase/firestore/lite";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore/lite";
 
 const convertShiftTimestamps = (data: any): Shift => {
   return {
@@ -30,4 +40,9 @@ export const getVacantShiftByMonth = async (yearMonth: Shift["yearMonth"]): Prom
   const q = query(collection(db, "Shifts"), where("isFull", "==", false), where("yearMonth", "==", yearMonth));
   const docs = await getDocs(q);
   return docs.docs.map((d) => convertShiftTimestamps(d.data()));
+};
+
+export const signupShift = async (shiftId: Shift["id"], userId: User["id"]) => {
+  const shiftDoc = doc(db, "Shifts", shiftId);
+  await updateDoc(shiftDoc, { attendees: arrayUnion(userId) });
 };

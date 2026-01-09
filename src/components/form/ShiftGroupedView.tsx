@@ -26,7 +26,7 @@ export default function ShiftGroupedView({ siteShifts, siteKeys, renderShift, em
 
   return (
     <Tabs defaultValue={siteKeys[0]?.id} className={className}>
-      <TabsList className="w-full justify-start overflow-x-auto flex-wrap h-auto">
+      <TabsList className="flex-wrap justify-start w-full h-auto overflow-x-auto">
         {siteKeys
           .filter((s) => !!s.active)
           .map((site) => (
@@ -47,10 +47,10 @@ export default function ShiftGroupedView({ siteShifts, siteKeys, renderShift, em
             <TabsContent key={site.id} value={site.id} className="mt-4">
               {!hasShifts && emptyState}
               {hasShifts && (
-                <div className="space-y-1 bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div className="overflow-hidden bg-white border border-gray-200 rounded-lg space-y-1">
                   {Object.entries(dayGroups).map(([dayOfWeek, shifts]) => (
                     <div key={dayOfWeek}>
-                      <div className="bg-secondary border-b border-gray-200 px-4 py-3">
+                      <div className="px-4 py-3 border-b border-gray-200 bg-secondary">
                         <h4 className="text-base font-semibold text-primary">{WEEKDAY_NAMES[parseInt(dayOfWeek)]}</h4>
                       </div>
 

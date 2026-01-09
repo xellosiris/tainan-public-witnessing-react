@@ -2,7 +2,6 @@ import SiteDialog from "@/components/dialog/SiteDialog";
 import SiteForm from "@/components/form/SiteForm";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loading } from "@/components/ui/loading";
 import {
   Select,
   SelectContent,
@@ -49,19 +48,15 @@ function Sites() {
   const setting = settingQuery.data;
   const site = siteQuery.data;
   const siteShifts = siteShiftsQuery.data;
-  const isLoading = settingQuery.isLoading || siteQuery.isLoading || siteShiftsQuery.isLoading;
 
   const onSelectSite = (siteId: string) => {
     setSiteId(siteId);
   };
 
-  if (isLoading) return <Loading />;
-  if (!setting) return <div>設定檔不存在</div>;
-
   const { siteKeys } = setting;
 
   return (
-    <div className="flex flex-col gap-8 max-w-3xl">
+    <div className="flex flex-col max-w-3xl gap-8">
       <div className="flex items-end gap-2">
         <div className="flex flex-col gap-1.5">
           <Label>地點</Label>

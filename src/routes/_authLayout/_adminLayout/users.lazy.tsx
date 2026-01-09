@@ -9,7 +9,7 @@ export const Route = createLazyFileRoute("/_authLayout/_adminLayout/users")({
 });
 
 function Users() {
-  // const { data: users } = useQuery({
+  // const { data: users } = useSuspenseQuery({
   //   queryKey: ["users"],
   //   queryFn: getUsers,
   // });

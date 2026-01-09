@@ -8,7 +8,7 @@ import { getSetting } from "@/services/setting";
 import { getSiteShifts } from "@/services/siteShift";
 import type { Setting } from "@/types/setting";
 import type { SiteShift } from "@/types/siteShift";
-import { useQueries, type UseQueryResult } from "@tanstack/react-query";
+import { useSuspenseQueries, type UseQueryResult } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/_authLayout/_adminLayout/users/$userId")({
@@ -22,7 +22,7 @@ function RouteComponent() {
     // UseQueryResult<User | undefined>,
     UseQueryResult<Setting | undefined>,
     UseQueryResult<SiteShift[] | undefined>,
-  ] = useQueries({
+  ] = useSuspenseQueries({
     queries: [
       // {
       //   queryKey: ["users", userId],

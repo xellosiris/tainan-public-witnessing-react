@@ -118,7 +118,7 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
         <FieldGroup>
           <FieldSet>
             <FieldLegend>基本資訊</FieldLegend>
-            <FieldGroup className="bg-white p-4 rounded-md shadow-sm">
+            <FieldGroup className="p-4 bg-white rounded-md shadow-sm">
               <TextField name="name" label="地點名稱" control={form.control} />
               <TextAreaField name="description" label="地點描述" control={form.control} />
               <Item variant="outline">
@@ -165,7 +165,7 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
                       <h3 className="sticky top-0 z-20 px-4 pt-2 pb-2 -mx-4 text-lg font-semibold border-b bg-background text-foreground/80">
                         {WEEKDAY_NAMES[weekday]} ({shiftsForDay.length})
                       </h3>
-                      <div className="flex flex-wrap gap-4 bg-white p-4 rounded-md shadow-sm">
+                      <div className="flex flex-wrap p-4 bg-white gap-4 rounded-md shadow-sm">
                         {shiftsForDay.map((field) => {
                           const originalIndex = fields.findIndex((f) => f.id === field.id);
                           return (
@@ -200,7 +200,7 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
 
       {/* Fixed submit button at bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-10 p-4 border-t shadow-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-sm mx-auto">
           <Button type="submit" className="w-full" size="lg">
             儲存
           </Button>

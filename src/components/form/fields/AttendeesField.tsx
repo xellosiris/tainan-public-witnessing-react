@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { FieldError } from "@/components/ui/field";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -11,12 +11,11 @@ import clsx from "clsx";
 import { Check, ChevronsUpDown, GripVertical, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { type Control, Controller } from "react-hook-form";
-import { VList } from "virtua";
 
 type AttendeeFieldProps = {
   control: Control<ShiftForm>;
   index: number;
-  id: string; // 用於 dnd-kit
+  id: string;
   userKeys: Array<UserKey>;
   onRemove: () => void;
 };
@@ -57,7 +56,7 @@ export function AttendeesField({ control, index, id, userKeys, onRemove }: Atten
             }, [query, userKeys]);
             return (
               <div>
-                <Popover open={open} onOpenChange={setOpen}>
+                <Popover open={open} onOpenChange={setOpen} modal={true}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -66,14 +65,14 @@ export function AttendeesField({ control, index, id, userKeys, onRemove }: Atten
                       className={cn("w-full justify-between", !userField.value?.id && "text-muted-foreground")}
                     >
                       {userField.value?.displayName || "請選擇人員"}
-                      <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                      <ChevronsUpDown className="ml-2 opacity-50 size-4 shrink-0" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width]! p-0" align="start">
+                  <PopoverContent className="w-[--radix-popover-trigger-width]! p-0 z-100" align="start">
                     <Command shouldFilter={false}>
                       <CommandInput value={query} onValueChange={setQuery} placeholder="搜尋成員..." />
                       {!!query && (
-                        <VList style={{ height: 180 }}>
+                        <CommandList>
                           <CommandEmpty>找不到成員</CommandEmpty>
                           <CommandGroup>
                             {filterUsers?.map((user) => (
@@ -96,7 +95,7 @@ export function AttendeesField({ control, index, id, userKeys, onRemove }: Atten
                               </CommandItem>
                             ))}
                           </CommandGroup>
-                        </VList>
+                        </CommandList>
                       )}
                     </Command>
                   </PopoverContent>

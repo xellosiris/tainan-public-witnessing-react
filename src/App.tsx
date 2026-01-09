@@ -3,6 +3,8 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-tw";
 import timezone from "dayjs/plugin/timezone";
+import { Suspense } from "react";
+import { Loading } from "./components/ui/loading";
 import { routeTree } from "./routeTree.gen";
 dayjs.extend(timezone);
 dayjs.locale("zh-tw");
@@ -19,7 +21,9 @@ declare module "@tanstack/react-router" {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <Suspense fallback={<Loading />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </QueryClientProvider>
   );
 }

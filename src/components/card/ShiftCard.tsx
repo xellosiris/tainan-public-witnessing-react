@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Loading } from "@/components/ui/loading";
 import { getSetting } from "@/services/setting";
+import { signupShift } from "@/services/shift";
 import type { Shift } from "@/types/shift";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import {
   ClipboardEditIcon,
@@ -33,14 +34,16 @@ type Props = {
 export default function ShiftCard({ shift }: Props) {
   const [openReport, setOpenReport] = useState<boolean>(false);
   const [editObj, setEditObj] = useState<null | undefined | Shift>(undefined);
-  const { data: setting, isLoading } = useQuery({
+  const { data: setting } = useSuspenseQuery({
     queryKey: ["setting"],
     queryFn: getSetting,
   });
+  const signupMutation = useMutation({
+    mutationFn: () => signupShift(shift.id, "wef"),
+  });
 
-  if (isLoading) return <Loading />;
-  if (!setting) return <div>找不到設定檔</div>;
   const { userKeys, siteKeys } = setting;
+
   return (
     <React.Fragment>
       <Card className="relative w-full max-w-xs gap-4">
