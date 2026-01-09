@@ -1,18 +1,22 @@
-import { type ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, SortAscIcon, SortDescIcon } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { UserColsType } from "@/routes/Users";
-import { ArrowUpDown } from "lucide-react";
-import { Checkbox } from "../ui/checkbox";
+import type { User } from "@/types/user";
+import { Link } from "@tanstack/react-router";
+import { type ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, SortAscIcon, SortDescIcon } from "lucide-react";
+
+export type UserColsType = User & {
+  congName: string;
+  permissionName: string;
+  genderName: string;
+};
 
 export const columns: ColumnDef<UserColsType>[] = [
   {
@@ -72,11 +76,13 @@ export const columns: ColumnDef<UserColsType>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.id)}>Copy payment ID</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/users/$userId" params={{ userId: user.id }}>
+                編輯
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem variant="destructive">刪除</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

@@ -1,9 +1,9 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loading } from "@/components/ui/loading";
 import { getSetting } from "@/services/setting";
 import { type Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
 import ShiftForm from "../form/ShiftForm";
-import { Loading } from "../ui/loading";
 
 type Props = {
   editShiftObj: Shift | null;

@@ -1,11 +1,19 @@
+import MenuItem from "@/components/MenuItem";
+import Error from "@/components/route/ErrorComponent";
+import NotFoundedComponent from "@/components/route/NotFoundedComponent";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { MenuIcon } from "lucide-react";
 import { useState } from "react";
-import { Outlet } from "react-router";
 import { Fragment } from "react/jsx-runtime";
-import MenuItem from "./components/MenuItem";
-import { Separator } from "./components/ui/separator";
+
+export const Route = createRootRoute({
+  component: Layout,
+  errorComponent: Error,
+  notFoundComponent: NotFoundedComponent,
+});
 
 export default function Layout() {
   const [open, setOpen] = useState<boolean>(false);
@@ -34,9 +42,9 @@ export default function Layout() {
             <nav className="flex-1 py-4 overflow-y-auto">
               <div className="px-4 grid gap-3">
                 <label className="text-sm text-muted-foreground">一般功能</label>
-                <MenuItem url="/" label="今日班表" onClick={onItemClick} />
+                <MenuItem url="/" label="首頁" onClick={onItemClick} />
                 <MenuItem url="/myShifts" label="我的班次" onClick={onItemClick} />
-                <MenuItem url="/profile" label="我的設定" onClick={onItemClick} />
+                <MenuItem url="/mySchedule" label="我的排班" onClick={onItemClick} />
                 <MenuItem url="/vacantShifts" label="報名空缺" onClick={onItemClick} />
                 <Separator className="my-2" />
                 <label className="text-sm text-muted-foreground">管理功能</label>

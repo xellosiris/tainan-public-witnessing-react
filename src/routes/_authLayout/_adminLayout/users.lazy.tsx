@@ -1,16 +1,14 @@
 import { CONGS, USERS } from "@/assets/mock";
 import { PERMISSIONS_OPTIONS } from "@/assets/permission";
 import { DataTable } from "@/components/data-table";
-import { columns } from "@/components/data-table/columns";
-import type { User } from "@/types/user";
+import { columns, type UserColsType } from "@/components/data-table/columns";
+import { createLazyFileRoute } from "@tanstack/react-router";
 
-export type UserColsType = User & {
-  congName: string;
-  permissionName: string;
-  genderName: string;
-};
+export const Route = createLazyFileRoute("/_authLayout/_adminLayout/users")({
+  component: Users,
+});
 
-export default function Users() {
+function Users() {
   // const { data: users } = useQuery({
   //   queryKey: ["users"],
   //   queryFn: getUsers,

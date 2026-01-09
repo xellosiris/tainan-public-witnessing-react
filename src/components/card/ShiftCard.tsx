@@ -1,5 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Loading } from "@/components/ui/loading";
 import { getSetting } from "@/services/setting";
 import type { Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
@@ -16,14 +24,6 @@ import {
 } from "lucide-react";
 import React, { Suspense, useState } from "react";
 import ReportDialog from "../dialog/ReportDialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Loading } from "../ui/loading";
 const ShiftDialog = React.lazy(() => import("../dialog/ShiftDialog"));
 
 type Props = {
@@ -84,7 +84,7 @@ export default function ShiftCard({ shift }: Props) {
               className="flex items-center justify-center px-3 text-base rounded-l-full rounded-r-full bg-secondary h-7 min-w-18 gap-1 "
             >
               {shift.requiredDeliverers > 0 && index < 2 && <VanIcon />}
-              {userKeys?.find((user) => user.id === attendee)?.displayName}
+              {userKeys?.find((user) => user.id === attendee)?.displayName ?? "未知？"}
             </div>
           ))}
         </CardContent>

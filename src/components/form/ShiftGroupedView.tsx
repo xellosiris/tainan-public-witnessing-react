@@ -1,10 +1,10 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { groupShiftsBySiteAndWeekday } from "@/lib/shiftUtils";
 import type { SiteKey } from "@/types/site";
 import type { SiteShift } from "@/types/siteShift";
 import { MapPin } from "lucide-react";
 import { type ReactNode, useMemo } from "react";
 import { WEEKDAY_NAMES } from "../form/SiteForm";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 type Props = {
   siteShifts: SiteShift[];

@@ -1,10 +1,10 @@
 // ShiftSignupCard.tsx
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { SiteShift } from "@/types/siteShift";
 import { MinusCircle, PlusCircle } from "lucide-react";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
 
 type Props = {
   siteShift: SiteShift;

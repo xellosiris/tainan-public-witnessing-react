@@ -1,11 +1,11 @@
 import { CONGS } from "@/assets/mock";
 import { PERMISSIONS_OPTIONS } from "@/assets/permission";
+import { Button } from "@/components/ui/button";
+import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { userSchema, type User } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
-import { Button } from "../ui/button";
-import { FieldGroup, FieldLegend, FieldSet } from "../ui/field";
 import { SelectField } from "./fields/SelectField";
 import { SwitchField } from "./fields/SwitchField";
 import { TextAreaField } from "./fields/TextAreaField";

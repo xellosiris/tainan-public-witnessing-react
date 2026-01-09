@@ -10,10 +10,15 @@ import {
 } from "@/components/ui/select";
 import { getVacantShiftByMonth } from "@/services/shift";
 import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 
-export default function VacantShifts() {
+export const Route = createFileRoute("/_authLayout/vacantShifts")({
+  component: VacantShifts,
+});
+
+function VacantShifts() {
   const [yearMonth, setYearMonth] = useState<string>(dayjs().format("YYYY-MM"));
   const yearMonths = useMemo(() => [dayjs().subtract(1, "month"), dayjs(), dayjs().add(1, "month")], []);
   const { data: shifts } = useQuery({

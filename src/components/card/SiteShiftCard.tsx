@@ -1,11 +1,11 @@
 // SiteShiftCard.tsx
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { SiteShift } from "@/types/site";
+import type { SiteShift } from "@/types/siteShift";
 import { ClockIcon, PenIcon, Trash2Icon, UsersRoundIcon, VanIcon } from "lucide-react";
 import { WEEKDAY_NAMES } from "../form/SiteForm";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
 type Props = {
   siteShift: SiteShift;
@@ -16,7 +16,7 @@ type Props = {
 
 export default function SiteShiftCard({ siteShift, onEdit, onDelete, onToggleActive }: Props) {
   return (
-    <Card className={cn("gap-1 p-2 w-full max-w-sm transition-all", !siteShift.active && "opacity-60 bg-muted/50")}>
+    <Card className={cn("gap-1 p-2 w-full max-w-xs transition-all", !siteShift.active && "opacity-60 bg-muted/50")}>
       <CardHeader className="p-3 pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

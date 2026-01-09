@@ -1,11 +1,11 @@
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { FieldGroup } from "@/components/ui/field";
 import type { Shift } from "@/types/shift";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { NumberField } from "../form/fields/NumberInput";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "../ui/dialog";
-import { FieldGroup } from "../ui/field";
 
 type Props = {
   shift: Shift;

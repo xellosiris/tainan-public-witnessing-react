@@ -15,15 +15,17 @@ import {
 import { getSetting } from "@/services/setting";
 import { getSite } from "@/services/site";
 import { getSiteShift } from "@/services/siteShift";
-import type { Site } from "@/types/site";
 import { useQueries } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
-type Props = {};
+export const Route = createLazyFileRoute("/_authLayout/_adminLayout/sites")({
+  component: Sites,
+});
 
-export default function Sites({}: Props) {
+function Sites() {
   const [siteId, setSiteId] = useState<string>("");
-  const [siteEditObj, setEditSiteObj] = useState<Site | null | undefined>(undefined);
+  const [open, setOpen] = useState<boolean>(false);
   const results = useQueries({
     queries: [
       {
@@ -52,18 +54,14 @@ export default function Sites({}: Props) {
   const onSelectSite = (siteId: string) => {
     setSiteId(siteId);
   };
-  useEffect(() => {
-    if (site) {
-      setEditSiteObj(site);
-    }
-  }, [site]);
+
   if (isLoading) return <Loading />;
   if (!setting) return <div>設定檔不存在</div>;
 
   const { siteKeys } = setting;
 
   return (
-    <div className="flex flex-col gap-8 max-w-4xl">
+    <div className="flex flex-col gap-8 max-w-3xl">
       <div className="flex items-end gap-2">
         <div className="flex flex-col gap-1.5">
           <Label>地點</Label>
@@ -83,10 +81,10 @@ export default function Sites({}: Props) {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={() => setEditSiteObj(null)}>新增</Button>
+        <Button onClick={() => setOpen(true)}>新增</Button>
       </div>
-      {!!siteEditObj && <SiteForm key={siteEditObj.id} siteEditObj={siteEditObj} siteShifts={siteShifts || []} />}
-      {siteEditObj === null && <SiteDialog onClose={() => setEditSiteObj(undefined)} />}
+      {!!siteId && <SiteForm siteEditObj={site!} siteShifts={siteShifts || []} />}
+      {open && <SiteDialog onClose={() => setOpen(false)} />}
     </div>
   );
 }

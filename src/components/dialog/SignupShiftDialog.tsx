@@ -1,4 +1,13 @@
-// SignupShiftDialog.tsx
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { Schedule } from "@/types/schedule";
 import type { SiteKey } from "@/types/site";
@@ -6,9 +15,6 @@ import type { SiteShift } from "@/types/siteShift";
 import { MinusCircle, Plus, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import ShiftGroupedView from "../form/ShiftGroupedView";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 type Props = {
   siteShifts: SiteShift[];

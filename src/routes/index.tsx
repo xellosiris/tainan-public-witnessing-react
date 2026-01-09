@@ -1,35 +1,29 @@
-import Layout from "@/Layout";
-import { Route, Routes } from "react-router";
-import Home from "./Home";
-import Overview from "./Overview";
-import PersonalShifts from "./PersonalShifts";
-import Profile from "./Profile";
-import Shifts from "./Shifts";
-import Sites from "./Sites";
-import User from "./User";
-import Users from "./Users";
-import VacantShifts from "./VacantShifts";
+import ShiftCard from "@/components/card/ShiftCard";
+import { Label } from "@/components/ui/label";
+import { Loading } from "@/components/ui/loading";
+import { getShiftsByDate } from "@/services/shift";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import dayjs from "dayjs";
 
-export default function AppRoutes() {
+export const Route = createFileRoute("/")({
+  component: Home,
+});
+
+function Home() {
+  const { data: shifts, isLoading } = useQuery({
+    queryKey: ["shifts", dayjs().format("YYYY-MM-DD")],
+    queryFn: () => getShiftsByDate(dayjs().format("YYYY-MM-DD")),
+  });
+  if (isLoading) return <Loading />;
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-
-        {/* 需要一般使用者Routes */}
-        <Route path="profile" element={<Profile />} />
-        <Route path="myShifts" element={<PersonalShifts id={"00cf91ce-f962-4025-837a-7b47453406dc"} />} />
-        <Route path="vacantShifts" element={<VacantShifts />} />
-
-        {/* 需要管理者身份Routes */}
-        <Route path="overview" element={<Overview />} />
-        <Route path="shifts" element={<Shifts />} />
-        <Route path="sites" element={<Sites />} />
-        <Route path="users">
-          <Route index element={<Users />} />
-          <Route path=":userId" element={<User />} />
-        </Route>
-      </Route>
-    </Routes>
+    <div className="space-y-2">
+      <Label className="text-2xl">今日班表</Label>
+      <div className="flex flex-wrap gap-4">
+        {shifts?.map((shift) => (
+          <ShiftCard key={shift.id} shift={shift} />
+        ))}
+      </div>
+    </div>
   );
 }

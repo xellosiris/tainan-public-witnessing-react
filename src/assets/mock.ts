@@ -5099,3 +5099,33 @@ export const CONGS = [
   { active: true, id: "ddcb36a3-2436-4bf3-a249-8d9519e047fe", name: "路竹區閩南語" },
   { active: true, id: "ef83f974-fd7e-4e2d-ac64-1e0e21f0186b", name: "北區印尼語" },
 ];
+
+export const USER: User = {
+  note: "2018/1/11加入。",
+  firebaseSub: "CzuIxz8hZRX4aQbLgTnTkk4hcBc2",
+  telephone: "(06)2028640",
+  id: "00cf91ce-f962-4025-837a-7b47453406dc",
+  displayName: "葉憶秋",
+  cellphone: "0987-754-230",
+  lineSub: "U47b60d33acd6b812ea51cf47597ee6e6",
+  name: "葉憶秋",
+  gender: "female",
+  active: true,
+  congId: "c096a442-e326-4ead-83e2-4a10e3b5262c",
+  permission: 3,
+  availableSiteShifts: [],
+};
+export const SCHEDULE = {
+  canSchedule: true,
+  siteShiftLimits: {
+    "056337b9-4969-4405-9cad-dab0f6c7d029": 2,
+    "0be68d41-1ca7-4f49-a787-261b27f8e3ce": 5,
+    "14d39d44-ed09-4ac3-bb25-4a75bdd4c55b": 3,
+    "23e698fb-a610-4194-9d66-1995b428cd7c": 1,
+    "6de770c5-ff5e-48fd-8dda-225175bf56ea": 4,
+    "87738992-0f28-4104-a209-5dac82e1728f": 4,
+    "79f5661b-3689-4602-be37-2a15e25c400c": 4,
+  },
+  unavailableDates: [],
+  partnerId: "",
+};

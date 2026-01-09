@@ -1,5 +1,6 @@
 import type { Schedule } from "@/types/schedule";
 import type { SiteShift } from "@/types/siteShift";
+import { chain, difference, groupBy, keyBy, mapValues, sortBy } from "lodash-es";
 
 type GroupedShifts<T = SiteShift> = Record<string, Record<number, T[]>>;
 
@@ -9,35 +10,18 @@ type GroupedShifts<T = SiteShift> = Record<string, Record<number, T[]>>;
  * @param siteKeys - 地點列表
  * @returns 分組後的班次 { 地點名稱: { 星期: [班次] } }
  */
+
 export function groupShiftsBySiteAndWeekday(siteShifts: SiteShift[]): GroupedShifts {
-  const groups: GroupedShifts = {};
+  const bySite = groupBy(siteShifts, "siteId");
 
-  siteShifts.forEach((siteShift) => {
-    const { weekday, siteId } = siteShift;
+  return mapValues(bySite, (shifts) => {
+    const byWeekday = groupBy(shifts, (s) => s.weekday);
 
-    if (!groups[siteId]) {
-      groups[siteId] = {};
-    }
-    if (!groups[siteId][weekday]) {
-      groups[siteId][weekday] = [];
-    }
-
-    groups[siteId][weekday].push(siteShift);
+    return Object.fromEntries(sortBy(Object.entries(byWeekday), ([weekday]) => Number(weekday))) as Record<
+      number,
+      SiteShift[]
+    >;
   });
-
-  // 對每個地點的星期進行排序
-  Object.keys(groups).forEach((siteId) => {
-    const sortedDays: Record<number, SiteShift[]> = {};
-    Object.keys(groups[siteId])
-      .map(Number)
-      .sort((a, b) => a - b)
-      .forEach((day) => {
-        sortedDays[day] = groups[siteId][day];
-      });
-    groups[siteId] = sortedDays;
-  });
-
-  return groups;
 }
 
 /**
@@ -47,43 +31,51 @@ export function groupShiftsBySiteAndWeekday(siteShifts: SiteShift[]): GroupedShi
  * @param siteKeys - 地點列表
  * @returns 分組後的班次 (包含 maxTimes)
  */
+
 export function groupShiftLimitsBySiteAndWeekday(
   siteShiftLimits: Schedule["siteShiftLimits"],
   siteShifts: SiteShift[]
 ): Record<string, Record<number, Array<{ siteShift: SiteShift; maxTimes: number }>>> {
-  const groups: Record<string, Record<number, Array<{ siteShift: SiteShift; maxTimes: number }>>> = {};
+  const siteShiftMap = keyBy(siteShifts, "id");
 
-  Object.entries(siteShiftLimits).forEach(([siteShiftId, maxTimes]) => {
-    const siteShift = siteShifts.find((s) => s.id === siteShiftId);
-    if (!siteShift) return;
+  return (
+    chain(siteShiftLimits)
+      // 轉成可處理的 array，並補上 siteShift
+      .toPairs()
+      .map(([siteShiftId, maxTimes]) => {
+        const siteShift = siteShiftMap[siteShiftId];
+        if (!siteShift) return null;
 
-    const { siteId, weekday } = siteShift;
+        return {
+          siteId: siteShift.siteId,
+          weekday: siteShift.weekday,
+          siteShift,
+          maxTimes,
+        };
+      })
+      .compact()
 
-    if (!groups[siteId]) {
-      groups[siteId] = {};
-    }
-    if (!groups[siteId][weekday]) {
-      groups[siteId][weekday] = [];
-    }
-    groups[siteId][weekday].push({
-      siteShift,
-      maxTimes,
-    });
-  });
+      // siteId 分組
+      .groupBy("siteId")
 
-  // 對每個地點的星期進行排序
-  Object.keys(groups).forEach((siteId) => {
-    const sortedDays: Record<number, Array<{ siteShift: SiteShift; maxTimes: number }>> = {};
-    Object.keys(groups[siteId])
-      .map(Number)
-      .sort((a, b) => a - b)
-      .forEach((day) => {
-        sortedDays[day] = groups[siteId][day];
-      });
-    groups[siteId] = sortedDays;
-  });
-
-  return groups;
+      // weekday 分組 + 排序
+      .mapValues((items) =>
+        chain(items)
+          .groupBy("weekday")
+          .toPairs()
+          .sortBy(([weekday]) => Number(weekday))
+          .map(([weekday, values]) => [
+            Number(weekday),
+            values.map(({ siteShift, maxTimes }) => ({
+              siteShift,
+              maxTimes,
+            })),
+          ])
+          .fromPairs()
+          .value()
+      )
+      .value()
+  );
 }
 
 /**
@@ -94,4 +86,11 @@ export function groupShiftLimitsBySiteAndWeekday(
  */
 export function getEnrolledShifts(siteShiftLimits: Schedule["siteShiftLimits"], siteShifts: SiteShift[]): SiteShift[] {
   return siteShifts.filter((shift) => siteShiftLimits[shift.id] !== undefined && shift.active);
+}
+
+export function diffStringArray(prev: string[], next: string[]) {
+  return {
+    added: difference(next, prev),
+    removed: difference(prev, next),
+  };
 }

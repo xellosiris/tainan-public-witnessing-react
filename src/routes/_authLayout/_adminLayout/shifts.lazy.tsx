@@ -6,10 +6,15 @@ import { SingleDatePicker } from "@/components/ui/singleDatePicker";
 import { getShiftsByDate } from "@/services/shift";
 import type { Shift } from "@/types/shift";
 import { useQuery } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useState } from "react";
 
-export default function Shifts() {
+export const Route = createLazyFileRoute("/_authLayout/_adminLayout/shifts")({
+  component: Shifts,
+});
+
+function Shifts() {
   const [date, setDate] = useState<string | undefined>(dayjs().format("YYYY-MM-DD"));
   const [editShiftObj, setEditShiftObj] = useState<Shift | null | undefined>(undefined);
   const { data: shifts, isLoading } = useQuery({

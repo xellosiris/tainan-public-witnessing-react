@@ -1,18 +1,18 @@
+import ShiftCard from "@/components/card/ShiftCard";
+import { Calendar } from "@/components/ui/calendar";
 import { getPersonalShiftByMonth } from "@/services/shift";
 import type { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { zhTW } from "react-day-picker/locale";
 
-import ShiftCard from "@/components/card/ShiftCard";
-import { Calendar } from "@/components/ui/calendar";
+export const Route = createLazyFileRoute("/_authLayout/myShifts")({
+  component: () => PersonalShifts("00cf91ce-f962-4025-837a-7b47453406dc"),
+});
 
-type Props = {
-  id: User["id"];
-};
-
-export default function PersonalShifts({ id }: Props) {
+function PersonalShifts(id: User["id"]) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [month, setMonth] = useState<Date>(new Date());
 

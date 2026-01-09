@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import {
@@ -14,9 +17,6 @@ import {
 } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

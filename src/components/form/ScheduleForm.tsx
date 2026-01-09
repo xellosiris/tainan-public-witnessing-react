@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { getEnrolledShifts } from "@/lib/shiftUtils";
 import { scheduleSchema, type Schedule } from "@/types/schedule";
 import type { SiteKey } from "@/types/site";
@@ -6,9 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import SignupShiftDialog from "../dialog/SignupShiftDialog";
-import { Button } from "../ui/button";
-import { Field, FieldError, FieldGroup, FieldLegend, FieldSet } from "../ui/field";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { AttendeeField } from "./fields/AttendeeField";
 import { DateField } from "./fields/DateField";
 import { SwitchField } from "./fields/SwitchField";
@@ -34,9 +34,9 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="pb-24">
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <FieldGroup>
-        <FieldSet className="max-w-lg">
+        <FieldSet>
           <FieldLegend>排班設定</FieldLegend>
           <FieldGroup className="bg-white p-4 rounded-md shadow-sm">
             <Item variant="outline">
@@ -52,8 +52,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
             <DateField name="unavailableDates" mode="multiple" control={form.control} label="無法參與日期" />
           </FieldGroup>
         </FieldSet>
-
-        <FieldSet className="max-w-4xl">
+        <FieldSet>
           <div className="flex items-center justify-between">
             <FieldLegend>參與班次設定</FieldLegend>
             <Controller
@@ -116,7 +115,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
 
       <div className="fixed bottom-0 left-0 right-0 z-10 p-4 border-t shadow-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="max-w-2xl mx-auto">
-          <Button type="button" onClick={form.handleSubmit(onSubmit)} className="w-full" size="lg">
+          <Button type="submit" className="w-full" size="lg">
             儲存
           </Button>
         </div>

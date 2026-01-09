@@ -1,5 +1,9 @@
 // SiteForm.tsx
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FieldGroup, FieldLegend, FieldSeparator, FieldSet } from "@/components/ui/field";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
+import { Label } from "@/components/ui/label";
 import { siteFormSchema, type Site, type SiteForm } from "@/types/site";
 import type { SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,10 +12,6 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import SiteShiftCard from "../card/SiteShiftCard";
 import SiteShiftFormDialog from "../dialog/SiteShiftDialog";
-import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
-import { FieldGroup, FieldLegend, FieldSeparator, FieldSet } from "../ui/field";
-import { Label } from "../ui/label";
 import { SwitchField } from "./fields/SwitchField";
 import { TextAreaField } from "./fields/TextAreaField";
 import { TextField } from "./fields/TextField";
@@ -61,13 +61,16 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
   const groupedShifts = useMemo(() => {
     const filteredShifts = filter ? fields.filter((shift) => shift.active) : fields;
     // 按 weekday 分組
-    const grouped = filteredShifts.reduce((acc, shift) => {
-      if (!acc[shift.weekday]) {
-        acc[shift.weekday] = [];
-      }
-      acc[shift.weekday].push(shift);
-      return acc;
-    }, {} as Record<number, typeof fields>);
+    const grouped = filteredShifts.reduce(
+      (acc, shift) => {
+        if (!acc[shift.weekday]) {
+          acc[shift.weekday] = [];
+        }
+        acc[shift.weekday].push(shift);
+        return acc;
+      },
+      {} as Record<number, typeof fields>
+    );
 
     // 對每組內的班次按開始時間排序
     Object.keys(grouped).forEach((key) => {
@@ -101,18 +104,19 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
   };
 
   const onSubmit = (data: SiteForm) => {
-    console.log("提交資料:", data);
+    const submitData: Site = { ...data, siteShifts: data.siteShifts.map((s) => s.id) };
+    console.log("提交資料:", { submitData });
     if (onSubmitProp) {
-      onSubmitProp({ ...data, siteShifts: data.siteShifts.map((s) => s.id) });
+      onSubmitProp(submitData);
     }
   };
 
   const hasShifts = Object.keys(groupedShifts).length > 0;
   return (
-    <>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <div className="pb-20 space-y-6">
         <FieldGroup>
-          <FieldSet className="max-w-lg">
+          <FieldSet>
             <FieldLegend>基本資訊</FieldLegend>
             <FieldGroup className="bg-white p-4 rounded-md shadow-sm">
               <TextField name="name" label="地點名稱" control={form.control} />
@@ -128,7 +132,7 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
               </Item>
             </FieldGroup>
           </FieldSet>
-          <FieldSet className="max-w-4xl">
+          <FieldSet>
             <FieldSeparator />
             <div className="flex flex-col mb-4 gap-3 sm:flex-row sm:justify-between sm:items-center">
               <FieldLegend>班次設定</FieldLegend>
@@ -197,7 +201,7 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
       {/* Fixed submit button at bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-10 p-4 border-t shadow-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="max-w-2xl mx-auto">
-          <Button type="button" onClick={form.handleSubmit(onSubmit)} className="w-full" size="lg">
+          <Button type="submit" className="w-full" size="lg">
             儲存
           </Button>
         </div>
@@ -211,6 +215,6 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
           onOpenChange={() => setEditingSiteShift(null)}
         />
       )}
-    </>
+    </form>
   );
 }

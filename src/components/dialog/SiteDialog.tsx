@@ -1,3 +1,13 @@
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { FieldGroup } from "@/components/ui/field";
 import { siteSchema, type Site } from "@/types/site";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -5,9 +15,6 @@ import { v4 } from "uuid";
 import { SwitchField } from "../form/fields/SwitchField";
 import { TextAreaField } from "../form/fields/TextAreaField";
 import { TextField } from "../form/fields/TextField";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-import { FieldGroup } from "../ui/field";
 
 type Props = {
   onClose: () => void;
