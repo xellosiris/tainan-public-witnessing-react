@@ -65,7 +65,7 @@ function Sites() {
     setSiteId(siteId);
   };
 
-  if (!setting) return <ErrorComponent />;
+  if (!setting || (siteId && !site)) return <ErrorComponent />;
   const { siteKeys } = setting;
 
   return (
@@ -92,12 +92,7 @@ function Sites() {
         <Button onClick={() => setOpen(true)}>新增</Button>
       </div>
 
-      {/* Show loading indicator for site-specific data */}
-      {siteId && siteQuery.isLoading && <div className="p-4">載入地點資料...</div>}
-
-      {/* Show form only when data is available */}
-      {siteId && site && <SiteForm siteEditObj={site} siteShifts={siteShifts!} />}
-
+      {siteId && site && <SiteForm key={site.id} siteEditObj={site} siteShifts={siteShifts!} />}
       {open && <SiteDialog onClose={() => setOpen(false)} />}
     </div>
   );

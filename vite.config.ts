@@ -3,8 +3,9 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
+import { analyzer } from "vite-bundle-analyzer";
+import { compression } from "vite-plugin-compression2";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     tanstackRouter({
@@ -13,10 +14,75 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
+    analyzer({
+      analyzerMode: "static",
+    }),
+    compression({
+      algorithms: ["brotli"],
+    }),
   ],
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+            return "react-vendor";
+          }
+          if (
+            id.includes("@tanstack/react-router") ||
+            id.includes("@tanstack/react-query") ||
+            id.includes("@tanstack/router-core") ||
+            id.includes("@tanstack/query-cord")
+          ) {
+            return "tanstack-router-query";
+          }
+          if (id.includes("@tanstack/react-router") || id.includes("@tanstack/table-core")) {
+            return "tanstack-table";
+          }
+
+          if (id.includes("firebase")) {
+            return "firebase";
+          }
+
+          if (id.includes("lodash-es")) {
+            return "lodash-es";
+          }
+
+          if (id.includes("@radix-ui")) {
+            return "radix-ui";
+          }
+
+          if (id.includes("react-hook-form") || id.includes("zod") || id.includes("@hookform")) {
+            return "form-vendor";
+          }
+
+          if (id.includes("@dnd-kit")) {
+            return "dnd-kit";
+          }
+
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+        },
+      },
+    },
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "@tanstack/react-router",
+      "@tanstack/react-query",
+      "firebase/app",
+      "firebase/auth",
+      "firebase/firestore",
+    ],
   },
 });
