@@ -47,15 +47,15 @@ export default function Layout() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="left"
-          className="w-70 data-[state=closed]:duration-200 data-[state=open]:duration-300 top-12 h-[calc(100vh-3rem)] border-t-0 flex flex-col"
+          className="w-70 data-[state=closed]:duration-200 data-[state=open]:duration-300 top-12 h-[calc(100dvh-3rem)] border-t-0 flex flex-col"
         >
           <SheetHeader>
             <SheetTitle>選單</SheetTitle>
           </SheetHeader>
           <nav className="flex-1 py-4 overflow-y-auto" onClick={() => setOpen(false)}>
-            <div className="px-4 grid gap-3">
+            <div className="grid gap-3 px-4">
               <label className="text-sm text-muted-foreground">一般功能</label>
-              <div className="flex flex-col ml-4 gap-3">
+              <div className="flex flex-col gap-3 ml-4">
                 <Link to="/">首頁</Link>
                 <Link to="/myShifts">我的班表</Link>
                 <Link to="/mySchedule">我的排班設定</Link>
@@ -63,7 +63,7 @@ export default function Layout() {
               </div>
               <Separator className="my-2" />
               <label className="text-sm text-muted-foreground">管理功能</label>
-              <div className="flex flex-col ml-4 gap-3">
+              <div className="flex flex-col gap-3 ml-4">
                 <Link to="/overview">狀態一覽</Link>
                 <Link to="/users">成員管理</Link>
                 <Link to="/shifts">班次管理</Link>
