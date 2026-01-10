@@ -1,3 +1,5 @@
+import { MinusCircle, Plus, PlusCircle } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +14,6 @@ import { cn } from "@/lib/utils";
 import type { Schedule } from "@/types/schedule";
 import type { SiteKey } from "@/types/site";
 import type { SiteShift } from "@/types/siteShift";
-import { MinusCircle, Plus, PlusCircle } from "lucide-react";
-import { useState } from "react";
 import ShiftGroupedView from "../form/ShiftGroupedView";
 
 type Props = {
@@ -23,11 +23,15 @@ type Props = {
   onUpdateLimits: (newLimits: Schedule["siteShiftLimits"]) => void;
 };
 
-export default function SignupShiftDialog({ siteShifts, siteKeys, currentLimits, onUpdateLimits }: Props) {
+export default function SignupShiftDialog({
+  siteShifts,
+  siteKeys,
+  currentLimits,
+  onUpdateLimits,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [tempLimits, setTempLimits] = useState<Record<string, number>>({});
 
-  // 當 Dialog 打開時,初始化 tempLimits
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (open) {
@@ -70,7 +74,9 @@ export default function SignupShiftDialog({ siteShifts, siteKeys, currentLimits,
       <DialogContent className="max-w-4xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>編輯班次報名</DialogTitle>
-          <DialogDescription>調整每個班次的參與次數 (0-5 次),次數為 0 將自動移除</DialogDescription>
+          <DialogDescription>
+            調整每個班次的參與次數 (0-5 次),次數為 0 將自動移除
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto">
@@ -83,21 +89,27 @@ export default function SignupShiftDialog({ siteShifts, siteKeys, currentLimits,
                 <div
                   className={cn(
                     "flex items-center justify-between p-3 bg-white border rounded-lg transition-all",
-                    currentTimes > 0 ? "border-primary bg-primary/5" : "border-gray-200",
-                    !siteShift.active && "opacity-60"
+                    currentTimes > 0
+                      ? "border-primary bg-primary/5"
+                      : "border-gray-200",
+                    !siteShift.active && "opacity-60",
                   )}
                 >
                   <div className="flex-1">
                     <h5 className="text-lg font-medium">
                       {siteShift.startTime} ～ {siteShift.endTime}
                     </h5>
-                    {!siteShift.active && <Badge variant={"secondary"}>停用中</Badge>}
+                    {!siteShift.active && (
+                      <Badge variant={"secondary"}>停用中</Badge>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-1">
                     <Button
                       type="button"
-                      onClick={() => updateShiftTimes(siteShift.id, currentTimes - 1)}
+                      onClick={() =>
+                        updateShiftTimes(siteShift.id, currentTimes - 1)
+                      }
                       variant="ghost"
                       size="icon"
                       disabled={currentTimes <= 0 || !siteShift.active}
@@ -105,10 +117,14 @@ export default function SignupShiftDialog({ siteShifts, siteKeys, currentLimits,
                     >
                       <MinusCircle className="size-8" />
                     </Button>
-                    <span className="text-3xl min-w-[2ch] text-center font-semibold">{currentTimes}</span>
+                    <span className="text-3xl min-w-[2ch] text-center font-semibold">
+                      {currentTimes}
+                    </span>
                     <Button
                       type="button"
-                      onClick={() => updateShiftTimes(siteShift.id, currentTimes + 1)}
+                      onClick={() =>
+                        updateShiftTimes(siteShift.id, currentTimes + 1)
+                      }
                       variant="ghost"
                       size="icon"
                       disabled={currentTimes >= 5 || !siteShift.active}

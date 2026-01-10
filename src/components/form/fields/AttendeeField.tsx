@@ -1,16 +1,32 @@
-import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { FieldError } from "@/components/ui/field";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { getSetting } from "@/services/setting";
-import type { UserKey } from "@/types/user";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
-import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
+import {
+  type Control,
+  Controller,
+  type FieldValues,
+  type Path,
+} from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { FieldError } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { getSetting } from "@/services/setting";
+import type { UserKey } from "@/types/user";
 
 type AttendeeFieldProps<T extends FieldValues> = {
   name: Path<T>;
@@ -43,7 +59,7 @@ export function AttendeeField<T extends FieldValues>({
           userField.onChange("");
         };
         const filterUsers = useMemo<UserKey[]>(() => {
-          if (!!query) {
+          if (query) {
             return userKeys.filter((user) => user.displayName.includes(query));
           }
           return [];
@@ -60,16 +76,30 @@ export function AttendeeField<T extends FieldValues>({
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className={cn("w-full justify-between", !userField.value && "text-muted-foreground")}
+                    className={cn(
+                      "w-full justify-between",
+                      !userField.value && "text-muted-foreground",
+                    )}
                   >
-                    {userKeys.find((u) => u.id === userField.value)?.displayName || placeholder}
+                    {userKeys.find((u) => u.id === userField.value)
+                      ?.displayName || placeholder}
                     <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                   </Button>
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width]! p-0" align="start">
-                <Command shouldFilter={false} className="**:[[cmdk-group]]:max-h-50 **:[[cmdk-group]]:overflow-y-auto">
-                  <CommandInput value={query} onValueChange={setQuery} placeholder={placeholder} />
+              <PopoverContent
+                className="w-[--radix-popover-trigger-width]! p-0"
+                align="start"
+              >
+                <Command
+                  shouldFilter={false}
+                  className="**:[[cmdk-group]]:max-h-50 **:[[cmdk-group]]:overflow-y-auto"
+                >
+                  <CommandInput
+                    value={query}
+                    onValueChange={setQuery}
+                    placeholder={placeholder}
+                  />
                   {!query && (
                     <CommandGroup>
                       <CommandItem value="" onSelect={onClear}>
@@ -86,7 +116,9 @@ export function AttendeeField<T extends FieldValues>({
                             key={user.id}
                             value={user.id}
                             onSelect={(value) => {
-                              const selectedUser = userKeys.find((user) => user.id === value)?.id;
+                              const selectedUser = userKeys.find(
+                                (user) => user.id === value,
+                              )?.id;
                               userField.onChange(selectedUser);
                               setOpen(false);
                             }}
@@ -95,7 +127,9 @@ export function AttendeeField<T extends FieldValues>({
                             <Check
                               className={clsx(
                                 "ml-auto size-4",
-                                userField.value?.id === user.id ? "opacity-100" : "opacity-0"
+                                userField.value?.id === user.id
+                                  ? "opacity-100"
+                                  : "opacity-0",
                               )}
                             />
                           </CommandItem>

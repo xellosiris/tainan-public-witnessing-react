@@ -1,3 +1,5 @@
+import { type UseQueryResult, useSuspenseQueries } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { SCHEDULE, USER } from "@/assets/mock";
 import ScheduleForm from "@/components/form/ScheduleForm";
 import UserForm from "@/components/form/UserForm";
@@ -8,10 +10,8 @@ import { getSetting } from "@/services/setting";
 import { getSiteShifts } from "@/services/siteShift";
 import type { Setting } from "@/types/setting";
 import type { SiteShift } from "@/types/siteShift";
-import { useSuspenseQueries, type UseQueryResult } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/_authLayout/_adminLayout/users/$userId")({
+export const Route = createLazyFileRoute("/_assistantLayout/users/$userId")({
   component: RouteComponent,
 });
 
@@ -73,7 +73,11 @@ function RouteComponent() {
         <UserForm editUserObj={USER} />
       </TabsContent>
       <TabsContent value="schedule" className="max-w-3xl">
-        <ScheduleForm editScheduleObj={SCHEDULE} siteShifts={siteShifts} siteKeys={siteKeys} />
+        <ScheduleForm
+          editScheduleObj={SCHEDULE}
+          siteShifts={siteShifts}
+          siteKeys={siteKeys}
+        />
       </TabsContent>
     </Tabs>
   );

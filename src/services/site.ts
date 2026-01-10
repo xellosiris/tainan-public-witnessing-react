@@ -1,6 +1,6 @@
+import { collection, doc, getDoc, getDocs } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase";
 import type { Site } from "@/types/site";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore/lite";
 
 export const getSites = async (): Promise<Site[]> => {
   const ref = collection(db, "Sites");

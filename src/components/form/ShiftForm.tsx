@@ -1,30 +1,50 @@
-import { Button } from "@/components/ui/button";
-import { FieldGroup, FieldSeparator, FieldSet } from "@/components/ui/field";
-import { shiftFormSchema, type Shift, type ShiftForm } from "@/types/shift";
-import type { SiteKey } from "@/types/site";
-import { type UserKey } from "@/types/user";
 import {
   closestCenter,
   DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { v4 } from "uuid";
+import type z from "zod";
+import { Button } from "@/components/ui/button";
+import { FieldGroup, FieldSeparator, FieldSet } from "@/components/ui/field";
+import { type Shift, shiftSchema } from "@/types/shift";
+import type { SiteKey } from "@/types/site";
+import { type UserKey, userKeySchema } from "@/types/user";
 import { AttendeesField } from "../form/fields/AttendeesField";
 import { DateField } from "../form/fields/DateField";
 import { NumberField } from "../form/fields/NumberInput";
 import { SelectField } from "../form/fields/SelectField";
 import { SwitchField } from "../form/fields/SwitchField";
 import { TimeField } from "../form/fields/TimeField";
+
+export const schema = shiftSchema
+  .extend({
+    attendees: userKeySchema.array(),
+  })
+  .transform((data) => ({
+    ...data,
+    expiredAt: dayjs(data.date).add(6, "months").toDate(),
+    yearMonth: dayjs(data.date).format("YYYY-MM"),
+    isFull:
+      data.attendeesLimit !== 0
+        ? data.attendees.length >= data.attendeesLimit
+        : false,
+  }));
+
 type Props = {
   editShiftObj: Shift | null;
   siteKeys: SiteKey[];
@@ -32,13 +52,20 @@ type Props = {
   onClose: () => void;
 };
 
-export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }: Props) {
-  const form = useForm<ShiftForm>({
-    resolver: zodResolver(shiftFormSchema),
+export default function ShiftForm({
+  editShiftObj,
+  siteKeys,
+  userKeys,
+  onClose,
+}: Props) {
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: editShiftObj
       ? {
           ...editShiftObj,
-          attendees: editShiftObj.attendees.map((attendee) => userKeys.find((u) => u.id === attendee)),
+          attendees: editShiftObj.attendees.map((attendee) =>
+            userKeys.find((u) => u.id === attendee),
+          ),
         }
       : {
           id: v4(),
@@ -68,7 +95,7 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleAddAttendee = () => {
@@ -93,7 +120,7 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
     }
   };
 
-  const onSubmit = (data: ShiftForm) => {
+  const onSubmit = (data: z.infer<typeof schema>) => {
     const shift = {
       ...data,
       attendees: data.attendees.map((attendee) => attendee.id),
@@ -107,7 +134,11 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
       <FieldGroup>
         <FieldSet>
           <FieldGroup>
-            <SwitchField control={form.control} name="active" label="啟用班次" />
+            <SwitchField
+              control={form.control}
+              name="active"
+              label="啟用班次"
+            />
             <div className="grid grid-cols-2 gap-4">
               <DateField control={form.control} name="date" label="日期" />
               <SelectField
@@ -119,13 +150,31 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <TimeField control={form.control} name="startTime" label="開始時間" placeholder="請輸入開始時間" />
-              <TimeField control={form.control} name="endTime" label="結束時間" placeholder="請輸入結束時間" />
+              <TimeField
+                control={form.control}
+                name="startTime"
+                label="開始時間"
+                placeholder="請輸入開始時間"
+              />
+              <TimeField
+                control={form.control}
+                name="endTime"
+                label="結束時間"
+                placeholder="請輸入結束時間"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <NumberField control={form.control} name="attendeesLimit" label="人數上限（0表示無限制)" />
-              <NumberField control={form.control} name="requiredDeliverers" label="需要搬運人員" />
+              <NumberField
+                control={form.control}
+                name="attendeesLimit"
+                label="人數上限（0表示無限制)"
+              />
+              <NumberField
+                control={form.control}
+                name="requiredDeliverers"
+                label="需要搬運人員"
+              />
             </div>
           </FieldGroup>
         </FieldSet>
@@ -134,7 +183,9 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
           <FieldGroup>
             <div className="space-y-2">
               {fields.length === 0 ? (
-                <p className="py-4 text-sm text-center text-muted-foreground">尚無參與者，點擊下方按鈕新增</p>
+                <p className="py-4 text-sm text-center text-muted-foreground">
+                  尚無參與者，點擊下方按鈕新增
+                </p>
               ) : (
                 <DndContext
                   sensors={sensors}
@@ -142,7 +193,10 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
                   modifiers={[restrictToVerticalAxis]}
                   onDragEnd={handleDragEnd}
                 >
-                  <SortableContext items={fields.map((field) => field.id)} strategy={verticalListSortingStrategy}>
+                  <SortableContext
+                    items={fields.map((field) => field.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
                     {fields.map((field, index) => (
                       <AttendeesField
                         key={field.id}

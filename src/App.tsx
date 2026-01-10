@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-tw";
 import timezone from "dayjs/plugin/timezone";
 import { Suspense } from "react";
 import { Loading } from "./components/ui/loading";
 import { routeTree } from "./routeTree.gen";
+
 dayjs.extend(timezone);
 dayjs.locale("zh-tw");
 dayjs.tz.setDefault("Asia/Taipei");

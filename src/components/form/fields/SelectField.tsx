@@ -1,3 +1,9 @@
+import {
+  type Control,
+  Controller,
+  type FieldValues,
+  type Path,
+} from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   Select,
@@ -8,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
 
 type SelectOption = {
   id: string;

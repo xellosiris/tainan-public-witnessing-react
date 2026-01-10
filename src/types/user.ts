@@ -1,5 +1,5 @@
-import { PERMISSION } from "@/assets/permission";
 import * as z from "zod";
+import { PERMISSION } from "@/assets/permission";
 
 export const userSchema = z.object({
   id: z.uuid(),
@@ -18,6 +18,10 @@ export const userSchema = z.object({
   availableSiteShifts: z.uuid().array(),
 });
 
-export const userKeySchema = userSchema.pick({ id: true, active: true, displayName: true });
+export const userKeySchema = userSchema.pick({
+  id: true,
+  active: true,
+  displayName: true,
+});
 export type User = z.infer<typeof userSchema>;
 export type UserKey = z.infer<typeof userKeySchema>;

@@ -1,3 +1,11 @@
+import { Link } from "@tanstack/react-router";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  ArrowUpDown,
+  MoreHorizontal,
+  SortAscIcon,
+  SortDescIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -8,9 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { User } from "@/types/user";
-import { Link } from "@tanstack/react-router";
-import { type ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, SortAscIcon, SortDescIcon } from "lucide-react";
 
 export type UserColsType = User & {
   congName: string;
@@ -31,10 +36,18 @@ export const columns: ColumnDef<UserColsType>[] = [
       return (
         <div className="flex items-center">
           <span>使用者名稱</span>
-          <Button variant="ghost" size={"icon-sm"} onClick={() => column.toggleSorting()}>
+          <Button
+            variant="ghost"
+            size={"icon-sm"}
+            onClick={() => column.toggleSorting()}
+          >
             {!column.getIsSorted() && <ArrowUpDown className="size-4" />}
-            {column.getIsSorted() === "desc" && <SortDescIcon className="size-4 text-destructive" />}
-            {column.getIsSorted() === "asc" && <SortAscIcon className="size-4 text-destructive" />}
+            {column.getIsSorted() === "desc" && (
+              <SortDescIcon className="size-4 text-destructive" />
+            )}
+            {column.getIsSorted() === "asc" && (
+              <SortAscIcon className="size-4 text-destructive" />
+            )}
           </Button>
         </div>
       );

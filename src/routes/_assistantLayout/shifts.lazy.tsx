@@ -1,3 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import { useState } from "react";
 import ShiftCard from "@/components/card/ShiftCard";
 import ShiftDialog from "@/components/dialog/ShiftDialog";
 import { Button } from "@/components/ui/button";
@@ -5,18 +9,18 @@ import { Loading } from "@/components/ui/loading";
 import { SingleDatePicker } from "@/components/ui/singleDatePicker";
 import { getShiftsByDate } from "@/services/shift";
 import type { Shift } from "@/types/shift";
-import { useQuery } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import dayjs from "dayjs";
-import { useState } from "react";
 
-export const Route = createLazyFileRoute("/_authLayout/_adminLayout/shifts")({
+export const Route = createLazyFileRoute("/_assistantLayout/shifts")({
   component: Shifts,
 });
 
 function Shifts() {
-  const [date, setDate] = useState<string | undefined>(dayjs().format("YYYY-MM-DD"));
-  const [editShiftObj, setEditShiftObj] = useState<Shift | null | undefined>(undefined);
+  const [date, setDate] = useState<string | undefined>(
+    dayjs().format("YYYY-MM-DD"),
+  );
+  const [editShiftObj, setEditShiftObj] = useState<Shift | null | undefined>(
+    undefined,
+  );
   const { data: shifts, isLoading } = useQuery({
     queryKey: ["shifts", date],
     queryFn: () => getShiftsByDate(date!),
@@ -37,9 +41,12 @@ function Shifts() {
         <Button onClick={() => setEditShiftObj(null)}>新增班次</Button>
       </div>
       <div className="flex flex-wrap gap-4">
-        {shifts && shifts.map((shift) => <ShiftCard key={shift.id} shift={shift} />)}
+        {shifts &&
+          shifts.map((shift) => <ShiftCard key={shift.id} shift={shift} />)}
       </div>
-      {editShiftObj !== undefined && <ShiftDialog editShiftObj={editShiftObj} onClose={onClose} />}
+      {editShiftObj !== undefined && (
+        <ShiftDialog editShiftObj={editShiftObj} onClose={onClose} />
+      )}
     </div>
   );
 }

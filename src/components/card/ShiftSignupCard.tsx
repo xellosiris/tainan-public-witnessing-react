@@ -1,10 +1,11 @@
 // ShiftSignupCard.tsx
+
+import { MinusCircle, PlusCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { SiteShift } from "@/types/siteShift";
-import { MinusCircle, PlusCircle } from "lucide-react";
 
 type Props = {
   siteShift: SiteShift;
@@ -12,7 +13,11 @@ type Props = {
   onTimesChange: (newTimes: number) => void;
 };
 
-export default function ShiftSignupCard({ siteShift, maxTimes, onTimesChange }: Props) {
+export default function ShiftSignupCard({
+  siteShift,
+  maxTimes,
+  onTimesChange,
+}: Props) {
   const handleIncrement = () => {
     if (maxTimes < 5) {
       onTimesChange(maxTimes + 1);
@@ -26,7 +31,12 @@ export default function ShiftSignupCard({ siteShift, maxTimes, onTimesChange }: 
   };
 
   return (
-    <Card className={cn("gap-1 p-1 w-full max-w-sm transition-all", !siteShift.active && "opacity-60 bg-muted/50")}>
+    <Card
+      className={cn(
+        "gap-1 p-1 w-full max-w-sm transition-all",
+        !siteShift.active && "opacity-60 bg-muted/50",
+      )}
+    >
       <CardContent className="flex justify-between p-1 gap-2">
         <div className="flex items-center justify-between w-full gap-3">
           <h3 className="flex item-center gap-1.5 text-xl">

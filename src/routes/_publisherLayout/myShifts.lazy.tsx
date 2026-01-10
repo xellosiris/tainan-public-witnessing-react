@@ -1,19 +1,21 @@
-import ShiftCard from "@/components/card/ShiftCard";
-import { Calendar } from "@/components/ui/calendar";
-import { getPersonalShiftByMonth } from "@/services/shift";
-import type { User } from "@/types/user";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { zhTW } from "react-day-picker/locale";
+import ShiftCard from "@/components/card/ShiftCard";
+import { Calendar } from "@/components/ui/calendar";
+import { getPersonalShiftByMonth } from "@/services/shift";
+import type { User } from "@/types/user";
 
-export const Route = createLazyFileRoute("/_authLayout/myShifts")({
+export const Route = createLazyFileRoute("/_publisherLayout/myShifts")({
   component: () => PersonalShifts("00cf91ce-f962-4025-837a-7b47453406dc"),
 });
 
 function PersonalShifts(id: User["id"]) {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date(),
+  );
   const [month, setMonth] = useState<Date>(new Date());
 
   const yearMonth = dayjs(month).format("YYYY-MM");
@@ -35,11 +37,13 @@ function PersonalShifts(id: User["id"]) {
   };
 
   const filteredShifts = useMemo(() => {
-    if (!!selectedDate) {
-      return shifts?.filter((shift) => shift.date === dayjs(selectedDate).format("YYYY-MM-DD"));
+    if (selectedDate) {
+      return shifts?.filter(
+        (shift) => shift.date === dayjs(selectedDate).format("YYYY-MM-DD"),
+      );
     }
     return null;
-  }, [selectedDate]);
+  }, [selectedDate, shifts]);
   return (
     <div className="flex flex-col">
       <Calendar
@@ -67,13 +71,24 @@ function PersonalShifts(id: User["id"]) {
 
       <div className="mt-8 space-y-2">
         <h3 className="text-lg font-semibold">
-          {selectedDate ? `${dayjs(selectedDate).format("MM月DD日")} 的班表` : "請選擇日期"}
-          {filteredShifts && filteredShifts.length > 0 && ` (當天有${filteredShifts.length}個班次)`}
+          {selectedDate
+            ? `${dayjs(selectedDate).format("MM月DD日")} 的班表`
+            : "請選擇日期"}
+          {filteredShifts &&
+            filteredShifts.length > 0 &&
+            ` (當天有${filteredShifts.length}個班次)`}
         </h3>
         <div className="flex flex-wrap gap-4">
-          {!!filteredShifts && filteredShifts?.map((shift) => <ShiftCard key={shift.id} shift={shift} />)}
-          {filteredShifts?.length === 0 && <p className="text-muted-foreground">當天無班表</p>}
-          {!filteredShifts && !selectedDate && <p className="text-muted-foreground">請選擇日期以查看班表</p>}
+          {!!filteredShifts &&
+            filteredShifts?.map((shift) => (
+              <ShiftCard key={shift.id} shift={shift} />
+            ))}
+          {filteredShifts?.length === 0 && (
+            <p className="text-muted-foreground">當天無班表</p>
+          )}
+          {!filteredShifts && !selectedDate && (
+            <p className="text-muted-foreground">請選擇日期以查看班表</p>
+          )}
         </div>
       </div>
     </div>

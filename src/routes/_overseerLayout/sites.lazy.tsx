@@ -1,3 +1,6 @@
+import { type UseQueryResult, useQueries } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import SiteDialog from "@/components/dialog/SiteDialog";
 import SiteForm from "@/components/form/SiteForm";
 import ErrorComponent from "@/components/route/ErrorComponent";
@@ -19,11 +22,8 @@ import { getSiteShift } from "@/services/siteShift";
 import type { Setting } from "@/types/setting";
 import type { Site } from "@/types/site";
 import type { SiteShift } from "@/types/siteShift";
-import { useQueries, type UseQueryResult } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 
-export const Route = createLazyFileRoute("/_authLayout/_adminLayout/sites")({
+export const Route = createLazyFileRoute("/_overseerLayout/sites")({
   component: Sites,
 });
 
@@ -55,7 +55,8 @@ function Sites() {
   });
 
   const [settingQuery, siteQuery, siteShiftsQuery] = results;
-  const isLoading = settingQuery.isLoading || siteQuery.isLoading || siteShiftsQuery.isLoading;
+  const isLoading =
+    settingQuery.isLoading || siteQuery.isLoading || siteShiftsQuery.isLoading;
   if (isLoading) return <Loading />;
   const setting = settingQuery.data;
   const site = siteQuery.data;
@@ -92,7 +93,9 @@ function Sites() {
         <Button onClick={() => setOpen(true)}>新增</Button>
       </div>
 
-      {siteId && site && <SiteForm key={site.id} siteEditObj={site} siteShifts={siteShifts!} />}
+      {siteId && site && (
+        <SiteForm key={site.id} siteEditObj={site} siteShifts={siteShifts!} />
+      )}
       {open && <SiteDialog onClose={() => setOpen(false)} />}
     </div>
   );

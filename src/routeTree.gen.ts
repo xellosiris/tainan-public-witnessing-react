@@ -11,38 +11,47 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthLayoutRouteImport } from './routes/_authLayout'
+import { Route as PublisherLayoutRouteImport } from './routes/_publisherLayout'
+import { Route as OverseerLayoutRouteImport } from './routes/_overseerLayout'
+import { Route as AssistantLayoutRouteImport } from './routes/_assistantLayout'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthLayoutVacantShiftsRouteImport } from './routes/_authLayout/vacantShifts'
-import { Route as AuthLayoutAdminLayoutRouteImport } from './routes/_authLayout/_adminLayout'
+import { Route as PublisherLayoutVacantShiftsRouteImport } from './routes/_publisherLayout/vacantShifts'
 
-const AuthLayoutMyShiftsLazyRouteImport = createFileRoute(
-  '/_authLayout/myShifts',
+const PublisherLayoutMyShiftsLazyRouteImport = createFileRoute(
+  '/_publisherLayout/myShifts',
 )()
-const AuthLayoutMyScheduleLazyRouteImport = createFileRoute(
-  '/_authLayout/mySchedule',
+const PublisherLayoutMyScheduleLazyRouteImport = createFileRoute(
+  '/_publisherLayout/mySchedule',
 )()
-const AuthLayoutAdminLayoutUsersLazyRouteImport = createFileRoute(
-  '/_authLayout/_adminLayout/users',
+const OverseerLayoutSitesLazyRouteImport = createFileRoute(
+  '/_overseerLayout/sites',
 )()
-const AuthLayoutAdminLayoutSitesLazyRouteImport = createFileRoute(
-  '/_authLayout/_adminLayout/sites',
+const OverseerLayoutSettingLazyRouteImport = createFileRoute(
+  '/_overseerLayout/setting',
 )()
-const AuthLayoutAdminLayoutShiftsLazyRouteImport = createFileRoute(
-  '/_authLayout/_adminLayout/shifts',
+const OverseerLayoutOverviewLazyRouteImport = createFileRoute(
+  '/_overseerLayout/overview',
 )()
-const AuthLayoutAdminLayoutSettingLazyRouteImport = createFileRoute(
-  '/_authLayout/_adminLayout/setting',
+const AssistantLayoutUsersLazyRouteImport = createFileRoute(
+  '/_assistantLayout/users',
 )()
-const AuthLayoutAdminLayoutOverviewLazyRouteImport = createFileRoute(
-  '/_authLayout/_adminLayout/overview',
+const AssistantLayoutShiftsLazyRouteImport = createFileRoute(
+  '/_assistantLayout/shifts',
 )()
-const AuthLayoutAdminLayoutUsersUserIdLazyRouteImport = createFileRoute(
-  '/_authLayout/_adminLayout/users/$userId',
+const AssistantLayoutUsersUserIdLazyRouteImport = createFileRoute(
+  '/_assistantLayout/users/$userId',
 )()
 
-const AuthLayoutRoute = AuthLayoutRouteImport.update({
-  id: '/_authLayout',
+const PublisherLayoutRoute = PublisherLayoutRouteImport.update({
+  id: '/_publisherLayout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverseerLayoutRoute = OverseerLayoutRouteImport.update({
+  id: '/_overseerLayout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistantLayoutRoute = AssistantLayoutRouteImport.update({
+  id: '/_assistantLayout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -50,179 +59,186 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthLayoutMyShiftsLazyRoute = AuthLayoutMyShiftsLazyRouteImport.update({
-  id: '/myShifts',
-  path: '/myShifts',
-  getParentRoute: () => AuthLayoutRoute,
-} as any).lazy(() =>
-  import('./routes/_authLayout/myShifts.lazy').then((d) => d.Route),
-)
-const AuthLayoutMyScheduleLazyRoute =
-  AuthLayoutMyScheduleLazyRouteImport.update({
+const PublisherLayoutMyShiftsLazyRoute =
+  PublisherLayoutMyShiftsLazyRouteImport.update({
+    id: '/myShifts',
+    path: '/myShifts',
+    getParentRoute: () => PublisherLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_publisherLayout/myShifts.lazy').then((d) => d.Route),
+  )
+const PublisherLayoutMyScheduleLazyRoute =
+  PublisherLayoutMyScheduleLazyRouteImport.update({
     id: '/mySchedule',
     path: '/mySchedule',
-    getParentRoute: () => AuthLayoutRoute,
+    getParentRoute: () => PublisherLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_authLayout/mySchedule.lazy').then((d) => d.Route),
+    import('./routes/_publisherLayout/mySchedule.lazy').then((d) => d.Route),
   )
-const AuthLayoutVacantShiftsRoute = AuthLayoutVacantShiftsRouteImport.update({
-  id: '/vacantShifts',
-  path: '/vacantShifts',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
-const AuthLayoutAdminLayoutRoute = AuthLayoutAdminLayoutRouteImport.update({
-  id: '/_adminLayout',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
-const AuthLayoutAdminLayoutUsersLazyRoute =
-  AuthLayoutAdminLayoutUsersLazyRouteImport.update({
-    id: '/users',
-    path: '/users',
-    getParentRoute: () => AuthLayoutAdminLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_authLayout/_adminLayout/users.lazy').then((d) => d.Route),
-  )
-const AuthLayoutAdminLayoutSitesLazyRoute =
-  AuthLayoutAdminLayoutSitesLazyRouteImport.update({
-    id: '/sites',
-    path: '/sites',
-    getParentRoute: () => AuthLayoutAdminLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_authLayout/_adminLayout/sites.lazy').then((d) => d.Route),
-  )
-const AuthLayoutAdminLayoutShiftsLazyRoute =
-  AuthLayoutAdminLayoutShiftsLazyRouteImport.update({
-    id: '/shifts',
-    path: '/shifts',
-    getParentRoute: () => AuthLayoutAdminLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_authLayout/_adminLayout/shifts.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-const AuthLayoutAdminLayoutSettingLazyRoute =
-  AuthLayoutAdminLayoutSettingLazyRouteImport.update({
+const OverseerLayoutSitesLazyRoute = OverseerLayoutSitesLazyRouteImport.update({
+  id: '/sites',
+  path: '/sites',
+  getParentRoute: () => OverseerLayoutRoute,
+} as any).lazy(() =>
+  import('./routes/_overseerLayout/sites.lazy').then((d) => d.Route),
+)
+const OverseerLayoutSettingLazyRoute =
+  OverseerLayoutSettingLazyRouteImport.update({
     id: '/setting',
     path: '/setting',
-    getParentRoute: () => AuthLayoutAdminLayoutRoute,
+    getParentRoute: () => OverseerLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_authLayout/_adminLayout/setting.lazy').then(
-      (d) => d.Route,
-    ),
+    import('./routes/_overseerLayout/setting.lazy').then((d) => d.Route),
   )
-const AuthLayoutAdminLayoutOverviewLazyRoute =
-  AuthLayoutAdminLayoutOverviewLazyRouteImport.update({
+const OverseerLayoutOverviewLazyRoute =
+  OverseerLayoutOverviewLazyRouteImport.update({
     id: '/overview',
     path: '/overview',
-    getParentRoute: () => AuthLayoutAdminLayoutRoute,
+    getParentRoute: () => OverseerLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_authLayout/_adminLayout/overview.lazy').then(
-      (d) => d.Route,
-    ),
+    import('./routes/_overseerLayout/overview.lazy').then((d) => d.Route),
   )
-const AuthLayoutAdminLayoutUsersUserIdLazyRoute =
-  AuthLayoutAdminLayoutUsersUserIdLazyRouteImport.update({
+const AssistantLayoutUsersLazyRoute =
+  AssistantLayoutUsersLazyRouteImport.update({
+    id: '/users',
+    path: '/users',
+    getParentRoute: () => AssistantLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_assistantLayout/users.lazy').then((d) => d.Route),
+  )
+const AssistantLayoutShiftsLazyRoute =
+  AssistantLayoutShiftsLazyRouteImport.update({
+    id: '/shifts',
+    path: '/shifts',
+    getParentRoute: () => AssistantLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_assistantLayout/shifts.lazy').then((d) => d.Route),
+  )
+const PublisherLayoutVacantShiftsRoute =
+  PublisherLayoutVacantShiftsRouteImport.update({
+    id: '/vacantShifts',
+    path: '/vacantShifts',
+    getParentRoute: () => PublisherLayoutRoute,
+  } as any)
+const AssistantLayoutUsersUserIdLazyRoute =
+  AssistantLayoutUsersUserIdLazyRouteImport.update({
     id: '/users/$userId',
     path: '/users/$userId',
-    getParentRoute: () => AuthLayoutAdminLayoutRoute,
+    getParentRoute: () => AssistantLayoutRoute,
   } as any).lazy(() =>
-    import('./routes/_authLayout/_adminLayout/users.$userId.lazy').then(
-      (d) => d.Route,
-    ),
+    import('./routes/_assistantLayout/users.$userId.lazy').then((d) => d.Route),
   )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/vacantShifts': typeof AuthLayoutVacantShiftsRoute
-  '/mySchedule': typeof AuthLayoutMyScheduleLazyRoute
-  '/myShifts': typeof AuthLayoutMyShiftsLazyRoute
-  '/overview': typeof AuthLayoutAdminLayoutOverviewLazyRoute
-  '/setting': typeof AuthLayoutAdminLayoutSettingLazyRoute
-  '/shifts': typeof AuthLayoutAdminLayoutShiftsLazyRoute
-  '/sites': typeof AuthLayoutAdminLayoutSitesLazyRoute
-  '/users': typeof AuthLayoutAdminLayoutUsersLazyRoute
-  '/users/$userId': typeof AuthLayoutAdminLayoutUsersUserIdLazyRoute
+  '/vacantShifts': typeof PublisherLayoutVacantShiftsRoute
+  '/shifts': typeof AssistantLayoutShiftsLazyRoute
+  '/users': typeof AssistantLayoutUsersLazyRoute
+  '/overview': typeof OverseerLayoutOverviewLazyRoute
+  '/setting': typeof OverseerLayoutSettingLazyRoute
+  '/sites': typeof OverseerLayoutSitesLazyRoute
+  '/mySchedule': typeof PublisherLayoutMyScheduleLazyRoute
+  '/myShifts': typeof PublisherLayoutMyShiftsLazyRoute
+  '/users/$userId': typeof AssistantLayoutUsersUserIdLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/vacantShifts': typeof AuthLayoutVacantShiftsRoute
-  '/mySchedule': typeof AuthLayoutMyScheduleLazyRoute
-  '/myShifts': typeof AuthLayoutMyShiftsLazyRoute
-  '/overview': typeof AuthLayoutAdminLayoutOverviewLazyRoute
-  '/setting': typeof AuthLayoutAdminLayoutSettingLazyRoute
-  '/shifts': typeof AuthLayoutAdminLayoutShiftsLazyRoute
-  '/sites': typeof AuthLayoutAdminLayoutSitesLazyRoute
-  '/users': typeof AuthLayoutAdminLayoutUsersLazyRoute
-  '/users/$userId': typeof AuthLayoutAdminLayoutUsersUserIdLazyRoute
+  '/vacantShifts': typeof PublisherLayoutVacantShiftsRoute
+  '/shifts': typeof AssistantLayoutShiftsLazyRoute
+  '/users': typeof AssistantLayoutUsersLazyRoute
+  '/overview': typeof OverseerLayoutOverviewLazyRoute
+  '/setting': typeof OverseerLayoutSettingLazyRoute
+  '/sites': typeof OverseerLayoutSitesLazyRoute
+  '/mySchedule': typeof PublisherLayoutMyScheduleLazyRoute
+  '/myShifts': typeof PublisherLayoutMyShiftsLazyRoute
+  '/users/$userId': typeof AssistantLayoutUsersUserIdLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authLayout': typeof AuthLayoutRouteWithChildren
-  '/_authLayout/_adminLayout': typeof AuthLayoutAdminLayoutRouteWithChildren
-  '/_authLayout/vacantShifts': typeof AuthLayoutVacantShiftsRoute
-  '/_authLayout/mySchedule': typeof AuthLayoutMyScheduleLazyRoute
-  '/_authLayout/myShifts': typeof AuthLayoutMyShiftsLazyRoute
-  '/_authLayout/_adminLayout/overview': typeof AuthLayoutAdminLayoutOverviewLazyRoute
-  '/_authLayout/_adminLayout/setting': typeof AuthLayoutAdminLayoutSettingLazyRoute
-  '/_authLayout/_adminLayout/shifts': typeof AuthLayoutAdminLayoutShiftsLazyRoute
-  '/_authLayout/_adminLayout/sites': typeof AuthLayoutAdminLayoutSitesLazyRoute
-  '/_authLayout/_adminLayout/users': typeof AuthLayoutAdminLayoutUsersLazyRoute
-  '/_authLayout/_adminLayout/users/$userId': typeof AuthLayoutAdminLayoutUsersUserIdLazyRoute
+  '/_assistantLayout': typeof AssistantLayoutRouteWithChildren
+  '/_overseerLayout': typeof OverseerLayoutRouteWithChildren
+  '/_publisherLayout': typeof PublisherLayoutRouteWithChildren
+  '/_publisherLayout/vacantShifts': typeof PublisherLayoutVacantShiftsRoute
+  '/_assistantLayout/shifts': typeof AssistantLayoutShiftsLazyRoute
+  '/_assistantLayout/users': typeof AssistantLayoutUsersLazyRoute
+  '/_overseerLayout/overview': typeof OverseerLayoutOverviewLazyRoute
+  '/_overseerLayout/setting': typeof OverseerLayoutSettingLazyRoute
+  '/_overseerLayout/sites': typeof OverseerLayoutSitesLazyRoute
+  '/_publisherLayout/mySchedule': typeof PublisherLayoutMyScheduleLazyRoute
+  '/_publisherLayout/myShifts': typeof PublisherLayoutMyShiftsLazyRoute
+  '/_assistantLayout/users/$userId': typeof AssistantLayoutUsersUserIdLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/vacantShifts'
-    | '/mySchedule'
-    | '/myShifts'
+    | '/shifts'
+    | '/users'
     | '/overview'
     | '/setting'
-    | '/shifts'
     | '/sites'
-    | '/users'
+    | '/mySchedule'
+    | '/myShifts'
     | '/users/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/vacantShifts'
-    | '/mySchedule'
-    | '/myShifts'
+    | '/shifts'
+    | '/users'
     | '/overview'
     | '/setting'
-    | '/shifts'
     | '/sites'
-    | '/users'
+    | '/mySchedule'
+    | '/myShifts'
     | '/users/$userId'
   id:
     | '__root__'
     | '/'
-    | '/_authLayout'
-    | '/_authLayout/_adminLayout'
-    | '/_authLayout/vacantShifts'
-    | '/_authLayout/mySchedule'
-    | '/_authLayout/myShifts'
-    | '/_authLayout/_adminLayout/overview'
-    | '/_authLayout/_adminLayout/setting'
-    | '/_authLayout/_adminLayout/shifts'
-    | '/_authLayout/_adminLayout/sites'
-    | '/_authLayout/_adminLayout/users'
-    | '/_authLayout/_adminLayout/users/$userId'
+    | '/_assistantLayout'
+    | '/_overseerLayout'
+    | '/_publisherLayout'
+    | '/_publisherLayout/vacantShifts'
+    | '/_assistantLayout/shifts'
+    | '/_assistantLayout/users'
+    | '/_overseerLayout/overview'
+    | '/_overseerLayout/setting'
+    | '/_overseerLayout/sites'
+    | '/_publisherLayout/mySchedule'
+    | '/_publisherLayout/myShifts'
+    | '/_assistantLayout/users/$userId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
+  AssistantLayoutRoute: typeof AssistantLayoutRouteWithChildren
+  OverseerLayoutRoute: typeof OverseerLayoutRouteWithChildren
+  PublisherLayoutRoute: typeof PublisherLayoutRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_authLayout': {
-      id: '/_authLayout'
+    '/_publisherLayout': {
+      id: '/_publisherLayout'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof AuthLayoutRouteImport
+      preLoaderRoute: typeof PublisherLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_overseerLayout': {
+      id: '/_overseerLayout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof OverseerLayoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_assistantLayout': {
+      id: '/_assistantLayout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AssistantLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -232,125 +248,125 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authLayout/myShifts': {
-      id: '/_authLayout/myShifts'
+    '/_publisherLayout/myShifts': {
+      id: '/_publisherLayout/myShifts'
       path: '/myShifts'
       fullPath: '/myShifts'
-      preLoaderRoute: typeof AuthLayoutMyShiftsLazyRouteImport
-      parentRoute: typeof AuthLayoutRoute
+      preLoaderRoute: typeof PublisherLayoutMyShiftsLazyRouteImport
+      parentRoute: typeof PublisherLayoutRoute
     }
-    '/_authLayout/mySchedule': {
-      id: '/_authLayout/mySchedule'
+    '/_publisherLayout/mySchedule': {
+      id: '/_publisherLayout/mySchedule'
       path: '/mySchedule'
       fullPath: '/mySchedule'
-      preLoaderRoute: typeof AuthLayoutMyScheduleLazyRouteImport
-      parentRoute: typeof AuthLayoutRoute
+      preLoaderRoute: typeof PublisherLayoutMyScheduleLazyRouteImport
+      parentRoute: typeof PublisherLayoutRoute
     }
-    '/_authLayout/vacantShifts': {
-      id: '/_authLayout/vacantShifts'
-      path: '/vacantShifts'
-      fullPath: '/vacantShifts'
-      preLoaderRoute: typeof AuthLayoutVacantShiftsRouteImport
-      parentRoute: typeof AuthLayoutRoute
-    }
-    '/_authLayout/_adminLayout': {
-      id: '/_authLayout/_adminLayout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AuthLayoutAdminLayoutRouteImport
-      parentRoute: typeof AuthLayoutRoute
-    }
-    '/_authLayout/_adminLayout/users': {
-      id: '/_authLayout/_adminLayout/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthLayoutAdminLayoutUsersLazyRouteImport
-      parentRoute: typeof AuthLayoutAdminLayoutRoute
-    }
-    '/_authLayout/_adminLayout/sites': {
-      id: '/_authLayout/_adminLayout/sites'
+    '/_overseerLayout/sites': {
+      id: '/_overseerLayout/sites'
       path: '/sites'
       fullPath: '/sites'
-      preLoaderRoute: typeof AuthLayoutAdminLayoutSitesLazyRouteImport
-      parentRoute: typeof AuthLayoutAdminLayoutRoute
+      preLoaderRoute: typeof OverseerLayoutSitesLazyRouteImport
+      parentRoute: typeof OverseerLayoutRoute
     }
-    '/_authLayout/_adminLayout/shifts': {
-      id: '/_authLayout/_adminLayout/shifts'
-      path: '/shifts'
-      fullPath: '/shifts'
-      preLoaderRoute: typeof AuthLayoutAdminLayoutShiftsLazyRouteImport
-      parentRoute: typeof AuthLayoutAdminLayoutRoute
-    }
-    '/_authLayout/_adminLayout/setting': {
-      id: '/_authLayout/_adminLayout/setting'
+    '/_overseerLayout/setting': {
+      id: '/_overseerLayout/setting'
       path: '/setting'
       fullPath: '/setting'
-      preLoaderRoute: typeof AuthLayoutAdminLayoutSettingLazyRouteImport
-      parentRoute: typeof AuthLayoutAdminLayoutRoute
+      preLoaderRoute: typeof OverseerLayoutSettingLazyRouteImport
+      parentRoute: typeof OverseerLayoutRoute
     }
-    '/_authLayout/_adminLayout/overview': {
-      id: '/_authLayout/_adminLayout/overview'
+    '/_overseerLayout/overview': {
+      id: '/_overseerLayout/overview'
       path: '/overview'
       fullPath: '/overview'
-      preLoaderRoute: typeof AuthLayoutAdminLayoutOverviewLazyRouteImport
-      parentRoute: typeof AuthLayoutAdminLayoutRoute
+      preLoaderRoute: typeof OverseerLayoutOverviewLazyRouteImport
+      parentRoute: typeof OverseerLayoutRoute
     }
-    '/_authLayout/_adminLayout/users/$userId': {
-      id: '/_authLayout/_adminLayout/users/$userId'
+    '/_assistantLayout/users': {
+      id: '/_assistantLayout/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AssistantLayoutUsersLazyRouteImport
+      parentRoute: typeof AssistantLayoutRoute
+    }
+    '/_assistantLayout/shifts': {
+      id: '/_assistantLayout/shifts'
+      path: '/shifts'
+      fullPath: '/shifts'
+      preLoaderRoute: typeof AssistantLayoutShiftsLazyRouteImport
+      parentRoute: typeof AssistantLayoutRoute
+    }
+    '/_publisherLayout/vacantShifts': {
+      id: '/_publisherLayout/vacantShifts'
+      path: '/vacantShifts'
+      fullPath: '/vacantShifts'
+      preLoaderRoute: typeof PublisherLayoutVacantShiftsRouteImport
+      parentRoute: typeof PublisherLayoutRoute
+    }
+    '/_assistantLayout/users/$userId': {
+      id: '/_assistantLayout/users/$userId'
       path: '/users/$userId'
       fullPath: '/users/$userId'
-      preLoaderRoute: typeof AuthLayoutAdminLayoutUsersUserIdLazyRouteImport
-      parentRoute: typeof AuthLayoutAdminLayoutRoute
+      preLoaderRoute: typeof AssistantLayoutUsersUserIdLazyRouteImport
+      parentRoute: typeof AssistantLayoutRoute
     }
   }
 }
 
-interface AuthLayoutAdminLayoutRouteChildren {
-  AuthLayoutAdminLayoutOverviewLazyRoute: typeof AuthLayoutAdminLayoutOverviewLazyRoute
-  AuthLayoutAdminLayoutSettingLazyRoute: typeof AuthLayoutAdminLayoutSettingLazyRoute
-  AuthLayoutAdminLayoutShiftsLazyRoute: typeof AuthLayoutAdminLayoutShiftsLazyRoute
-  AuthLayoutAdminLayoutSitesLazyRoute: typeof AuthLayoutAdminLayoutSitesLazyRoute
-  AuthLayoutAdminLayoutUsersLazyRoute: typeof AuthLayoutAdminLayoutUsersLazyRoute
-  AuthLayoutAdminLayoutUsersUserIdLazyRoute: typeof AuthLayoutAdminLayoutUsersUserIdLazyRoute
+interface AssistantLayoutRouteChildren {
+  AssistantLayoutShiftsLazyRoute: typeof AssistantLayoutShiftsLazyRoute
+  AssistantLayoutUsersLazyRoute: typeof AssistantLayoutUsersLazyRoute
+  AssistantLayoutUsersUserIdLazyRoute: typeof AssistantLayoutUsersUserIdLazyRoute
 }
 
-const AuthLayoutAdminLayoutRouteChildren: AuthLayoutAdminLayoutRouteChildren = {
-  AuthLayoutAdminLayoutOverviewLazyRoute:
-    AuthLayoutAdminLayoutOverviewLazyRoute,
-  AuthLayoutAdminLayoutSettingLazyRoute: AuthLayoutAdminLayoutSettingLazyRoute,
-  AuthLayoutAdminLayoutShiftsLazyRoute: AuthLayoutAdminLayoutShiftsLazyRoute,
-  AuthLayoutAdminLayoutSitesLazyRoute: AuthLayoutAdminLayoutSitesLazyRoute,
-  AuthLayoutAdminLayoutUsersLazyRoute: AuthLayoutAdminLayoutUsersLazyRoute,
-  AuthLayoutAdminLayoutUsersUserIdLazyRoute:
-    AuthLayoutAdminLayoutUsersUserIdLazyRoute,
+const AssistantLayoutRouteChildren: AssistantLayoutRouteChildren = {
+  AssistantLayoutShiftsLazyRoute: AssistantLayoutShiftsLazyRoute,
+  AssistantLayoutUsersLazyRoute: AssistantLayoutUsersLazyRoute,
+  AssistantLayoutUsersUserIdLazyRoute: AssistantLayoutUsersUserIdLazyRoute,
 }
 
-const AuthLayoutAdminLayoutRouteWithChildren =
-  AuthLayoutAdminLayoutRoute._addFileChildren(
-    AuthLayoutAdminLayoutRouteChildren,
-  )
+const AssistantLayoutRouteWithChildren = AssistantLayoutRoute._addFileChildren(
+  AssistantLayoutRouteChildren,
+)
 
-interface AuthLayoutRouteChildren {
-  AuthLayoutAdminLayoutRoute: typeof AuthLayoutAdminLayoutRouteWithChildren
-  AuthLayoutVacantShiftsRoute: typeof AuthLayoutVacantShiftsRoute
-  AuthLayoutMyScheduleLazyRoute: typeof AuthLayoutMyScheduleLazyRoute
-  AuthLayoutMyShiftsLazyRoute: typeof AuthLayoutMyShiftsLazyRoute
+interface OverseerLayoutRouteChildren {
+  OverseerLayoutOverviewLazyRoute: typeof OverseerLayoutOverviewLazyRoute
+  OverseerLayoutSettingLazyRoute: typeof OverseerLayoutSettingLazyRoute
+  OverseerLayoutSitesLazyRoute: typeof OverseerLayoutSitesLazyRoute
 }
 
-const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
-  AuthLayoutAdminLayoutRoute: AuthLayoutAdminLayoutRouteWithChildren,
-  AuthLayoutVacantShiftsRoute: AuthLayoutVacantShiftsRoute,
-  AuthLayoutMyScheduleLazyRoute: AuthLayoutMyScheduleLazyRoute,
-  AuthLayoutMyShiftsLazyRoute: AuthLayoutMyShiftsLazyRoute,
+const OverseerLayoutRouteChildren: OverseerLayoutRouteChildren = {
+  OverseerLayoutOverviewLazyRoute: OverseerLayoutOverviewLazyRoute,
+  OverseerLayoutSettingLazyRoute: OverseerLayoutSettingLazyRoute,
+  OverseerLayoutSitesLazyRoute: OverseerLayoutSitesLazyRoute,
 }
 
-const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
-  AuthLayoutRouteChildren,
+const OverseerLayoutRouteWithChildren = OverseerLayoutRoute._addFileChildren(
+  OverseerLayoutRouteChildren,
+)
+
+interface PublisherLayoutRouteChildren {
+  PublisherLayoutVacantShiftsRoute: typeof PublisherLayoutVacantShiftsRoute
+  PublisherLayoutMyScheduleLazyRoute: typeof PublisherLayoutMyScheduleLazyRoute
+  PublisherLayoutMyShiftsLazyRoute: typeof PublisherLayoutMyShiftsLazyRoute
+}
+
+const PublisherLayoutRouteChildren: PublisherLayoutRouteChildren = {
+  PublisherLayoutVacantShiftsRoute: PublisherLayoutVacantShiftsRoute,
+  PublisherLayoutMyScheduleLazyRoute: PublisherLayoutMyScheduleLazyRoute,
+  PublisherLayoutMyShiftsLazyRoute: PublisherLayoutMyShiftsLazyRoute,
+}
+
+const PublisherLayoutRouteWithChildren = PublisherLayoutRoute._addFileChildren(
+  PublisherLayoutRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthLayoutRoute: AuthLayoutRouteWithChildren,
+  AssistantLayoutRoute: AssistantLayoutRouteWithChildren,
+  OverseerLayoutRoute: OverseerLayoutRouteWithChildren,
+  PublisherLayoutRoute: PublisherLayoutRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

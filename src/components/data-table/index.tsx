@@ -1,29 +1,49 @@
-import { Button } from "@/components/ui/button";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { rankItem } from "@tanstack/match-sorter-utils";
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type FilterFn,
-  type SortingState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState(""); // 加入 global filter state
@@ -79,8 +99,16 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id} style={{ width: `${header.column.getSize()}px` }}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      <TableHead
+                        key={header.id}
+                        style={{ width: `${header.column.getSize()}px` }}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -90,17 +118,29 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} style={{ width: `${cell.column.getSize()}px` }}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      <TableCell
+                        key={cell.id}
+                        style={{ width: `${cell.column.getSize()}px` }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     沒有符合的結果
                   </TableCell>
                 </TableRow>
@@ -111,7 +151,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       </div>
 
       <div className="flex items-center justify-between py-4">
-        <div className="text-sm text-muted-foreground">顯示 {table.getFilteredRowModel().rows.length} 筆結果</div>
+        <div className="text-sm text-muted-foreground">
+          顯示 {table.getFilteredRowModel().rows.length} 筆結果
+        </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
@@ -138,7 +180,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
             下一頁
           </Button>
         </div>

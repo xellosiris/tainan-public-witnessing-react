@@ -1,9 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import dayjs from "dayjs";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { zhTW } from "react-day-picker/locale";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type Props = {
   dates?: string[];
@@ -13,11 +17,19 @@ type Props = {
   disabled?: boolean;
 };
 
-export function MultiDatePicker({ dates = [], onDatesChange, id, "aria-invalid": ariaInvalid, disabled }: Props) {
+export function MultiDatePicker({
+  dates = [],
+  onDatesChange,
+  id,
+  "aria-invalid": ariaInvalid,
+  disabled,
+}: Props) {
   const dateObjs = dates.map((date) => dayjs(date).toDate());
 
   const handleSelect = (selectedDates: Date[] | undefined) => {
-    const dateStrings = selectedDates ? selectedDates.map((date) => dayjs(date).format("YYYY-MM-DD")) : [];
+    const dateStrings = selectedDates
+      ? selectedDates.map((date) => dayjs(date).format("YYYY-MM-DD"))
+      : [];
     onDatesChange(dateStrings);
   };
 

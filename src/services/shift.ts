@@ -1,6 +1,3 @@
-import { db } from "@/lib/firebase";
-import type { Shift } from "@/types/shift";
-import type { User } from "@/types/user";
 import {
   arrayUnion,
   collection,
@@ -8,10 +5,13 @@ import {
   getDocs,
   orderBy,
   query,
-  Timestamp,
+  type Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase";
+import type { Shift } from "@/types/shift";
+import type { User } from "@/types/user";
 
 const convertShiftTimestamps = (data: any): Shift => {
   return {
@@ -21,23 +21,36 @@ const convertShiftTimestamps = (data: any): Shift => {
 };
 
 export const getShiftsByDate = async (date: string): Promise<Shift[]> => {
-  const q = query(collection(db, "Shifts"), where("date", "==", date), orderBy("startTime", "asc"));
-  const docs = await getDocs(q);
-  return docs.docs.map((d) => convertShiftTimestamps(d.data()));
-};
-
-export const getPersonalShiftByMonth = async (id: User["id"], yearMonth: Shift["yearMonth"]): Promise<Shift[]> => {
   const q = query(
     collection(db, "Shifts"),
-    where("attendees", "array-contains", id),
-    where("yearMonth", "==", yearMonth)
+    where("date", "==", date),
+    orderBy("startTime", "asc"),
   );
   const docs = await getDocs(q);
   return docs.docs.map((d) => convertShiftTimestamps(d.data()));
 };
 
-export const getVacantShiftByMonth = async (yearMonth: Shift["yearMonth"]): Promise<Shift[]> => {
-  const q = query(collection(db, "Shifts"), where("isFull", "==", false), where("yearMonth", "==", yearMonth));
+export const getPersonalShiftByMonth = async (
+  id: User["id"],
+  yearMonth: Shift["yearMonth"],
+): Promise<Shift[]> => {
+  const q = query(
+    collection(db, "Shifts"),
+    where("attendees", "array-contains", id),
+    where("yearMonth", "==", yearMonth),
+  );
+  const docs = await getDocs(q);
+  return docs.docs.map((d) => convertShiftTimestamps(d.data()));
+};
+
+export const getVacantShiftByMonth = async (
+  yearMonth: Shift["yearMonth"],
+): Promise<Shift[]> => {
+  const q = query(
+    collection(db, "Shifts"),
+    where("isFull", "==", false),
+    where("yearMonth", "==", yearMonth),
+  );
   const docs = await getDocs(q);
   return docs.docs.map((d) => convertShiftTimestamps(d.data()));
 };

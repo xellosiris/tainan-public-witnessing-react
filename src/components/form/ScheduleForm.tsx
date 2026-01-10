@@ -1,22 +1,49 @@
-import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import { getEnrolledShifts } from "@/lib/shiftUtils";
-import { scheduleSchema, type Schedule } from "@/types/schedule";
-import type { SiteKey } from "@/types/site";
-import type { SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item";
+import { getEnrolledShifts } from "@/lib/shiftUtils";
+import { getNextDeadlineDate } from "@/lib/utils";
+import { getSetting } from "@/services/setting";
+import { type Schedule, scheduleSchema } from "@/types/schedule";
+import type { SiteKey } from "@/types/site";
+import type { SiteShift } from "@/types/siteShift";
 import SignupShiftDialog from "../dialog/SignupShiftDialog";
 import { AttendeeField } from "./fields/AttendeeField";
 import { DateField } from "./fields/DateField";
 import { SwitchField } from "./fields/SwitchField";
 import ShiftGroupedView from "./ShiftGroupedView";
 
-type Props = { editScheduleObj: Schedule | null; siteKeys: SiteKey[]; siteShifts: SiteShift[] };
+type Props = {
+  editScheduleObj: Schedule | null;
+  siteKeys: SiteKey[];
+  siteShifts: SiteShift[];
+};
 
-export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: Props) {
+export default function ScheduleForm({
+  editScheduleObj,
+  siteKeys,
+  siteShifts,
+}: Props) {
+  const { data: setting } = useSuspenseQuery({
+    queryKey: ["setting"],
+    queryFn: getSetting,
+  });
   const form = useForm<Schedule>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: editScheduleObj
@@ -31,6 +58,7 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
 
   const onSubmit = (data: Schedule) => {
     console.log({ data });
+    alert(`下次生效日：${getNextDeadlineDate(3).format("YYYY-MM-DD")}`);
   };
 
   return (
@@ -42,14 +70,30 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
             <Item variant="outline">
               <ItemContent>
                 <ItemTitle>參與排班</ItemTitle>
-                <ItemDescription>啟用後，會參與自動排班。關閉後，使用者會暫停排班</ItemDescription>
+                <ItemDescription>
+                  啟用後，會參與自動排班。關閉後，使用者會暫停排班
+                </ItemDescription>
               </ItemContent>
               <ItemActions>
-                <SwitchField name="canSchedule" label="啟用" control={form.control} />
+                <SwitchField
+                  name="canSchedule"
+                  label="啟用"
+                  control={form.control}
+                />
               </ItemActions>
             </Item>
-            <AttendeeField name="partnerId" control={form.control} label="同伴" placeholder="請輸入同伴名字..." />
-            <DateField name="unavailableDates" mode="multiple" control={form.control} label="無法參與日期" />
+            <AttendeeField
+              name="partnerId"
+              control={form.control}
+              label="同伴"
+              placeholder="請輸入同伴名字..."
+            />
+            <DateField
+              name="unavailableDates"
+              mode="multiple"
+              control={form.control}
+              label="無法參與日期"
+            />
           </FieldGroup>
         </FieldSet>
         <FieldSet>
@@ -75,7 +119,9 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
             control={form.control}
             render={({ field, fieldState }) => {
               const enrolledShifts = useMemo(() => {
-                return getEnrolledShifts(field.value, siteShifts).filter((shift) => shift.active);
+                return getEnrolledShifts(field.value, siteShifts).filter(
+                  (shift) => shift.active,
+                );
               }, [field.value]);
               return (
                 <Field className="p-4 bg-white rounded-md shadow-sm">
@@ -92,8 +138,12 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
                             </h5>
                           </div>
                           <div className="text-right">
-                            <span className="text-sm text-gray-500">報名次數</span>
-                            <p className="text-2xl font-semibold text-primary">{maxTimes}</p>
+                            <span className="text-sm text-gray-500">
+                              報名次數
+                            </span>
+                            <p className="text-2xl font-semibold text-primary">
+                              {maxTimes}
+                            </p>
                           </div>
                         </div>
                       );
@@ -101,11 +151,15 @@ export default function ScheduleForm({ editScheduleObj, siteKeys, siteShifts }: 
                     emptyState={
                       <div className="py-12 text-center text-gray-500">
                         <p>尚未報名任何班次</p>
-                        <p className="mt-2 text-sm">請點擊上方「我要報名」按鈕新增</p>
+                        <p className="mt-2 text-sm">
+                          請點擊上方「我要報名」按鈕新增
+                        </p>
                       </div>
                     }
                   />
-                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                  {fieldState.error && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Field>
               );
             }}

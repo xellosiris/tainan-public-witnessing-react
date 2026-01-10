@@ -1,10 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
-import { FieldGroup } from "@/components/ui/field";
-import type { Shift } from "@/types/shift";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import { FieldGroup } from "@/components/ui/field";
+import type { Shift } from "@/types/shift";
 import { NumberField } from "../form/fields/NumberInput";
 
 type Props = {
@@ -19,7 +25,7 @@ const formSchema = z.object({
 export default function ReportDialog({ shift, onClose }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: !!shift.attendeeCount
+    defaultValues: shift.attendeeCount
       ? {
           attendeeCount: shift.attendeeCount,
         }
@@ -37,7 +43,11 @@ export default function ReportDialog({ shift, onClose }: Props) {
         <DialogDescription>回報該班次的參與情況</DialogDescription>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
-            <NumberField name="attendeeCount" label={"實際參與人數"} control={form.control} />
+            <NumberField
+              name="attendeeCount"
+              label={"實際參與人數"}
+              control={form.control}
+            />
             <Button type="submit">提交</Button>
           </FieldGroup>
         </form>

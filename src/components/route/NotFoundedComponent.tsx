@@ -1,9 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { CircleQuestionMarkIcon } from "lucide-react";
 
-type Props = {};
-
-export default function NotFoundedComponent({}: Props) {
+export default function NotFoundedComponent() {
   return (
     <div className="flex items-center justify-center h-dvh">
       <div className="flex flex-col items-center gap-2">

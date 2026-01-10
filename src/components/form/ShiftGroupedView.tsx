@@ -1,10 +1,10 @@
+import { MapPin } from "lucide-react";
+import { type ReactNode, useMemo } from "react";
+import { WEEKDAY_NAMES } from "@/assets/date";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { groupShiftsBySiteAndWeekday } from "@/lib/shiftUtils";
 import type { SiteKey } from "@/types/site";
 import type { SiteShift } from "@/types/siteShift";
-import { MapPin } from "lucide-react";
-import { type ReactNode, useMemo } from "react";
-import { WEEKDAY_NAMES } from "../form/SiteForm";
 
 type Props = {
   siteShifts: SiteShift[];
@@ -14,7 +14,13 @@ type Props = {
   className?: string;
 };
 
-export default function ShiftGroupedView({ siteShifts, siteKeys, renderShift, emptyState, className = "" }: Props) {
+export default function ShiftGroupedView({
+  siteShifts,
+  siteKeys,
+  renderShift,
+  emptyState,
+  className = "",
+}: Props) {
   // 使用工具函式按地點和星期分組
   const groupedShifts = useMemo(() => {
     return groupShiftsBySiteAndWeekday(siteShifts);
@@ -51,7 +57,9 @@ export default function ShiftGroupedView({ siteShifts, siteKeys, renderShift, em
                   {Object.entries(dayGroups).map(([dayOfWeek, shifts]) => (
                     <div key={dayOfWeek}>
                       <div className="px-4 py-3 border-b border-gray-200 bg-secondary">
-                        <h4 className="text-base font-semibold text-primary">{WEEKDAY_NAMES[parseInt(dayOfWeek)]}</h4>
+                        <h4 className="text-base font-semibold text-primary">
+                          {WEEKDAY_NAMES[parseInt(dayOfWeek, 10)]}
+                        </h4>
                       </div>
 
                       <div className="p-4 space-y-2">

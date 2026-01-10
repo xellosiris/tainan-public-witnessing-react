@@ -1,11 +1,11 @@
+import { useSuspenseQueries } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { SCHEDULE } from "@/assets/mock";
 import ScheduleForm from "@/components/form/ScheduleForm";
 import { getSetting } from "@/services/setting";
 import { getSiteShifts } from "@/services/siteShift";
-import { useSuspenseQueries } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/_authLayout/mySchedule")({
+export const Route = createLazyFileRoute("/_publisherLayout/mySchedule")({
   component: PersonalSchedule,
 });
 
@@ -30,7 +30,11 @@ function PersonalSchedule() {
 
   return (
     <div className="max-w-3xl">
-      <ScheduleForm editScheduleObj={SCHEDULE} siteShifts={siteShifts} siteKeys={siteKeys} />
+      <ScheduleForm
+        editScheduleObj={SCHEDULE}
+        siteShifts={siteShifts}
+        siteKeys={siteKeys}
+      />
     </div>
   );
 }

@@ -1,6 +1,13 @@
+import {
+  chain,
+  difference,
+  groupBy,
+  keyBy,
+  mapValues,
+  sortBy,
+} from "lodash-es";
 import type { Schedule } from "@/types/schedule";
 import type { SiteShift } from "@/types/siteShift";
-import { chain, difference, groupBy, keyBy, mapValues, sortBy } from "lodash-es";
 
 type GroupedShifts<T = SiteShift> = Record<string, Record<number, T[]>>;
 
@@ -11,16 +18,15 @@ type GroupedShifts<T = SiteShift> = Record<string, Record<number, T[]>>;
  * @returns 分組後的班次 { 地點名稱: { 星期: [班次] } }
  */
 
-export function groupShiftsBySiteAndWeekday(siteShifts: SiteShift[]): GroupedShifts {
+export function groupShiftsBySiteAndWeekday(
+  siteShifts: SiteShift[],
+): GroupedShifts {
   const bySite = groupBy(siteShifts, "siteId");
-
   return mapValues(bySite, (shifts) => {
     const byWeekday = groupBy(shifts, (s) => s.weekday);
-
-    return Object.fromEntries(sortBy(Object.entries(byWeekday), ([weekday]) => Number(weekday))) as Record<
-      number,
-      SiteShift[]
-    >;
+    return Object.fromEntries(
+      sortBy(Object.entries(byWeekday), ([weekday]) => Number(weekday)),
+    ) as Record<number, SiteShift[]>;
   });
 }
 
@@ -34,8 +40,11 @@ export function groupShiftsBySiteAndWeekday(siteShifts: SiteShift[]): GroupedShi
 
 export function groupShiftLimitsBySiteAndWeekday(
   siteShiftLimits: Schedule["siteShiftLimits"],
-  siteShifts: SiteShift[]
-): Record<string, Record<number, Array<{ siteShift: SiteShift; maxTimes: number }>>> {
+  siteShifts: SiteShift[],
+): Record<
+  string,
+  Record<number, Array<{ siteShift: SiteShift; maxTimes: number }>>
+> {
   const siteShiftMap = keyBy(siteShifts, "id");
 
   return (
@@ -72,7 +81,7 @@ export function groupShiftLimitsBySiteAndWeekday(
             })),
           ])
           .fromPairs()
-          .value()
+          .value(),
       )
       .value()
   );
@@ -84,8 +93,13 @@ export function groupShiftLimitsBySiteAndWeekday(
  * @param siteShifts - 所有班次列表
  * @returns 已報名的班次列表
  */
-export function getEnrolledShifts(siteShiftLimits: Schedule["siteShiftLimits"], siteShifts: SiteShift[]): SiteShift[] {
-  return siteShifts.filter((shift) => siteShiftLimits[shift.id] !== undefined && shift.active);
+export function getEnrolledShifts(
+  siteShiftLimits: Schedule["siteShiftLimits"],
+  siteShifts: SiteShift[],
+): SiteShift[] {
+  return siteShifts.filter(
+    (shift) => siteShiftLimits[shift.id] !== undefined && shift.active,
+  );
 }
 
 export function diffStringArray(prev: string[], next: string[]) {
@@ -93,4 +107,18 @@ export function diffStringArray(prev: string[], next: string[]) {
     added: difference(next, prev),
     removed: difference(prev, next),
   };
+}
+
+export function hasShiftTimeOverlap(
+  target: SiteShift,
+  shifts: SiteShift[],
+): boolean {
+  return shifts.some(
+    (shift) =>
+      shift.id !== target.id &&
+      shift.siteId === target.siteId &&
+      shift.weekday === target.weekday &&
+      target.startTime < shift.endTime &&
+      shift.startTime < target.endTime,
+  );
 }

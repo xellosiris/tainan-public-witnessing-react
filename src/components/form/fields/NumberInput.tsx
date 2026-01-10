@@ -1,6 +1,11 @@
+import {
+  type Control,
+  Controller,
+  type FieldValues,
+  type Path,
+} from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
 
 type NumberFieldProps<T extends FieldValues> = {
   control: Control<T>;
@@ -31,7 +36,11 @@ export function NumberField<T extends FieldValues>({
           <Input
             type="number"
             id={field.name}
-            value={field.value === null || field.value === undefined ? "" : field.value}
+            value={
+              field.value === null || field.value === undefined
+                ? ""
+                : field.value
+            }
             onChange={(e) => {
               const val = e.target.value;
               field.onChange(val === "" ? 0 : parseInt(val, 10));

@@ -1,15 +1,20 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { MenuIcon } from "lucide-react";
+import React, { useState } from "react";
 import { default as Error } from "@/components/route/ErrorComponent";
 import NotFoundedComponent from "@/components/route/NotFoundedComponent";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Toaster } from "@/components/ui/sonner";
 import { getSetting } from "@/services/setting";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
-import { MenuIcon } from "lucide-react";
-import { useState } from "react";
-import { Fragment } from "react/jsx-runtime";
 
 export const Route = createRootRoute({
   component: Layout,
@@ -25,7 +30,7 @@ export default function Layout() {
   });
 
   return (
-    <Fragment>
+    <React.Fragment>
       <header
         className={
           "relative z-50 flex items-center h-12 gap-2 px-2 text-base text-white lg:text-xl bg-primary justify-between"
@@ -52,7 +57,10 @@ export default function Layout() {
           <SheetHeader>
             <SheetTitle>選單</SheetTitle>
           </SheetHeader>
-          <nav className="flex-1 py-4 overflow-y-auto" onClick={() => setOpen(false)}>
+          <nav
+            className="flex-1 py-4 overflow-y-auto"
+            onClick={() => setOpen(false)}
+          >
             <div className="grid gap-3 px-4">
               <label className="text-sm text-muted-foreground">一般功能</label>
               <div className="flex flex-col gap-3 ml-4">
@@ -84,6 +92,6 @@ export default function Layout() {
         <Outlet />
         <Toaster />
       </main>
-    </Fragment>
+    </React.Fragment>
   );
 }
