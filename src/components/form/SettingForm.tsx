@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
-import { Label } from "@/components/ui/label";
 import { updateSetting } from "@/services/setting";
 import { type Setting, settingSchema } from "@/types/setting";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,9 +8,11 @@ import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { v4 } from "uuid";
+import { VList } from "virtua";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { Loading } from "../ui/loading";
 import { NumberField } from "./fields/NumberInput";
+import { SwitchField } from "./fields/SwitchField";
 import { TextField } from "./fields/TextField";
 
 type Props = { editSettingObj: Setting };
@@ -121,7 +121,6 @@ export default function SettingForm({ editSettingObj }: Props) {
           </FieldGroup>
         </FieldSet>
 
-        {/* 會眾管理區塊 */}
         <FieldSet>
           <div className="flex items-center justify-between mb-4">
             <FieldLegend>會眾管理</FieldLegend>
@@ -143,11 +142,11 @@ export default function SettingForm({ editSettingObj }: Props) {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
+              <VList style={{ height: 400 }}>
                 {fields.map((field, index) => (
                   <div
                     key={field.id}
-                    className="group bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-200"
+                    className="group bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 my-1"
                   >
                     <div className="flex items-center gap-3 p-4">
                       <div className="flex-1 min-w-0">
@@ -160,19 +159,7 @@ export default function SettingForm({ editSettingObj }: Props) {
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
-                        <Checkbox
-                          id={`congs.${index}.active`}
-                          checked={form.watch(`congs.${index}.active`)}
-                          onCheckedChange={(checked) => {
-                            form.setValue(`congs.${index}.active`, checked as boolean);
-                          }}
-                        />
-                        <Label
-                          htmlFor={`congs.${index}.active`}
-                          className="text-sm font-medium cursor-pointer select-none"
-                        >
-                          啟用
-                        </Label>
+                        <SwitchField name={`congs.${index}.active`} control={form.control} />
                       </div>
 
                       <Button
@@ -194,7 +181,7 @@ export default function SettingForm({ editSettingObj }: Props) {
                     )}
                   </div>
                 ))}
-              </div>
+              </VList>
             )}
           </FieldGroup>
         </FieldSet>

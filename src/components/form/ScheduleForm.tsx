@@ -16,7 +16,7 @@ import { useMemo } from "react";
 import { zhTW } from "react-day-picker/locale";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import SignupShiftDialog from "../dialog/SignupShiftDialog";
+import SignupSiteShiftDialog from "../dialog/SignupSiteShiftDialog";
 import { Calendar } from "../ui/calendar";
 import { Loading } from "../ui/loading";
 import { AttendeeField } from "./fields/AttendeeField";
@@ -124,7 +124,7 @@ export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: P
               name="siteShiftLimits"
               control={form.control}
               render={({ field }) => (
-                <SignupShiftDialog
+                <SignupSiteShiftDialog
                   siteShifts={siteShifts}
                   siteKeys={siteKeys}
                   currentLimits={field.value}

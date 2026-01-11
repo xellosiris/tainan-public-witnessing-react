@@ -1,11 +1,6 @@
-import {
-  type Control,
-  Controller,
-  type FieldValues,
-  type Path,
-} from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
+import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
 
 type SwitchFieldProps<T extends FieldValues> = {
   control: Control<T>;
@@ -18,7 +13,7 @@ type SwitchFieldProps<T extends FieldValues> = {
 export function SwitchField<T extends FieldValues>({
   control,
   name,
-  label = "開關",
+  label = "啟用",
   description,
   disabled,
 }: SwitchFieldProps<T>) {
@@ -31,9 +26,7 @@ export function SwitchField<T extends FieldValues>({
           <div className="flex items-center gap-2">
             <div className="space-y-0.5">
               <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-              {description && (
-                <p className="text-sm text-muted-foreground">{description}</p>
-              )}
+              {description && <p className="text-sm text-muted-foreground">{description}</p>}
             </div>
             <Switch
               id={field.name}

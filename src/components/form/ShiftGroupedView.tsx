@@ -1,10 +1,10 @@
-import { MapPin } from "lucide-react";
-import { type ReactNode, useMemo } from "react";
 import { WEEKDAY_NAMES } from "@/assets/date";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { groupShiftsBySiteAndWeekday } from "@/lib/shiftUtils";
 import type { SiteKey } from "@/types/site";
 import type { SiteShift } from "@/types/siteShift";
+import { MapPin } from "lucide-react";
+import { type ReactNode, useMemo } from "react";
 
 type Props = {
   siteShifts: SiteShift[];
@@ -15,7 +15,6 @@ type Props = {
 };
 
 export default function ShiftGroupedView({ siteShifts, siteKeys, renderShift, emptyState, className = "" }: Props) {
-  // 使用工具函式按地點和星期分組
   const groupedShifts = useMemo(() => {
     return groupShiftsBySiteAndWeekday(siteShifts);
   }, [siteShifts]);
