@@ -1,6 +1,6 @@
 import type { Schedule } from "@/types/schedule";
 import type { SiteShift } from "@/types/siteShift";
-import { chain, difference, groupBy, keyBy, mapValues, sortBy } from "lodash-es";
+import { chain, groupBy, keyBy, mapValues, sortBy } from "lodash-es";
 
 type GroupedShifts<T = SiteShift> = Record<string, Record<number, T[]>>;
 
@@ -86,13 +86,6 @@ export function groupShiftLimitsBySiteAndWeekday(
  */
 export function getEnrolledShifts(siteShiftLimits: Schedule["siteShiftLimits"], siteShifts: SiteShift[]): SiteShift[] {
   return siteShifts.filter((shift) => siteShiftLimits[shift.id] !== undefined && shift.active);
-}
-
-export function diffStringArray(prev: string[], next: string[]) {
-  return {
-    added: difference(next, prev),
-    removed: difference(prev, next),
-  };
 }
 
 export function hasShiftTimeOverlap(target: SiteShift, shifts: SiteShift[]): boolean {

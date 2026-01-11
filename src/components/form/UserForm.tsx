@@ -53,7 +53,7 @@ export default function UserForm({ editUserObj, congs }: Props) {
   });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20">
       {mutation.isPending && <Loading />}
       <FieldSet>
         <FieldLegend>基本設定</FieldLegend>

@@ -4,55 +4,46 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FieldGroup, FieldLegend, FieldSeparator, FieldSet } from "@/components/ui/field";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
-import { getSetting } from "@/services/setting";
-import { type Site, siteSchema } from "@/types/site";
-import { type SiteShift, siteShiftSchema } from "@/types/siteShift";
+import { createSite, updateSite } from "@/services/site";
+import type { Setting } from "@/types/setting";
+import { siteSchema, type Site } from "@/types/site";
+import { type SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { chain, sortBy } from "lodash-es";
 import { useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { v4 } from "uuid";
-import type z from "zod";
 import SiteShiftCard from "../card/SiteShiftCard";
 import SiteShiftFormDialog from "../dialog/SiteShiftDialog";
 import { SwitchField } from "./fields/SwitchField";
 import { TextAreaField } from "./fields/TextAreaField";
 import { TextField } from "./fields/TextField";
 
-const schema = siteSchema.extend({ siteShifts: siteShiftSchema.array() });
-
 type Props = {
   siteEditObj: Site | null;
-  onSubmit?: (data: Site) => void;
-  siteShifts: SiteShift[];
+  setting: Setting;
 };
 
-export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShifts }: Props) {
-  const { data: setting } = useQuery({
-    queryKey: ["setting"],
-    queryFn: getSetting,
-  });
+export default function SiteForm({ siteEditObj, setting }: Props) {
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<boolean>(true);
-  const [editingSiteShift, setEditingSiteShift] = useState<
+
+  const [editSiteShift, setEditingSiteShift] = useState<
     { mode: "create" } | { mode: "edit"; shift: SiteShift; index: number } | null
   >(null);
-  const siteId = siteEditObj?.id ?? v4();
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: siteEditObj
-      ? {
-          ...siteEditObj,
-          siteShifts,
-        }
-      : {
-          id: siteId,
-          active: true,
-          name: "",
-          description: "",
-          siteShifts: [],
-        },
+  const siteId = siteEditObj?.id ?? v4();
+  const form = useForm<Site>({
+    resolver: zodResolver(siteSchema),
+    defaultValues: siteEditObj || {
+      id: siteId,
+      active: true,
+      name: "",
+      description: "",
+      siteShifts: [],
+    },
   });
 
   const { fields, append, remove, update } = useFieldArray({
@@ -73,9 +64,9 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
   const handleEditShift = (shift: SiteShift, index: number) => setEditingSiteShift({ mode: "edit", shift, index });
 
   const handleSaveShift = (shift: SiteShift) => {
-    if (editingSiteShift === null) return;
-    if (editingSiteShift.mode === "edit") {
-      update(editingSiteShift.index, shift);
+    if (editSiteShift === null) return;
+    if (editSiteShift.mode === "edit") {
+      update(editSiteShift.index, shift);
     } else {
       append(shift);
     }
@@ -90,16 +81,17 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
     const shift = fields[index];
     update(index, { ...shift, active: !shift.active });
   };
-
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    const submitData: Site = {
-      ...data,
-      siteShifts: data.siteShifts.map((s) => s.id),
-    };
-    console.log("提交資料:", { submitData });
-    if (onSubmitProp) {
-      onSubmitProp(submitData);
-    }
+  const mutation = useMutation({
+    mutationFn: (site: Site) => (siteEditObj === null ? createSite(site) : updateSite(site)),
+    onSuccess: () => {
+      toast.success(siteEditObj === null ? "新增地點成功" : "更新地點成功");
+      queryClient.invalidateQueries({ queryKey: ["sites"] });
+      queryClient.invalidateQueries({ queryKey: ["setting"] });
+    },
+    onError: () => toast.error(siteEditObj === null ? "新增失敗" : "更新失敗"),
+  });
+  const onSubmit = (data: Site) => {
+    mutation.mutate(data);
   };
 
   const hasShifts = Object.keys(groupedShifts).length > 0;
@@ -196,11 +188,15 @@ export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShif
         </div>
       </div>
 
-      {setting && editingSiteShift && (
+      {setting && editSiteShift && (
         <SiteShiftFormDialog
           siteId={siteId}
-          existSiteShifts={siteShifts}
-          siteShiftEditObj={editingSiteShift.mode === "edit" ? editingSiteShift.shift : null}
+          existSiteShifts={
+            editSiteShift.mode === "edit"
+              ? form.watch("siteShifts").filter((_, i) => i !== editSiteShift.index)
+              : form.watch("siteShifts")
+          }
+          siteShiftEditObj={editSiteShift.mode === "edit" ? editSiteShift.shift : null}
           onSave={handleSaveShift}
           onOpenChange={() => setEditingSiteShift(null)}
           setting={setting}

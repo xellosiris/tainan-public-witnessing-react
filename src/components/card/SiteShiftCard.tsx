@@ -1,21 +1,10 @@
-import {
-  ClockIcon,
-  PenIcon,
-  Trash2Icon,
-  UsersRoundIcon,
-  VanIcon,
-} from "lucide-react";
 import { WEEKDAY_NAMES } from "@/assets/date";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { SiteShift } from "@/types/siteShift";
+import { ClockIcon, PenIcon, Trash2Icon, UsersRoundIcon, VanIcon } from "lucide-react";
 
 type Props = {
   siteShift: SiteShift;
@@ -24,25 +13,13 @@ type Props = {
   onToggleActive: () => void;
 };
 
-export default function SiteShiftCard({
-  siteShift,
-  onEdit,
-  onDelete,
-  onToggleActive,
-}: Props) {
+export default function SiteShiftCard({ siteShift, onEdit, onDelete, onToggleActive }: Props) {
   return (
-    <Card
-      className={cn(
-        "gap-1 p-2 w-full max-w-xs transition-all",
-        !siteShift.active && "opacity-60 bg-muted/50",
-      )}
-    >
+    <Card className={cn("gap-1 p-2 w-full max-w-xs transition-all", !siteShift.active && "opacity-60 bg-muted/50")}>
       <CardHeader className="p-3 pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Badge variant={siteShift.active ? "default" : "secondary"}>
-              {WEEKDAY_NAMES[siteShift.weekday]}
-            </Badge>
+            <Badge variant={siteShift.active ? "default" : "secondary"}>{WEEKDAY_NAMES[siteShift.weekday]}</Badge>
             {!siteShift.active && (
               <Badge variant="outline" className="text-xs">
                 已停用
@@ -51,6 +28,7 @@ export default function SiteShiftCard({
           </div>
           <div className="flex gap-1">
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               className="w-8 h-8"
@@ -60,6 +38,7 @@ export default function SiteShiftCard({
               <PenIcon className="w-4 h-4" />
             </Button>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               className="w-8 h-8 hover:bg-destructive/10"
@@ -83,9 +62,7 @@ export default function SiteShiftCard({
           <UsersRoundIcon className="size-4 shrink-0" />
           <span>
             人數上限：
-            {siteShift.attendeesLimit !== 0
-              ? `${siteShift.attendeesLimit}人`
-              : "無限制"}
+            {siteShift.attendeesLimit !== 0 ? `${siteShift.attendeesLimit}人` : "無限制"}
           </span>
         </div>
         <div className="flex items-center text-sm gap-2 text-muted-foreground">

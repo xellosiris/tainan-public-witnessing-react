@@ -1,8 +1,19 @@
 import { db } from "@/lib/firebase";
 import type { Setting } from "@/types/setting";
-import type { User, UserKey } from "@/types/user";
+import type { User } from "@/types/user";
 import dayjs from "dayjs";
-import { arrayUnion, collection, doc, getDoc, getDocs, runTransaction, Timestamp } from "firebase/firestore/lite";
+import {
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  runTransaction,
+  Timestamp,
+  where,
+} from "firebase/firestore/lite";
 
 const convertExpiredAt = (data: any): User => {
   if (Object.keys(data).includes("expiredAt")) {
@@ -14,23 +25,10 @@ const convertExpiredAt = (data: any): User => {
   return data;
 };
 
-export const getUserKeys = async (): Promise<UserKey[]> => {
-  const ref = doc(db, "Settings", "settings");
-  const settingDoc = await getDoc(ref);
-  const setting = settingDoc.data() as Setting;
-  return setting.userKeys;
-};
-
 export const getUser = async (id: User["id"]): Promise<User> => {
   const ref = doc(db, "Users", id);
   const userDoc = await getDoc(ref);
   return convertExpiredAt(userDoc.data()) as User;
-};
-
-export const getUsers = async (): Promise<User[]> => {
-  const ref = collection(db, "Users");
-  const userDocs = await getDocs(ref);
-  return userDocs.docs.map((d) => convertExpiredAt(d.data())) as User[];
 };
 
 export const createUser = async (user: User) => {
@@ -87,5 +85,26 @@ export const updateUser = async (user: User) => {
     t.update(settingRef, {
       userKeys: replaceUserKeys,
     });
+  });
+};
+
+export const deleteUser = async (userId: User["id"]): Promise<void> => {
+  await runTransaction(db, async (t) => {
+    const userRef = doc(db, "Users", userId);
+    const settingRef = doc(db, "Settings", "settings");
+
+    const settingSnap = await t.get(settingRef);
+    if (!settingSnap.exists()) {
+      throw new Error("Settings not found");
+    }
+
+    const setting = settingSnap.data() as Setting;
+    const userKeys = setting.userKeys.filter((u) => u.id !== userId);
+    const q = query(collection(db, "Shifts"), where("attendees", "array-contains", userId));
+    const shiftsSnap = await getDocs(q);
+
+    shiftsSnap.docs.forEach((d) => t.update(d.ref, { attendees: arrayRemove(userId) }));
+    t.delete(userRef);
+    t.update(settingRef, { userKeys });
   });
 };

@@ -11,19 +11,17 @@ import {
 import { cn } from "@/lib/utils";
 import type { Schedule } from "@/types/schedule";
 import type { SiteKey } from "@/types/site";
-import type { SiteShift } from "@/types/siteShift";
 import { MinusCircle, Plus, PlusCircle } from "lucide-react";
 import { useState } from "react";
-import ShiftGroupedView from "../form/ShiftGroupedView";
+import SiteShiftList from "../form/SiteShiftList";
 
 type Props = {
-  siteShifts: SiteShift[];
   siteKeys: SiteKey[];
   currentLimits: Schedule["siteShiftLimits"];
   onUpdateLimits: (newLimits: Schedule["siteShiftLimits"]) => void;
 };
 
-export default function SignupSiteShiftDialog({ siteShifts, siteKeys, currentLimits, onUpdateLimits }: Props) {
+export default function SignupSiteShiftDialog({ siteKeys, currentLimits, onUpdateLimits }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [tempLimits, setTempLimits] = useState<Record<string, number>>({});
 
@@ -73,8 +71,7 @@ export default function SignupSiteShiftDialog({ siteShifts, siteKeys, currentLim
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto">
-          <ShiftGroupedView
-            siteShifts={siteShifts}
+          <SiteShiftList
             siteKeys={siteKeys}
             renderShift={(siteShift) => {
               const currentTimes = tempLimits[siteShift.id] || 0;

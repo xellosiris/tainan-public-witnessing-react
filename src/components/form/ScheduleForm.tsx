@@ -3,7 +3,6 @@ import { PERMISSION } from "@/assets/permission";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import { getEnrolledShifts } from "@/lib/shiftUtils";
 import { getScheduleDeadline } from "@/lib/utils";
 import { updateSchedule } from "@/services/schedule";
 import { type Schedule, scheduleSchema } from "@/types/schedule";
@@ -12,7 +11,6 @@ import type { SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useMemo } from "react";
 import { zhTW } from "react-day-picker/locale";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -22,18 +20,19 @@ import { Loading } from "../ui/loading";
 import { AttendeeField } from "./fields/AttendeeField";
 import { DateField } from "./fields/DateField";
 import { SwitchField } from "./fields/SwitchField";
-import ShiftGroupedView from "./ShiftGroupedView";
+import SiteShiftList from "./SiteShiftList";
 
 type Props = {
   editScheduleObj: Schedule | null;
   setting: Setting;
-  siteShifts: SiteShift[];
 };
 
-export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: Props) {
+export default function ScheduleForm({ editScheduleObj, setting }: Props) {
   const { permission } = user;
   const { siteKeys } = setting;
+
   const queryClient = useQueryClient();
+
   const form = useForm<Schedule>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: editScheduleObj
@@ -49,6 +48,7 @@ export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: P
   const onSubmit = (data: Schedule) => {
     mutation.mutate(data);
   };
+
   const mutation = useMutation({
     mutationFn: (schedule: Schedule) => updateSchedule(schedule),
     onSuccess: () => {
@@ -61,8 +61,9 @@ export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: P
     },
     onError: () => toast.error("更新排班失敗", { description: "請再次嘗試" }),
   });
+
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20">
       {mutation.isPending && <Loading />}
       <FieldGroup>
         {permission < PERMISSION.Publisher && (
@@ -125,7 +126,6 @@ export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: P
               control={form.control}
               render={({ field }) => (
                 <SignupSiteShiftDialog
-                  siteShifts={siteShifts}
                   siteKeys={siteKeys}
                   currentLimits={field.value}
                   onUpdateLimits={(newLimits) => {
@@ -139,14 +139,13 @@ export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: P
             name="siteShiftLimits"
             control={form.control}
             render={({ field, fieldState }) => {
-              const enrolledShifts = useMemo(() => {
-                return getEnrolledShifts(field.value, siteShifts).filter((shift) => shift.active);
-              }, [field.value, siteShifts]);
               return (
                 <Field className="p-4 bg-white rounded-md shadow-sm">
-                  <ShiftGroupedView
-                    siteShifts={enrolledShifts}
+                  <SiteShiftList
                     siteKeys={siteKeys}
+                    filterShifts={(shift) =>
+                      field.value[shift.id] !== undefined && field.value[shift.id] > 0 && shift.active
+                    }
                     renderShift={(siteShift: SiteShift) => {
                       const maxTimes = field.value[siteShift.id];
                       return (
@@ -158,7 +157,7 @@ export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: P
                           </div>
                           <div className="text-right">
                             <span className="text-sm text-gray-500">報名次數</span>
-                            <p className="text-2xl font-semibold text-primary">{maxTimes}</p>
+                            <p className="text-2xl font-semibold text-primary">{maxTimes ?? 0}</p>
                           </div>
                         </div>
                       );
@@ -166,7 +165,7 @@ export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: P
                     emptyState={
                       <div className="py-12 text-center text-gray-500">
                         <p>尚未報名任何班次</p>
-                        <p className="mt-2 text-sm">請點擊上方「我要報名」按鈕新增</p>
+                        <p className="mt-2 text-sm">請點擊上方「報名（修改）」按鈕新增</p>
                       </div>
                     }
                   />

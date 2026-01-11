@@ -1,3 +1,4 @@
+import DeleteDialog from "@/components/dialog/DeleteDialog";
 import ScheduleForm from "@/components/form/ScheduleForm";
 import UserForm from "@/components/form/UserForm";
 import ErrorComponent from "@/components/route/ErrorComponent";
@@ -9,12 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { getSchedule } from "@/services/schedule";
 import { getSetting } from "@/services/setting";
-import { getSiteShifts } from "@/services/siteShift";
-import { getUser } from "@/services/user";
-import { useQueries } from "@tanstack/react-query";
+import { deleteUser, getUser } from "@/services/user";
+import type { User } from "@/types/user";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createLazyFileRoute("/_assistantAuthLayout/users")({
   component: Users,
@@ -23,16 +25,15 @@ export const Route = createLazyFileRoute("/_assistantAuthLayout/users")({
 function Users() {
   const [userId, setUserId] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+  const queryClient = useQueryClient();
   const results = useQueries({
     queries: [
       {
         queryKey: ["setting"],
         queryFn: getSetting,
       },
-      {
-        queryKey: ["siteShifts"],
-        queryFn: getSiteShifts,
-      },
+
       {
         queryKey: ["users", userId],
         queryFn: () => getUser(userId),
@@ -46,23 +47,41 @@ function Users() {
     ],
     combine: (results) => ({
       setting: results[0].data,
-      siteShifts: results[1].data,
-      user: results[2].data,
-      schedule: results[3].data,
+      user: results[1].data,
+      schedule: results[2].data,
 
-      isInitialLoading: results[0].isLoading || results[1].isLoading,
-      isUserLoading: results[2].isLoading || results[3].isLoading,
+      isInitialLoading: results[0].isLoading,
+      isUserLoading: results[1].isLoading || results[2].isLoading,
     }),
   });
 
-  const { user, siteShifts, schedule, setting, isInitialLoading, isUserLoading } = results;
+  const { user, schedule, setting, isInitialLoading, isUserLoading } = results;
+  const onClose = () => {
+    setOpenDel(false);
+  };
+
+  const mutation = useMutation({
+    mutationFn: (userId: User["id"]) => deleteUser(userId),
+    onSuccess: () => {
+      toast.success("刪除成功");
+      queryClient.invalidateQueries({ queryKey: ["setting"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["shifts"] });
+    },
+    onError: () => toast.error("刪除失敗"),
+    onSettled: onClose,
+  });
+  const onDelete = (userId: User["id"]) => {
+    mutation.mutate(userId);
+    setUserId("");
+  };
   if (isInitialLoading) return <Loading />;
   if (!setting) return <ErrorComponent />;
 
   const { userKeys, congs } = setting;
-  console.log({ user, schedule, congs, siteShifts });
   return (
     <div className="max-w-4xl space-y-4">
+      {mutation.isPending && <Loading />}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -106,23 +125,37 @@ function Users() {
         </PopoverContent>
       </Popover>
       {isUserLoading && <Loading />}
-      {user && schedule && congs && siteShifts && (
-        <Tabs defaultValue="user">
-          <TabsList>
-            <TabsTrigger value="user" disabled={!userId}>
-              基本資料
-            </TabsTrigger>
-            <TabsTrigger value="schedule" disabled={!userId}>
-              排班設定
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="user" className="max-w-3xl">
-            <UserForm key={user.id} editUserObj={user} congs={congs} />
-          </TabsContent>
-          <TabsContent value="schedule" className="max-w-3xl">
-            <ScheduleForm key={user.id} editScheduleObj={schedule} siteShifts={siteShifts} setting={setting} />
-          </TabsContent>
-        </Tabs>
+      {user && schedule && congs && (
+        <>
+          <Tabs defaultValue="user">
+            <div className="flex flex-wrap gap-2">
+              <TabsList>
+                <TabsTrigger value="user" disabled={!userId}>
+                  基本資料
+                </TabsTrigger>
+                <TabsTrigger value="schedule" disabled={!userId}>
+                  排班設定
+                </TabsTrigger>
+              </TabsList>
+              <Button onClick={() => setOpenDel(true)}>刪除人員</Button>
+            </div>
+            <TabsContent value="user">
+              <UserForm key={user.id} editUserObj={user} congs={congs} />
+            </TabsContent>
+            <TabsContent value="schedule">
+              <ScheduleForm key={user.id} editScheduleObj={schedule} setting={setting} />
+            </TabsContent>
+          </Tabs>
+          {openDel && (
+            <DeleteDialog
+              title="刪除成員"
+              description={`你確定要刪除${user.displayName}嗎？`}
+              confirmText={user.displayName}
+              onClose={onClose}
+              deleteFn={() => onDelete(userId)}
+            />
+          )}
+        </>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import SiteDialog from "@/components/dialog/SiteDialog";
+import DeleteDialog from "@/components/dialog/DeleteDialog";
 import SiteForm from "@/components/form/SiteForm";
 import ErrorComponent from "@/components/route/ErrorComponent";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getSetting } from "@/services/setting";
-import { getSite } from "@/services/site";
-import { getSiteShift } from "@/services/siteShift";
-import { useQueries } from "@tanstack/react-query";
+import { deleteSite, getSite } from "@/services/site";
+import type { Site } from "@/types/site";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createLazyFileRoute("/_overseerAuthLayout/sites")({
   component: Sites,
@@ -26,8 +27,9 @@ export const Route = createLazyFileRoute("/_overseerAuthLayout/sites")({
 
 function Sites() {
   const [siteId, setSiteId] = useState<string>("");
-  const [open, setOpen] = useState<boolean>(false);
-
+  const [editSiteObj, setEditSiteObj] = useState<Site | null | undefined>(undefined);
+  const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
   const results = useQueries({
     queries: [
       {
@@ -39,33 +41,52 @@ function Sites() {
         queryFn: () => getSite(siteId),
         enabled: !!siteId,
       },
-      {
-        queryKey: ["siteShifts", siteId],
-        queryFn: () => getSiteShift(siteId),
-        enabled: !!siteId,
-      },
     ],
     combine: (result) => ({
       setting: result[0].data,
       site: result[1].data,
-      siteShifts: result[2].data,
-      isLoading: result[0].isLoading || result[1].isLoading || result[2].isLoading,
+      isLoading: result[0].isLoading || result[1].isLoading,
     }),
   });
 
-  const { setting, site, siteShifts, isLoading } = results;
+  const { setting, site, isLoading } = results;
 
-  if (isLoading) return <Loading />;
+  useEffect(() => {
+    setEditSiteObj(site);
+  }, [site]);
 
-  const onSelectSite = (siteId: string) => {
-    setSiteId(siteId);
+  const onCreate = () => {
+    setEditSiteObj(null);
   };
 
-  if (!setting || (siteId && !site)) return <ErrorComponent />;
+  const onSelectSite = (id: Site["id"]) => {
+    setSiteId(id);
+  };
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const mutation = useMutation({
+    mutationFn: (siteId: Site["id"]) => deleteSite(siteId),
+    onSuccess: () => {
+      toast.success("刪除成功");
+      queryClient.invalidateQueries({ queryKey: ["setting"] });
+      queryClient.invalidateQueries({ queryKey: ["sites"] });
+    },
+    onError: () => toast.error("刪除失敗"),
+    onSettled: onClose,
+  });
+  const onDelete = () => {
+    mutation.mutate(siteId);
+    setSiteId("");
+  };
+  if (isLoading) return <Loading />;
+  if (!setting) return <ErrorComponent />;
   const { siteKeys } = setting;
 
   return (
     <div className="flex flex-col max-w-3xl gap-8">
+      {mutation.isPending && <Loading />}
       <div className="flex items-end gap-2">
         <div className="flex flex-col gap-1.5">
           <Label>地點</Label>
@@ -85,11 +106,23 @@ function Sites() {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={() => setOpen(true)}>新增</Button>
+        <Button onClick={onCreate}>新增</Button>
+        {siteId && (
+          <Button variant={"destructive"} onClick={() => setOpen(true)}>
+            刪除
+          </Button>
+        )}
       </div>
-
-      {siteId && site && <SiteForm key={site.id} siteEditObj={site} siteShifts={siteShifts!} />}
-      {open && <SiteDialog onClose={() => setOpen(false)} />}
+      {editSiteObj !== undefined && <SiteForm key={editSiteObj?.id} siteEditObj={editSiteObj} setting={setting} />}
+      {open && (
+        <DeleteDialog
+          title="刪除地點"
+          description="你確定要刪除該地點嗎？這會刪除所有相關班次"
+          confirmText={siteKeys.find((s) => s.id === siteId)?.name!}
+          deleteFn={onDelete}
+          onClose={onClose}
+        />
+      )}
     </div>
   );
 }

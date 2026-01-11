@@ -1,3 +1,4 @@
+import { WEEKDAY_OPTIONS } from "@/assets/date";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FieldGroup } from "@/components/ui/field";
@@ -11,16 +12,6 @@ import { NumberField } from "../form/fields/NumberInput";
 import { SelectField } from "../form/fields/SelectField";
 import { SwitchField } from "../form/fields/SwitchField";
 import { TimeField } from "../form/fields/TimeField";
-
-const weekdayOptions = [
-  { id: "0", name: "週一" },
-  { id: "1", name: "週二" },
-  { id: "2", name: "週三" },
-  { id: "3", name: "週四" },
-  { id: "4", name: "週五" },
-  { id: "5", name: "週六" },
-  { id: "6", name: "週日" },
-];
 
 type Props = {
   siteId: string;
@@ -55,7 +46,6 @@ export default function SiteShiftFormDialog({
   });
 
   const handleSubmit = (data: SiteShift) => {
-    console.log({ data });
     onSave(data);
   };
 
@@ -68,7 +58,7 @@ export default function SiteShiftFormDialog({
 
         <FieldGroup>
           <SwitchField name="active" label="啟用此班次" control={form.control} />
-          <SelectField name="weekday" label="星期" control={form.control} options={weekdayOptions} valueAsNumber />
+          <SelectField name="weekday" label="星期" control={form.control} options={WEEKDAY_OPTIONS} valueAsNumber />
           <div className="grid grid-cols-2 gap-4">
             <TimeField name="startTime" label="開始時間" control={form.control} />
             <TimeField name="endTime" label="結束時間" control={form.control} />

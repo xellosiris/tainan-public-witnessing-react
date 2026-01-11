@@ -1,10 +1,10 @@
-import * as z from "zod";
 import { hasShiftTimeOverlap } from "@/lib/shiftUtils";
+import * as z from "zod";
 
 export const siteShiftSchema = z
   .object({
-    id: z.string().uuid(),
-    siteId: z.string().uuid(),
+    id: z.uuid(),
+    siteId: z.uuid(),
     active: z.boolean(),
     attendeesLimit: z.number().int().nonnegative(),
     startTime: z.string().nonempty(),
