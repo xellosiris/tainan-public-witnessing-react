@@ -1,3 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { FieldGroup, FieldSeparator, FieldSet } from "@/components/ui/field";
+import { createShift, updateShift } from "@/services/shift";
+import { type Shift, shiftSchema } from "@/types/shift";
+import type { SiteKey } from "@/types/site";
+import { type UserKey, userKeySchema } from "@/types/user";
 import {
   closestCenter,
   DndContext,
@@ -8,28 +14,22 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { v4 } from "uuid";
 import type z from "zod";
-import { Button } from "@/components/ui/button";
-import { FieldGroup, FieldSeparator, FieldSet } from "@/components/ui/field";
-import { type Shift, shiftSchema } from "@/types/shift";
-import type { SiteKey } from "@/types/site";
-import { type UserKey, userKeySchema } from "@/types/user";
 import { AttendeesField } from "../form/fields/AttendeesField";
 import { DateField } from "../form/fields/DateField";
 import { NumberField } from "../form/fields/NumberInput";
 import { SelectField } from "../form/fields/SelectField";
 import { SwitchField } from "../form/fields/SwitchField";
 import { TimeField } from "../form/fields/TimeField";
+import { Loading } from "../ui/loading";
 
 export const schema = shiftSchema
   .extend({
@@ -39,11 +39,23 @@ export const schema = shiftSchema
     ...data,
     expiredAt: dayjs(data.date).add(6, "months").toDate(),
     yearMonth: dayjs(data.date).format("YYYY-MM"),
-    isFull:
-      data.attendeesLimit !== 0
-        ? data.attendees.length >= data.attendeesLimit
-        : false,
-  }));
+    isFull: data.attendeesLimit !== 0 ? data.attendees.length >= data.attendeesLimit : false,
+  }))
+  .refine(
+    (data) =>
+      (data.attendeesLimit !== 0 && data.requiredDeliverers <= data.attendeesLimit) || data.attendeesLimit === 0,
+    {
+      message: "搬運者超過上限",
+      path: ["attendeesLimit"],
+    }
+  )
+  .refine(
+    (data) => (data.attendeesLimit !== 0 && data.attendees.length <= data.attendeesLimit) || data.attendeesLimit === 0,
+    {
+      message: "參加者超過上限",
+      path: ["attendeesLimit"],
+    }
+  );
 
 type Props = {
   editShiftObj: Shift | null;
@@ -52,20 +64,14 @@ type Props = {
   onClose: () => void;
 };
 
-export default function ShiftForm({
-  editShiftObj,
-  siteKeys,
-  userKeys,
-  onClose,
-}: Props) {
+export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }: Props) {
+  const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: editShiftObj
       ? {
           ...editShiftObj,
-          attendees: editShiftObj.attendees.map((attendee) =>
-            userKeys.find((u) => u.id === attendee),
-          ),
+          attendees: editShiftObj.attendees.map((attendee) => userKeys.find((u) => u.id === attendee)),
         }
       : {
           id: v4(),
@@ -90,12 +96,12 @@ export default function ShiftForm({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 移動 8px 後才開始拖移，避免誤觸
+        distance: 8,
       },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   const handleAddAttendee = () => {
@@ -125,20 +131,28 @@ export default function ShiftForm({
       ...data,
       attendees: data.attendees.map((attendee) => attendee.id),
     };
-    console.log({ shift });
-    onClose();
+    mutation.mutate(shift);
   };
+
+  const mutation = useMutation({
+    mutationFn: async (shift: Shift) => (editShiftObj ? updateShift(shift) : createShift(shift)),
+    onSuccess: () => {
+      toast.success(editShiftObj ? "更新班次成功" : "新增班次成功");
+      queryClient.invalidateQueries({
+        queryKey: ["shifts"],
+      });
+    },
+    onError: () => toast.error(editShiftObj ? "更新班次失敗" : "新增班次失敗"),
+    onSettled: onClose,
+  });
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
+      {mutation.isPending && <Loading />}
       <FieldGroup>
-        <FieldSet>
+        <FieldSet className="p-4 bg-white rounded-md shadow-sm">
           <FieldGroup>
-            <SwitchField
-              control={form.control}
-              name="active"
-              label="啟用班次"
-            />
+            <SwitchField control={form.control} name="active" label="啟用班次" />
             <div className="grid grid-cols-2 gap-4">
               <DateField control={form.control} name="date" label="日期" />
               <SelectField
@@ -150,42 +164,22 @@ export default function ShiftForm({
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <TimeField
-                control={form.control}
-                name="startTime"
-                label="開始時間"
-                placeholder="請輸入開始時間"
-              />
-              <TimeField
-                control={form.control}
-                name="endTime"
-                label="結束時間"
-                placeholder="請輸入結束時間"
-              />
+              <TimeField control={form.control} name="startTime" label="開始時間" placeholder="請輸入開始時間" />
+              <TimeField control={form.control} name="endTime" label="結束時間" placeholder="請輸入結束時間" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <NumberField
-                control={form.control}
-                name="attendeesLimit"
-                label="人數上限（0表示無限制)"
-              />
-              <NumberField
-                control={form.control}
-                name="requiredDeliverers"
-                label="需要搬運人員"
-              />
+              <NumberField control={form.control} name="attendeesLimit" label="人數上限（0表示無限制)" />
+              <NumberField control={form.control} name="requiredDeliverers" label="需要搬運人員" />
             </div>
           </FieldGroup>
         </FieldSet>
         <FieldSeparator>參與人員</FieldSeparator>
-        <FieldSet>
+        <FieldSet className="p-4 bg-white rounded-md shadow-sm">
           <FieldGroup>
             <div className="space-y-2">
               {fields.length === 0 ? (
-                <p className="py-4 text-sm text-center text-muted-foreground">
-                  尚無參與者，點擊下方按鈕新增
-                </p>
+                <p className="py-4 text-sm text-center text-muted-foreground">尚無參與者，點擊下方按鈕新增</p>
               ) : (
                 <DndContext
                   sensors={sensors}
@@ -193,10 +187,7 @@ export default function ShiftForm({
                   modifiers={[restrictToVerticalAxis]}
                   onDragEnd={handleDragEnd}
                 >
-                  <SortableContext
-                    items={fields.map((field) => field.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
+                  <SortableContext items={fields.map((field) => field.id)} strategy={verticalListSortingStrategy}>
                     {fields.map((field, index) => (
                       <AttendeesField
                         key={field.id}
@@ -224,7 +215,7 @@ export default function ShiftForm({
           </FieldGroup>
         </FieldSet>
       </FieldGroup>
-      <Button type="submit" className="w-full mt-5">
+      <Button type="submit" className="w-full mt-5" disabled={mutation.isPending || !form.formState.isDirty}>
         提交
       </Button>
     </form>

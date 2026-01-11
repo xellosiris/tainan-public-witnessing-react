@@ -1,25 +1,24 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { v4 } from "uuid";
-import { CONGS } from "@/assets/mock";
 import { PERMISSIONS_OPTIONS } from "@/assets/permission";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
+import { createUser, updateUser } from "@/services/user";
+import type { Cong } from "@/types/congregation";
 import { type User, userSchema } from "@/types/user";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "../ui/item";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { v4 } from "uuid";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
+import { Loading } from "../ui/loading";
 import { SelectField } from "./fields/SelectField";
 import { SwitchField } from "./fields/SwitchField";
 import { TextAreaField } from "./fields/TextAreaField";
 import { TextField } from "./fields/TextField";
 
-type Props = { editUserObj: User | null };
-export default function UserForm({ editUserObj }: Props) {
+type Props = { editUserObj: User | null; congs: Cong[] };
+export default function UserForm({ editUserObj, congs }: Props) {
+  const queryClient = useQueryClient();
   const form = useForm<User>({
     resolver: zodResolver(userSchema),
     defaultValues: editUserObj
@@ -36,16 +35,29 @@ export default function UserForm({ editUserObj }: Props) {
           bindCode: "",
         },
   });
-
   const onSubmit = (data: User) => {
-    console.log({ data });
+    mutation.mutate(data);
   };
+
+  const mutation = useMutation({
+    mutationFn: (user: User) => (editUserObj ? updateUser(user) : createUser(user)),
+    onSuccess: (_, user) => {
+      toast.success(editUserObj ? `更新成功` : `新增成功`, {
+        description: `${user.displayName}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["setting"] });
+      queryClient.invalidateQueries({ queryKey: ["schedule"] });
+    },
+    onError: () => toast.error(editUserObj ? "更新失敗" : "新增失敗"),
+  });
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
+      {mutation.isPending && <Loading />}
       <FieldSet>
         <FieldLegend>基本設定</FieldLegend>
-        <FieldGroup className="p-4 bg-white gap-3 rounded-md shadow-sm">
+        <FieldGroup className="gap-3 p-4 bg-white rounded-md shadow-sm">
           <Item variant="outline">
             <ItemContent>
               <ItemTitle>人員啟用</ItemTitle>
@@ -59,13 +71,19 @@ export default function UserForm({ editUserObj }: Props) {
               <SwitchField name="active" label="啟用" control={form.control} />
             </ItemActions>
           </Item>
-          <div className="grid grid-cols-3 gap-1.5">
-            <TextField
-              name="displayName"
-              label="顯示名稱"
-              control={form.control}
-            />
-            <TextField name="name" label="姓名" control={form.control} />
+
+          <Item variant="outline">
+            <ItemContent>
+              <ItemTitle>系統顯示名稱</ItemTitle>
+              <ItemDescription>為了避免撞名，這是系統上顯示你的名字。若需要修改請聯繫管理員</ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <TextField name="displayName" label="名稱" control={form.control} />
+            </ItemActions>
+          </Item>
+
+          <div className="grid grid-cols-2 gap-1.5">
+            <TextField name="name" label="實際姓名" control={form.control} />
             <SelectField
               name="gender"
               label="性別"
@@ -76,23 +94,10 @@ export default function UserForm({ editUserObj }: Props) {
               control={form.control}
             />
           </div>
-          <SelectField
-            name="congId"
-            label="會眾"
-            options={CONGS}
-            control={form.control}
-          />
+          <SelectField name="congId" label="會眾" options={congs} control={form.control} />
           <div className="grid grid-cols-2 gap-1.5">
-            <TextField
-              name="cellphone"
-              label="行動電話"
-              control={form.control}
-            />
-            <TextField
-              name="telephone"
-              label="室內電話"
-              control={form.control}
-            />
+            <TextField name="cellphone" label="行動電話" control={form.control} />
+            <TextField name="telephone" label="室內電話" control={form.control} />
           </div>
           <SelectField
             name="permission"
@@ -111,6 +116,7 @@ export default function UserForm({ editUserObj }: Props) {
             onClick={form.handleSubmit(onSubmit)}
             className="w-full"
             size="lg"
+            disabled={mutation.isPending || !form.formState.isDirty}
           >
             儲存
           </Button>

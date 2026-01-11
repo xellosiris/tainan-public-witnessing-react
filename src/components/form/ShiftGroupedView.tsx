@@ -14,13 +14,7 @@ type Props = {
   className?: string;
 };
 
-export default function ShiftGroupedView({
-  siteShifts,
-  siteKeys,
-  renderShift,
-  emptyState,
-  className = "",
-}: Props) {
+export default function ShiftGroupedView({ siteShifts, siteKeys, renderShift, emptyState, className = "" }: Props) {
   // 使用工具函式按地點和星期分組
   const groupedShifts = useMemo(() => {
     return groupShiftsBySiteAndWeekday(siteShifts);

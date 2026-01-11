@@ -1,20 +1,12 @@
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FieldGroup } from "@/components/ui/field";
+import type { Setting } from "@/types/setting";
+import { type SiteShift, siteShiftSchemaWithOverlapCheck } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import type z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { FieldGroup } from "@/components/ui/field";
-import {
-  type SiteShift,
-  siteShiftSchemaWithOverlapCheck,
-} from "@/types/siteShift";
 import { NumberField } from "../form/fields/NumberInput";
 import { SelectField } from "../form/fields/SelectField";
 import { SwitchField } from "../form/fields/SwitchField";
@@ -36,6 +28,7 @@ type Props = {
   onOpenChange: () => void;
   siteShiftEditObj: SiteShift | null;
   onSave: (shift: SiteShift) => void;
+  setting: Setting;
 };
 
 export default function SiteShiftFormDialog({
@@ -44,6 +37,7 @@ export default function SiteShiftFormDialog({
   onOpenChange,
   siteShiftEditObj,
   onSave,
+  setting,
 }: Props) {
   const schema = siteShiftSchemaWithOverlapCheck(existSiteShifts);
   const form = useForm<z.infer<typeof schema>>({
@@ -52,11 +46,11 @@ export default function SiteShiftFormDialog({
       id: v4(),
       siteId,
       active: true,
-      attendeesLimit: 4,
+      attendeesLimit: setting.defaultAttendeesLimit,
       startTime: "09:00",
       endTime: "17:00",
       weekday: 6,
-      requiredDeliverers: 0,
+      requiredDeliverers: setting.defaultRequiredDeliverers,
     },
   });
 
@@ -69,43 +63,19 @@ export default function SiteShiftFormDialog({
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-106 max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {siteShiftEditObj ? "編輯班次" : "新增班次"}
-          </DialogTitle>
+          <DialogTitle>{siteShiftEditObj ? "編輯班次" : "新增班次"}</DialogTitle>
         </DialogHeader>
 
         <FieldGroup>
-          <SwitchField
-            name="active"
-            label="啟用此班次"
-            control={form.control}
-          />
-          <SelectField
-            name="weekday"
-            label="星期"
-            control={form.control}
-            options={weekdayOptions}
-            valueAsNumber
-          />
+          <SwitchField name="active" label="啟用此班次" control={form.control} />
+          <SelectField name="weekday" label="星期" control={form.control} options={weekdayOptions} valueAsNumber />
           <div className="grid grid-cols-2 gap-4">
-            <TimeField
-              name="startTime"
-              label="開始時間"
-              control={form.control}
-            />
+            <TimeField name="startTime" label="開始時間" control={form.control} />
             <TimeField name="endTime" label="結束時間" control={form.control} />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <NumberField
-              name="attendeesLimit"
-              label="人數上限"
-              control={form.control}
-            />
-            <NumberField
-              name="requiredDeliverers"
-              label="參與運送人數"
-              control={form.control}
-            />
+            <NumberField name="attendeesLimit" label="人數上限" control={form.control} />
+            <NumberField name="requiredDeliverers" label="參與運送人數" control={form.control} />
           </div>
         </FieldGroup>
         <DialogFooter className="gap-2">

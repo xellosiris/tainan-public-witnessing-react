@@ -10,7 +10,22 @@ import { routeTree } from "./routeTree.gen";
 dayjs.extend(timezone);
 dayjs.locale("zh-tw");
 dayjs.tz.setDefault("Asia/Taipei");
-const queryClient = new QueryClient();
+
+export const user = {
+  id: "00cf91ce-f962-4025-837a-7b47453406dc",
+  displayName: "葉逸邱（假）",
+  permission: 0,
+};
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {

@@ -1,7 +1,7 @@
-import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
+import path from "node:path";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import { compression } from "vite-plugin-compression2";
@@ -16,6 +16,7 @@ export default defineConfig({
     tailwindcss(),
     analyzer({
       analyzerMode: "static",
+      openAnalyzer: true,
     }),
     compression({
       algorithms: ["brotli"],
@@ -32,45 +33,24 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          if (
-            id.includes("node_modules/react") ||
-            id.includes("node_modules/react-dom")
-          ) {
+          if (id.includes("react-hook-form") || id.includes("zod") || id.includes("@hookform")) {
+            return "form-vendor";
+          }
+          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
             return "react-vendor";
           }
-          if (
-            id.includes("@tanstack/react-router") ||
-            id.includes("@tanstack/react-query") ||
-            id.includes("@tanstack/router-core") ||
-            id.includes("@tanstack/query-cord")
-          ) {
-            return "tanstack-router-query";
+          if (id.includes("@tanstack")) {
+            return "tanstack";
           }
-          if (
-            id.includes("@tanstack/react-router") ||
-            id.includes("@tanstack/table-core")
-          ) {
-            return "tanstack-table";
-          }
-
           if (id.includes("firebase")) {
             return "firebase";
           }
-
           if (id.includes("lodash-es")) {
             return "lodash-es";
           }
 
           if (id.includes("@radix-ui")) {
             return "radix-ui";
-          }
-
-          if (
-            id.includes("react-hook-form") ||
-            id.includes("zod") ||
-            id.includes("@hookform")
-          ) {
-            return "form-vendor";
           }
 
           if (id.includes("@dnd-kit")) {

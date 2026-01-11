@@ -1,28 +1,19 @@
+import { WEEKDAY_NAMES } from "@/assets/date";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FieldGroup, FieldLegend, FieldSeparator, FieldSet } from "@/components/ui/field";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
+import { Label } from "@/components/ui/label";
+import { getSetting } from "@/services/setting";
+import { type Site, siteSchema } from "@/types/site";
+import { type SiteShift, siteShiftSchema } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { chain, sortBy } from "lodash-es";
 import { useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import type z from "zod";
-import { WEEKDAY_NAMES } from "@/assets/date";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  FieldGroup,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-} from "@/components/ui/field";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item";
-import { Label } from "@/components/ui/label";
-import { type Site, siteSchema } from "@/types/site";
-import { type SiteShift, siteShiftSchema } from "@/types/siteShift";
 import SiteShiftCard from "../card/SiteShiftCard";
 import SiteShiftFormDialog from "../dialog/SiteShiftDialog";
 import { SwitchField } from "./fields/SwitchField";
@@ -37,16 +28,14 @@ type Props = {
   siteShifts: SiteShift[];
 };
 
-export default function SiteForm({
-  siteEditObj,
-  onSubmit: onSubmitProp,
-  siteShifts,
-}: Props) {
-  const [filter, setFilter] = useState<boolean>(false);
+export default function SiteForm({ siteEditObj, onSubmit: onSubmitProp, siteShifts }: Props) {
+  const { data: setting } = useQuery({
+    queryKey: ["setting"],
+    queryFn: getSetting,
+  });
+  const [filter, setFilter] = useState<boolean>(true);
   const [editingSiteShift, setEditingSiteShift] = useState<
-    | { mode: "create" }
-    | { mode: "edit"; shift: SiteShift; index: number }
-    | null
+    { mode: "create" } | { mode: "edit"; shift: SiteShift; index: number } | null
   >(null);
   const siteId = siteEditObj?.id ?? v4();
 
@@ -81,8 +70,7 @@ export default function SiteForm({
 
   const handleAddShift = () => setEditingSiteShift({ mode: "create" });
 
-  const handleEditShift = (shift: SiteShift, index: number) =>
-    setEditingSiteShift({ mode: "edit", shift, index });
+  const handleEditShift = (shift: SiteShift, index: number) => setEditingSiteShift({ mode: "edit", shift, index });
 
   const handleSaveShift = (shift: SiteShift) => {
     if (editingSiteShift === null) return;
@@ -123,24 +111,14 @@ export default function SiteForm({
             <FieldLegend>基本資訊</FieldLegend>
             <FieldGroup className="p-4 bg-white rounded-md shadow-sm">
               <TextField name="name" label="地點名稱" control={form.control} />
-              <TextAreaField
-                name="description"
-                label="地點描述"
-                control={form.control}
-              />
+              <TextAreaField name="description" label="地點描述" control={form.control} />
               <Item variant="outline">
                 <ItemContent>
                   <ItemTitle>啟用地點</ItemTitle>
-                  <ItemDescription>
-                    啟用後，一般成員可以看到且報名排班
-                  </ItemDescription>
+                  <ItemDescription>啟用後，一般成員可以看到且報名排班</ItemDescription>
                 </ItemContent>
                 <ItemActions>
-                  <SwitchField
-                    name="active"
-                    label="啟用"
-                    control={form.control}
-                  />
+                  <SwitchField name="active" label="啟用" control={form.control} />
                 </ItemActions>
               </Item>
             </FieldGroup>
@@ -155,15 +133,8 @@ export default function SiteForm({
             </div>
 
             <div className="flex items-center mb-4 gap-3">
-              <Checkbox
-                id="filter"
-                checked={filter}
-                onCheckedChange={(checked) => setFilter(!!checked)}
-              />
-              <Label
-                htmlFor="filter"
-                className="text-sm cursor-pointer select-none"
-              >
+              <Checkbox id="filter" checked={filter} onCheckedChange={(checked) => setFilter(!!checked)} />
+              <Label htmlFor="filter" className="text-sm cursor-pointer select-none">
                 隱藏未啟用的班次
               </Label>
             </div>
@@ -171,11 +142,8 @@ export default function SiteForm({
             {!hasShifts ? (
               <div className="py-12 text-center">
                 <p className="text-sm text-muted-foreground">
-                  {filter &&
-                    fields.length > 0 &&
-                    "所有班次都已停用，請取消篩選查看或啟用班次"}
-                  {!(filter && fields.length > 0) &&
-                    "尚無安排班次，請點擊上方按鈕新增第一個班次"}
+                  {filter && fields.length > 0 && "所有班次都已停用，請取消篩選查看或啟用班次"}
+                  {!(filter && fields.length > 0) && "尚無安排班次，請點擊上方按鈕新增第一個班次"}
                 </p>
               </div>
             ) : (
@@ -190,20 +158,14 @@ export default function SiteForm({
                       </h3>
                       <div className="flex flex-wrap p-4 bg-white gap-4 rounded-md shadow-sm">
                         {shiftsForDay.map((field) => {
-                          const originalIndex = fields.findIndex(
-                            (f) => f.id === field.id,
-                          );
+                          const originalIndex = fields.findIndex((f) => f.id === field.id);
                           return (
                             <SiteShiftCard
                               key={field.id}
                               siteShift={field}
-                              onEdit={() =>
-                                handleEditShift(field, originalIndex)
-                              }
+                              onEdit={() => handleEditShift(field, originalIndex)}
                               onDelete={() => handleDeleteShift(originalIndex)}
-                              onToggleActive={() =>
-                                handleToggleShiftActive(originalIndex)
-                              }
+                              onToggleActive={() => handleToggleShiftActive(originalIndex)}
                             />
                           );
                         })}
@@ -220,10 +182,7 @@ export default function SiteForm({
           <div className="text-sm text-center text-muted-foreground">
             共 {fields.length} 個班次
             {filter && fields.filter((s) => !s.active).length > 0 && (
-              <span>
-                {" "}
-                · 隱藏 {fields.filter((s) => !s.active).length} 個已停用班次
-              </span>
+              <span> · 隱藏 {fields.filter((s) => !s.active).length} 個已停用班次</span>
             )}
           </div>
         )}
@@ -237,15 +196,14 @@ export default function SiteForm({
         </div>
       </div>
 
-      {editingSiteShift && (
+      {setting && editingSiteShift && (
         <SiteShiftFormDialog
           siteId={siteId}
           existSiteShifts={siteShifts}
-          siteShiftEditObj={
-            editingSiteShift.mode === "edit" ? editingSiteShift.shift : null
-          }
+          siteShiftEditObj={editingSiteShift.mode === "edit" ? editingSiteShift.shift : null}
           onSave={handleSaveShift}
           onOpenChange={() => setEditingSiteShift(null)}
+          setting={setting}
         />
       )}
     </form>

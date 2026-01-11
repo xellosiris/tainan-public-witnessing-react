@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getNextDeadlineDate = (dayOfMonth: number) => {
+export const getScheduleDeadline = (dayOfMonth: number) => {
   const makeDate = (monthsToAdd: number) => {
     const d = dayjs().add(monthsToAdd, "month");
     const lastDay = d.endOf("month").date();

@@ -25,7 +25,7 @@ export default function ShiftDialog({ editShiftObj, onClose }: Props) {
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{editShiftObj ? "編輯" : "新增"}班次</DialogTitle>
           <DialogDescription>班次的設定與參與人員</DialogDescription>

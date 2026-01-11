@@ -1,29 +1,24 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { user } from "@/App";
+import { PERMISSION } from "@/assets/permission";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item";
+import { Field, FieldError, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { getEnrolledShifts } from "@/lib/shiftUtils";
-import { getNextDeadlineDate } from "@/lib/utils";
-import { getSetting } from "@/services/setting";
+import { getScheduleDeadline } from "@/lib/utils";
+import { updateSchedule } from "@/services/schedule";
 import { type Schedule, scheduleSchema } from "@/types/schedule";
-import type { SiteKey } from "@/types/site";
+import type { Setting } from "@/types/setting";
 import type { SiteShift } from "@/types/siteShift";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import { useMemo } from "react";
+import { zhTW } from "react-day-picker/locale";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import SignupShiftDialog from "../dialog/SignupShiftDialog";
+import { Calendar } from "../ui/calendar";
+import { Loading } from "../ui/loading";
 import { AttendeeField } from "./fields/AttendeeField";
 import { DateField } from "./fields/DateField";
 import { SwitchField } from "./fields/SwitchField";
@@ -31,19 +26,14 @@ import ShiftGroupedView from "./ShiftGroupedView";
 
 type Props = {
   editScheduleObj: Schedule | null;
-  siteKeys: SiteKey[];
+  setting: Setting;
   siteShifts: SiteShift[];
 };
 
-export default function ScheduleForm({
-  editScheduleObj,
-  siteKeys,
-  siteShifts,
-}: Props) {
-  const { data: setting } = useSuspenseQuery({
-    queryKey: ["setting"],
-    queryFn: getSetting,
-  });
+export default function ScheduleForm({ editScheduleObj, setting, siteShifts }: Props) {
+  const { permission } = user;
+  const { siteKeys } = setting;
+  const queryClient = useQueryClient();
   const form = useForm<Schedule>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: editScheduleObj
@@ -57,45 +47,76 @@ export default function ScheduleForm({
   });
 
   const onSubmit = (data: Schedule) => {
-    console.log({ data });
-    alert(`下次生效日：${getNextDeadlineDate(3).format("YYYY-MM-DD")}`);
+    mutation.mutate(data);
   };
-
+  const mutation = useMutation({
+    mutationFn: (schedule: Schedule) => updateSchedule(schedule),
+    onSuccess: () => {
+      toast.success("更新排班成功", {
+        description: `排班生效日：${getScheduleDeadline(setting.scheduleDayOfMonth).format("YYYY-MM-DD")}`,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["schedule"],
+      });
+    },
+    onError: () => toast.error("更新排班失敗", { description: "請再次嘗試" }),
+  });
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
+      {mutation.isPending && <Loading />}
       <FieldGroup>
-        <FieldSet>
-          <FieldLegend>排班設定</FieldLegend>
-          <FieldGroup className="p-4 bg-white rounded-md shadow-sm">
-            <Item variant="outline">
-              <ItemContent>
-                <ItemTitle>參與排班</ItemTitle>
-                <ItemDescription>
-                  啟用後，會參與自動排班。關閉後，使用者會暫停排班
-                </ItemDescription>
-              </ItemContent>
-              <ItemActions>
-                <SwitchField
-                  name="canSchedule"
-                  label="啟用"
-                  control={form.control}
-                />
-              </ItemActions>
-            </Item>
-            <AttendeeField
-              name="partnerId"
-              control={form.control}
-              label="同伴"
-              placeholder="請輸入同伴名字..."
-            />
-            <DateField
+        {permission < PERMISSION.Publisher && (
+          <FieldSet>
+            <FieldLegend>排班設定</FieldLegend>
+            <FieldGroup className="p-4 bg-white rounded-md shadow-sm">
+              <Item variant="outline">
+                <ItemContent>
+                  <ItemTitle>自動排班</ItemTitle>
+                  <ItemDescription>啟用後，會參與自動排班。關閉後，使用者會暫停排班，但可以手動排班</ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                  <SwitchField name="canSchedule" label="啟用" control={form.control} />
+                </ItemActions>
+              </Item>
+              <AttendeeField
+                name="partnerId"
+                control={form.control}
+                label="同伴"
+                buttonPlaceholer="不指定同伴"
+                inputPlaceholder="請輸入同伴名字..."
+              />
+              <DateField name="unavailableDates" mode="multiple" control={form.control} label="無法參與日期" />
+            </FieldGroup>
+          </FieldSet>
+        )}
+        {permission >= PERMISSION.Publisher && (
+          <FieldSet>
+            <FieldLegend>無法參與排班的日期</FieldLegend>
+            <Controller
               name="unavailableDates"
-              mode="multiple"
               control={form.control}
-              label="無法參與日期"
+              render={({ field, fieldState }) => (
+                <>
+                  <Calendar
+                    mode="multiple"
+                    locale={zhTW}
+                    selected={field.value.map((v) => dayjs(v).toDate())}
+                    onSelect={(dates) => field.onChange(dates?.map((d) => dayjs(d).format("YYYY-MM-DD")))}
+                    classNames={{
+                      root: "shrink-0 w-full max-w-xs border rounded-md",
+                      day: "h-10 w-10 p-0 mx-auto",
+                      row: "mt-1",
+                      day_button: "rounded-full",
+                      caption_label: "text-xl",
+                    }}
+                  />
+                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
+                </>
+              )}
             />
-          </FieldGroup>
-        </FieldSet>
+          </FieldSet>
+        )}
+
         <FieldSet>
           <div className="flex items-center justify-between">
             <FieldLegend>參與班次設定</FieldLegend>
@@ -119,10 +140,8 @@ export default function ScheduleForm({
             control={form.control}
             render={({ field, fieldState }) => {
               const enrolledShifts = useMemo(() => {
-                return getEnrolledShifts(field.value, siteShifts).filter(
-                  (shift) => shift.active,
-                );
-              }, [field.value]);
+                return getEnrolledShifts(field.value, siteShifts).filter((shift) => shift.active);
+              }, [field.value, siteShifts]);
               return (
                 <Field className="p-4 bg-white rounded-md shadow-sm">
                   <ShiftGroupedView
@@ -138,12 +157,8 @@ export default function ScheduleForm({
                             </h5>
                           </div>
                           <div className="text-right">
-                            <span className="text-sm text-gray-500">
-                              報名次數
-                            </span>
-                            <p className="text-2xl font-semibold text-primary">
-                              {maxTimes}
-                            </p>
+                            <span className="text-sm text-gray-500">報名次數</span>
+                            <p className="text-2xl font-semibold text-primary">{maxTimes}</p>
                           </div>
                         </div>
                       );
@@ -151,15 +166,11 @@ export default function ScheduleForm({
                     emptyState={
                       <div className="py-12 text-center text-gray-500">
                         <p>尚未報名任何班次</p>
-                        <p className="mt-2 text-sm">
-                          請點擊上方「我要報名」按鈕新增
-                        </p>
+                        <p className="mt-2 text-sm">請點擊上方「我要報名」按鈕新增</p>
                       </div>
                     }
                   />
-                  {fieldState.error && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
+                  {fieldState.error && <FieldError errors={[fieldState.error]} />}
                 </Field>
               );
             }}
@@ -169,7 +180,7 @@ export default function ScheduleForm({
 
       <div className="fixed bottom-0 left-0 right-0 z-10 p-4 border-t shadow-lg bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="max-w-sm mx-auto">
-          <Button type="submit" className="w-full" size="lg">
+          <Button type="submit" className="w-full" size="lg" disabled={mutation.isPending || !form.formState.isDirty}>
             儲存
           </Button>
         </div>

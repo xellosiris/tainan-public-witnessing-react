@@ -1,36 +1,43 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
-import { MenuIcon } from "lucide-react";
-import React, { useState } from "react";
-import { default as Error } from "@/components/route/ErrorComponent";
+import { queryClient, user } from "@/App";
+import { PERMISSION } from "@/assets/permission";
+import ErrorComponent from "@/components/route/ErrorComponent";
 import NotFoundedComponent from "@/components/route/NotFoundedComponent";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Toaster } from "@/components/ui/sonner";
 import { getSetting } from "@/services/setting";
+import { useQuery } from "@tanstack/react-query";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { MenuIcon } from "lucide-react";
+import { useState } from "react";
+
+const MenuItem = ({ to, label, linkPermission }: { to: string; label: string; linkPermission: number }) => {
+  const { permission } = user;
+  return permission <= linkPermission && <Link to={to}>{label}</Link>;
+};
 
 export const Route = createRootRoute({
   component: Layout,
-  errorComponent: Error,
+  errorComponent: ErrorComponent,
   notFoundComponent: NotFoundedComponent,
+  loader: async () => {
+    await queryClient.ensureQueryData({
+      queryKey: ["setting"],
+      queryFn: getSetting,
+    });
+  },
 });
 
 export default function Layout() {
+  const { displayName, permission } = user;
   const [open, setOpen] = useState<boolean>(false);
-  const { data: setting } = useSuspenseQuery({
+  const { data: setting } = useQuery({
     queryKey: ["setting"],
     queryFn: getSetting,
   });
-
   return (
-    <React.Fragment>
+    <>
       <header
         className={
           "relative z-50 flex items-center h-12 gap-2 px-2 text-base text-white lg:text-xl bg-primary justify-between"
@@ -47,7 +54,7 @@ export default function Layout() {
           </Button>
           {setting.name} {import.meta.env.DEV && "(開發模式)"}
         </div>
-        XXXX
+        {displayName}
       </header>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
@@ -57,26 +64,27 @@ export default function Layout() {
           <SheetHeader>
             <SheetTitle>選單</SheetTitle>
           </SheetHeader>
-          <nav
-            className="flex-1 py-4 overflow-y-auto"
-            onClick={() => setOpen(false)}
-          >
-            <div className="grid gap-3 px-4">
-              <label className="text-sm text-muted-foreground">一般功能</label>
-              <div className="flex flex-col gap-3 ml-4">
-                <Link to="/">首頁</Link>
-                <Link to="/myShifts">我的班表</Link>
-                <Link to="/mySchedule">我的排班設定</Link>
-                <Link to="/vacantShifts">報名空缺</Link>
+          <nav className="flex-1 py-4 overflow-y-auto" onClick={() => setOpen(false)}>
+            <div className="px-4 grid gap-3">
+              {permission <= PERMISSION.Publisher && <label className="text-sm text-muted-foreground">一般功能</label>}
+              <div className="flex flex-col ml-4 gap-3">
+                <MenuItem to="/" label="首頁" linkPermission={3} />
+                <MenuItem to="/myShifts" label="我的班表" linkPermission={3} />
+                <MenuItem to="/mySchedule" label="我的排班設定" linkPermission={3} />
+                <MenuItem to="/vacantShifts" label="報名空缺" linkPermission={3} />
               </div>
-              <Separator className="my-2" />
-              <label className="text-sm text-muted-foreground">管理功能</label>
-              <div className="flex flex-col gap-3 ml-4">
-                <Link to="/overview">狀態一覽</Link>
-                <Link to="/users">成員管理</Link>
-                <Link to="/shifts">班次管理</Link>
-                <Link to="/sites">地點管理</Link>
-                <Link to="/setting">系統設定</Link>
+              {permission <= PERMISSION.Assistant && (
+                <>
+                  <Separator className="my-2" />
+                  <label className="text-sm text-muted-foreground">管理功能</label>
+                </>
+              )}
+              <div className="flex flex-col ml-4 gap-3">
+                <MenuItem to="/overview" label="狀態一覽" linkPermission={1} />
+                <MenuItem to="/users" label="成員管理" linkPermission={2} />
+                <MenuItem to="/shifts" label="班次管理" linkPermission={2} />
+                <MenuItem to="/sites" label="展示地點管理" linkPermission={1} />
+                <MenuItem to="/setting" label="系統設定" linkPermission={1} />
               </div>
             </div>
           </nav>
@@ -92,6 +100,6 @@ export default function Layout() {
         <Outlet />
         <Toaster />
       </main>
-    </React.Fragment>
+    </>
   );
 }

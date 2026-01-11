@@ -1,6 +1,3 @@
-import { type UseQueryResult, useQueries } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import SiteDialog from "@/components/dialog/SiteDialog";
 import SiteForm from "@/components/form/SiteForm";
 import ErrorComponent from "@/components/route/ErrorComponent";
@@ -19,11 +16,11 @@ import {
 import { getSetting } from "@/services/setting";
 import { getSite } from "@/services/site";
 import { getSiteShift } from "@/services/siteShift";
-import type { Setting } from "@/types/setting";
-import type { Site } from "@/types/site";
-import type { SiteShift } from "@/types/siteShift";
+import { useQueries } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
-export const Route = createLazyFileRoute("/_overseerLayout/sites")({
+export const Route = createLazyFileRoute("/_overseerAuthLayout/sites")({
   component: Sites,
 });
 
@@ -31,11 +28,7 @@ function Sites() {
   const [siteId, setSiteId] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
 
-  const results: [
-    UseQueryResult<Setting | undefined>,
-    UseQueryResult<Site | undefined>,
-    UseQueryResult<SiteShift[] | undefined>,
-  ] = useQueries({
+  const results = useQueries({
     queries: [
       {
         queryKey: ["setting"],
@@ -52,15 +45,17 @@ function Sites() {
         enabled: !!siteId,
       },
     ],
+    combine: (result) => ({
+      setting: result[0].data,
+      site: result[1].data,
+      siteShifts: result[2].data,
+      isLoading: result[0].isLoading || result[1].isLoading || result[2].isLoading,
+    }),
   });
 
-  const [settingQuery, siteQuery, siteShiftsQuery] = results;
-  const isLoading =
-    settingQuery.isLoading || siteQuery.isLoading || siteShiftsQuery.isLoading;
+  const { setting, site, siteShifts, isLoading } = results;
+
   if (isLoading) return <Loading />;
-  const setting = settingQuery.data;
-  const site = siteQuery.data;
-  const siteShifts = siteShiftsQuery.data;
 
   const onSelectSite = (siteId: string) => {
     setSiteId(siteId);
@@ -93,9 +88,7 @@ function Sites() {
         <Button onClick={() => setOpen(true)}>新增</Button>
       </div>
 
-      {siteId && site && (
-        <SiteForm key={site.id} siteEditObj={site} siteShifts={siteShifts!} />
-      )}
+      {siteId && site && <SiteForm key={site.id} siteEditObj={site} siteShifts={siteShifts!} />}
       {open && <SiteDialog onClose={() => setOpen(false)} />}
     </div>
   );

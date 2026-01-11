@@ -1,6 +1,7 @@
 import * as z from "zod";
 
 export const scheduleSchema = z.object({
+  userId: z.uuid(),
   canSchedule: z.boolean(),
   siteShiftLimits: z.record(z.uuid(), z.number().int().nonnegative()),
   unavailableDates: z.string().array(),

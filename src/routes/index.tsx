@@ -1,12 +1,12 @@
+import ShiftCard from "@/components/card/ShiftCard";
+import { Label } from "@/components/ui/label";
+import { getSetting } from "@/services/setting";
+import { getShiftsByDate } from "@/services/shift";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { groupBy } from "lodash-es";
 import { useMemo } from "react";
-import ShiftCard from "@/components/card/ShiftCard";
-import { Label } from "@/components/ui/label";
-import { getSetting } from "@/services/setting";
-import { getShiftsByDate } from "@/services/shift";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -34,9 +34,7 @@ function Home() {
       <div className="flex flex-col gap-3">
         {Object.entries(shiftsGroupBySite).map(([siteId, shifts]) => (
           <div key={siteId} className="flex flex-col gap-1.5">
-            <h3 className="text-xl font-semibold">
-              {setting?.siteKeys.find((s) => s.id === siteId)?.name}
-            </h3>
+            <h3 className="text-xl font-semibold">{setting?.siteKeys.find((s) => s.id === siteId)?.name}</h3>
             <div className="flex flex-wrap gap-4">
               {shifts.map((shift) => (
                 <ShiftCard key={shift.id} shift={shift} />

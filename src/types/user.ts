@@ -1,5 +1,5 @@
-import * as z from "zod";
 import { PERMISSION } from "@/assets/permission";
+import * as z from "zod";
 
 export const userSchema = z.object({
   id: z.uuid(),
@@ -15,7 +15,7 @@ export const userSchema = z.object({
   lineSub: z.string().optional(),
   bindCode: z.string().optional(),
   firebaseSub: z.string().optional(),
-  availableSiteShifts: z.uuid().array(),
+  expiredAt: z.date().optional(),
 });
 
 export const userKeySchema = userSchema.pick({

@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/_overseerLayout/overview")({
+export const Route = createLazyFileRoute("/_overseerAuthLayout/overview")({
   component: RouteComponent,
 });
 
