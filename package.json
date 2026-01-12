@@ -38,6 +38,7 @@
     "firebase": "^12.7.0",
     "lodash-es": "^4.17.22",
     "lucide-react": "^0.562.0",
+    "nanoid": "^5.1.6",
     "next-themes": "^0.4.6",
     "react": "^19.2.3",
     "react-day-picker": "^9.13.0",
@@ -46,7 +47,6 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
-    "uuid": "^13.0.0",
     "virtua": "^0.48.2",
     "zod": "^4.3.5"
   },

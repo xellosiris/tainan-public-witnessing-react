@@ -5,8 +5,9 @@ import { FieldGroup } from "@/components/ui/field";
 import type { Setting } from "@/types/setting";
 import { type SiteShift, siteShiftSchemaWithOverlapCheck } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
-import { v4 } from "uuid";
+
 import type z from "zod";
 import { NumberField } from "../form/fields/NumberInput";
 import { SelectField } from "../form/fields/SelectField";
@@ -34,7 +35,7 @@ export default function SiteShiftFormDialog({
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: siteShiftEditObj || {
-      id: v4(),
+      id: nanoid(),
       siteId,
       active: true,
       attendeesLimit: setting.defaultAttendeesLimit,

@@ -19,9 +19,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
+import { nanoid } from "nanoid";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { v4 } from "uuid";
+
 import type z from "zod";
 import { AttendeesField } from "../form/fields/AttendeesField";
 import { DateField } from "../form/fields/DateField";
@@ -74,7 +75,7 @@ export default function ShiftForm({ editShiftObj, siteKeys, userKeys, onClose }:
           attendees: editShiftObj.attendees.map((attendee) => userKeys.find((u) => u.id === attendee)),
         }
       : {
-          id: v4(),
+          id: nanoid(),
           active: true,
           date: dayjs().format("YYYY-MM-DD"),
           startTime: "09:00",

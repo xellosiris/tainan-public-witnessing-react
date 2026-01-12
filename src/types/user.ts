@@ -2,12 +2,12 @@ import { PERMISSION } from "@/assets/permission";
 import * as z from "zod";
 
 export const userSchema = z.object({
-  id: z.uuid(),
+  id: z.nanoid(),
   active: z.boolean(),
   name: z.string().nonempty(),
   displayName: z.string().nonempty(),
   gender: z.enum(["male", "female"]),
-  congId: z.uuid(),
+  congId: z.nanoid(),
   permission: z.enum(PERMISSION),
   cellphone: z.string(),
   telephone: z.string().optional(),

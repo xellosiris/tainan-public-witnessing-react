@@ -6,9 +6,10 @@ import type { Cong } from "@/types/congregation";
 import { type User, userSchema } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { v4 } from "uuid";
+
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { Loading } from "../ui/loading";
 import { SelectField } from "./fields/SelectField";
@@ -24,7 +25,7 @@ export default function UserForm({ editUserObj, congs }: Props) {
     defaultValues: editUserObj
       ? { ...editUserObj }
       : {
-          id: v4(),
+          id: nanoid(),
           active: true,
           name: "",
           displayName: "",

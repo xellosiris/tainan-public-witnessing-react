@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 export const congSchema = z.object({
-  id: z.uuid(),
+  id: z.nanoid(),
   active: z.boolean(),
   name: z.string().nonempty(),
 });

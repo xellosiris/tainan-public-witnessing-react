@@ -2,6 +2,7 @@ import DeleteDialog from "@/components/dialog/DeleteDialog";
 import ScheduleForm from "@/components/form/ScheduleForm";
 import UserForm from "@/components/form/UserForm";
 import ErrorComponent from "@/components/route/ErrorComponent";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Loading } from "@/components/ui/loading";
@@ -14,7 +15,8 @@ import { deleteUser, getUser } from "@/services/user";
 import type { User } from "@/types/user";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { Check, ChevronsUpDown } from "lucide-react";
+import dayjs from "dayjs";
+import { AlertTriangleIcon, Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -109,6 +111,7 @@ function Users() {
                 {userKeys.map((user) => (
                   <CommandItem
                     key={user.id}
+                    className={cn(!user.active && "opacity-50")}
                     value={user.id}
                     onSelect={(currentValue) => {
                       setUserId(currentValue);
@@ -127,6 +130,15 @@ function Users() {
       {isUserLoading && <Loading />}
       {user && schedule && congs && (
         <>
+          {user.expiredAt && (
+            <Alert variant={"destructive"}>
+              <AlertTriangleIcon />
+              <AlertTitle>請留意</AlertTitle>
+              <AlertDescription>
+                若沒有啟用，該使用者即將在{dayjs(user.expiredAt).format("YYYY年MM月DD日")}自動刪除
+              </AlertDescription>
+            </Alert>
+          )}
           <Tabs defaultValue="user">
             <div className="flex flex-wrap gap-2">
               <TabsList>

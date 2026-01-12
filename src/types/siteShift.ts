@@ -3,8 +3,8 @@ import * as z from "zod";
 
 export const siteShiftSchema = z
   .object({
-    id: z.uuid(),
-    siteId: z.uuid(),
+    id: z.nanoid(),
+    siteId: z.nanoid(),
     active: z.boolean(),
     attendeesLimit: z.number().int().nonnegative(),
     startTime: z.string().nonempty(),

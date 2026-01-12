@@ -11,10 +11,11 @@ import { type SiteShift } from "@/types/siteShift";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { chain, sortBy } from "lodash-es";
+import { nanoid } from "nanoid";
 import { useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { v4 } from "uuid";
+
 import SiteShiftCard from "../card/SiteShiftCard";
 import SiteShiftFormDialog from "../dialog/SiteShiftDialog";
 import { SwitchField } from "./fields/SwitchField";
@@ -34,7 +35,7 @@ export default function SiteForm({ siteEditObj, setting }: Props) {
     { mode: "create" } | { mode: "edit"; shift: SiteShift; index: number } | null
   >(null);
 
-  const siteId = siteEditObj?.id ?? v4();
+  const siteId = siteEditObj?.id ?? nanoid();
   const form = useForm<Site>({
     resolver: zodResolver(siteSchema),
     defaultValues: siteEditObj || {

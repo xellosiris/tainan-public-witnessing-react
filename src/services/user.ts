@@ -6,6 +6,7 @@ import {
   arrayRemove,
   arrayUnion,
   collection,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -50,7 +51,7 @@ export const createUser = async (user: User) => {
       canSchedule: true,
       siteShiftLimits: {},
       unavailableDates: [],
-      partnerId: [],
+      partnerId: "",
     };
     t.set(userRef, user); //建立使用者
     t.set(scheduleRef, schedule); //建立使用者預設的排班
@@ -74,17 +75,19 @@ export const updateUser = async (user: User) => {
       active: user.active,
     };
     const replaceUserKeys = setting.userKeys.map((userKey) => (userKey.id === user.id ? newUserKey : userKey));
+    t.update(settingRef, { userKeys: replaceUserKeys });
+
     if (!user.active) {
-      user.expiredAt = dayjs().add(1, "year").toDate();
-      t.update(userRef, user);
+      //一但使用者不啟用，使用者文件和他的排班文件標記上過期日期(1年)
+      const expiredAt = dayjs().add(1, "year").toDate();
+      t.update(userRef, { ...user, expiredAt });
+      //當使用者關閉或重啟時，會自動觸發參與排班
+      t.update(scheduleRef, { expiredAt, canSchedule: user.active });
     } else {
-      const { expiredAt, ...rest } = user;
-      t.update(userRef, rest);
+      //一但使用者再次啟用，使用者文件和他的排班文件移除過期日期
+      t.update(userRef, { ...user, expiredAt: deleteField() });
+      t.update(scheduleRef, { canSchedule: user.active, expiredAt: deleteField() });
     }
-    t.update(scheduleRef, { canSchedule: user.active }); //當使用者關閉或重啟時，會自動觸發參與排班
-    t.update(settingRef, {
-      userKeys: replaceUserKeys,
-    });
   });
 };
 
@@ -102,7 +105,7 @@ export const deleteUser = async (userId: User["id"]): Promise<void> => {
     const userKeys = setting.userKeys.filter((u) => u.id !== userId);
     const q = query(collection(db, "Shifts"), where("attendees", "array-contains", userId));
     const shiftsSnap = await getDocs(q);
-
+    //移除目前使用者參與的所有班次
     shiftsSnap.docs.forEach((d) => t.update(d.ref, { attendees: arrayRemove(userId) }));
     t.delete(userRef);
     t.update(settingRef, { userKeys });

@@ -77,25 +77,28 @@ export function AttendeeField<T extends FieldValues>({
                       <CommandItem value="" onSelect={onClear}>
                         不指定同伴
                       </CommandItem>
-                      {userKeys.map((user) => (
-                        <CommandItem
-                          key={user.id}
-                          value={user.id}
-                          onSelect={(value) => {
-                            const selectedUser = userKeys.find((user) => user.id === value)?.id;
-                            userField.onChange(selectedUser);
-                            setOpen(false);
-                          }}
-                        >
-                          {user.displayName}
-                          <Check
-                            className={clsx(
-                              "ml-auto size-4",
-                              userField.value?.id === user.id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
+                      {userKeys
+                        .filter((u) => u.active)
+                        .map((user) => (
+                          <CommandItem
+                            className={cn(!user.active && "opacity-50")}
+                            key={user.id}
+                            value={user.id}
+                            onSelect={(value) => {
+                              const selectedUser = userKeys.find((user) => user.id === value)?.id;
+                              userField.onChange(selectedUser);
+                              setOpen(false);
+                            }}
+                          >
+                            {user.displayName}
+                            <Check
+                              className={clsx(
+                                "ml-auto size-4",
+                                userField.value?.id === user.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
                     </CommandGroup>
                   </VList>
                 </Command>

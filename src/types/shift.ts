@@ -2,14 +2,14 @@ import type { Timestamp } from "firebase/firestore/lite";
 import * as z from "zod";
 
 export const shiftSchema = z.object({
-  id: z.uuid(),
+  id: z.nanoid(),
   active: z.boolean(),
   date: z.string().nonempty(),
   yearMonth: z.string(),
-  siteId: z.uuid(),
+  siteId: z.nanoid(),
   startTime: z.string().nonempty(),
   endTime: z.string().nonempty(),
-  attendees: z.uuid().array(),
+  attendees: z.nanoid().array(),
   attendeesLimit: z.number().int().nonnegative(), //0代表無限制
   attendeeCount: z.number().optional(),
   isFull: z.boolean(),

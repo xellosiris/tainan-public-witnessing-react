@@ -5,9 +5,10 @@ import { type Setting, settingSchema } from "@/types/setting";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
+import { nanoid } from "nanoid";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { v4 } from "uuid";
+
 import { VList } from "virtua";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from "../ui/item";
 import { Loading } from "../ui/loading";
@@ -42,7 +43,7 @@ export default function SettingForm({ editSettingObj }: Props) {
 
   const handleAddCong = () => {
     append({
-      id: v4(),
+      id: nanoid(),
       active: true,
       name: "",
     });
