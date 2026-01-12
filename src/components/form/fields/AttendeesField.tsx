@@ -1,16 +1,12 @@
+import UsersCombobox from "@/components/Combobox/UsersCombobox";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { FieldError } from "@/components/ui/field";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import type { UserKey } from "@/types/user";
+import type { User, UserKey } from "@/types/user";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import clsx from "clsx";
-import { Check, ChevronsUpDown, GripVertical, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { GripVertical, Trash2 } from "lucide-react";
 import { type Control, Controller } from "react-hook-form";
-import { VList } from "virtua";
 import type z from "zod";
 import type { schema } from "../ShiftForm";
 
@@ -48,62 +44,18 @@ export function AttendeesField({ control, index, id, userKeys, onRemove }: Atten
           name={`attendees.${index}`}
           control={control}
           render={({ field: userField, fieldState }) => {
-            const [open, setOpen] = useState<boolean>(false);
             return (
-              <div>
-                <Popover open={open} onOpenChange={setOpen} modal={true}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={open}
-                      className={cn("w-full justify-between", !userField.value?.id && "text-muted-foreground")}
-                    >
-                      {userField.value?.displayName || "請選擇人員"}
-                      <ChevronsUpDown className="ml-2 opacity-50 size-4 shrink-0" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[--radix-popover-trigger-width]! p-0 z-100" align="start">
-                    <Command
-                      filter={(value, search) => {
-                        const name = userKeys.find((u) => u.id === value)?.displayName;
-                        if (name?.includes(search)) return 1;
-                        return 0;
-                      }}
-                    >
-                      <CommandInput placeholder="搜尋成員..." />
-                      <VList style={{ height: 180 }}>
-                        <CommandEmpty>找不到成員</CommandEmpty>
-                        <CommandGroup>
-                          {userKeys
-                            .filter((u) => u.active)
-                            .map((user) => (
-                              <CommandItem
-                                className={cn(!user.active && "opacity-50")}
-                                key={user.id}
-                                value={user.id}
-                                onSelect={(value) => {
-                                  const selectedUser = userKeys.find((user) => user.id === value);
-                                  userField.onChange(selectedUser);
-                                  setOpen(false);
-                                }}
-                              >
-                                {user.displayName}
-                                <Check
-                                  className={clsx(
-                                    "ml-auto size-4",
-                                    userField.value?.id === user.id ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                        </CommandGroup>
-                      </VList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+              <>
+                <UsersCombobox
+                  value={userField.value}
+                  onSelect={(value: User["id"]) => {
+                    const selectedUser = userKeys.find((user) => user.id === value);
+                    userField.onChange(selectedUser);
+                  }}
+                  excludeUserIds={userKeys.filter((u) => !u.active).map((u) => u.id)}
+                />
                 {fieldState.error && <FieldError errors={[fieldState.error]} />}
-              </div>
+              </>
             );
           }}
         />

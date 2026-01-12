@@ -8,6 +8,7 @@ import { updateSchedule } from "@/services/schedule";
 import { type Schedule, scheduleSchema } from "@/types/schedule";
 import type { Setting } from "@/types/setting";
 import type { SiteShift } from "@/types/siteShift";
+import type { User } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -25,9 +26,10 @@ import SiteShiftList from "./SiteShiftList";
 type Props = {
   editScheduleObj: Schedule | null;
   setting: Setting;
+  userId: User["id"];
 };
 
-export default function ScheduleForm({ editScheduleObj, setting }: Props) {
+export default function ScheduleForm({ editScheduleObj, setting, userId }: Props) {
   const { permission } = user;
   const { siteKeys } = setting;
 
@@ -38,6 +40,7 @@ export default function ScheduleForm({ editScheduleObj, setting }: Props) {
     defaultValues: editScheduleObj
       ? { ...editScheduleObj }
       : {
+          userId,
           canSchedule: true,
           siteShiftLimits: {},
           unavailableDates: [],
@@ -83,8 +86,8 @@ export default function ScheduleForm({ editScheduleObj, setting }: Props) {
                 name="partnerId"
                 control={form.control}
                 label="同伴"
-                buttonPlaceholer="不指定同伴"
-                inputPlaceholder="請輸入同伴名字..."
+                excludeUserIds={[userId]}
+                disabledUserIds={setting?.userKeys.filter((u) => !u.active).map((u) => u.id)}
               />
               <DateField name="unavailableDates" mode="multiple" control={form.control} label="無法參與日期" />
             </FieldGroup>

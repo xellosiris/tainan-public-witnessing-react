@@ -1,110 +1,53 @@
+import UsersCombobox from "@/components/Combobox/UsersCombobox";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { FieldError } from "@/components/ui/field";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { getSetting } from "@/services/setting";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import clsx from "clsx";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import type { User } from "@/types/user";
+import { XCircleIcon } from "lucide-react";
 import { type Control, Controller, type FieldValues, type Path } from "react-hook-form";
-import { VList } from "virtua";
 
 type AttendeeFieldProps<T extends FieldValues> = {
   name: Path<T>;
   control: Control<T>;
   label?: string;
-  buttonPlaceholer?: string;
-  inputPlaceholder?: string;
+  excludeUserIds?: User["id"][];
+  disabledUserIds?: User["id"][];
 };
 
 export function AttendeeField<T extends FieldValues>({
   name,
   control,
   label = "人員",
-  buttonPlaceholer = "請輸入人員",
-  inputPlaceholder = "請輸入人員...",
+  excludeUserIds = [],
+  disabledUserIds = [],
 }: AttendeeFieldProps<T>) {
-  const { data: setting } = useSuspenseQuery({
-    queryKey: ["setting"],
-    queryFn: getSetting,
-  });
-  const { userKeys } = setting;
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field: userField, fieldState }) => {
-        const [open, setOpen] = useState<boolean>(false);
-        const onClear = () => {
-          setOpen(false);
-          userField.onChange("");
-        };
-
+      render={({ field, fieldState }) => {
         return (
-          <div>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <div className="flex flex-col gap-1.5">
-                  <Label>{label}</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className={cn("w-full justify-between", !userField.value && "text-muted-foreground")}
-                  >
-                    {userKeys.find((u) => u.id === userField.value)?.displayName || buttonPlaceholer}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width]! p-0" align="start">
-                <Command
-                  filter={(value, search) => {
-                    const name = userKeys.find((u) => u.id === value)?.displayName;
-                    if (name?.includes(search)) return 1;
-                    return 0;
-                  }}
-                  className="**:[[cmdk-group]]:max-h-50 **:[[cmdk-group]]:overflow-y-auto"
-                >
-                  <CommandInput placeholder={inputPlaceholder} />
-                  <VList style={{ height: 180 }}>
-                    <CommandEmpty>找不到成員</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem value="" onSelect={onClear}>
-                        不指定同伴
-                      </CommandItem>
-                      {userKeys
-                        .filter((u) => u.active)
-                        .map((user) => (
-                          <CommandItem
-                            className={cn(!user.active && "opacity-50")}
-                            key={user.id}
-                            value={user.id}
-                            onSelect={(value) => {
-                              const selectedUser = userKeys.find((user) => user.id === value)?.id;
-                              userField.onChange(selectedUser);
-                              setOpen(false);
-                            }}
-                          >
-                            {user.displayName}
-                            <Check
-                              className={clsx(
-                                "ml-auto size-4",
-                                userField.value?.id === user.id ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                          </CommandItem>
-                        ))}
-                    </CommandGroup>
-                  </VList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            {fieldState.error && <FieldError errors={[fieldState.error]} />}
+          <div className="flex items-end gap-1">
+            <Field className="gap-1.5" data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+              <UsersCombobox
+                value={field.value}
+                onSelect={(value) => {
+                  field.onChange(value);
+                }}
+                excludeUserIds={excludeUserIds}
+                disabledUserIds={disabledUserIds}
+              />
+              {fieldState.error && <FieldError errors={[fieldState.error]} />}
+            </Field>
+            <Button
+              type="button"
+              disabled={!field.value}
+              variant={"ghost"}
+              size={"icon"}
+              onClick={() => field.onChange("")}
+            >
+              <XCircleIcon className="text-destructive size-6" />
+            </Button>
           </div>
         );
       }}

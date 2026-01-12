@@ -1,14 +1,12 @@
+import UsersCombobox from "@/components/Combobox/UsersCombobox";
 import DeleteDialog from "@/components/dialog/DeleteDialog";
 import ScheduleForm from "@/components/form/ScheduleForm";
 import UserForm from "@/components/form/UserForm";
 import ErrorComponent from "@/components/route/ErrorComponent";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Loading } from "@/components/ui/loading";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 import { getSchedule } from "@/services/schedule";
 import { getSetting } from "@/services/setting";
 import { deleteUser, getUser } from "@/services/user";
@@ -16,7 +14,7 @@ import type { User } from "@/types/user";
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { AlertTriangleIcon, Check, ChevronsUpDown } from "lucide-react";
+import { AlertTriangleIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -80,53 +78,13 @@ function Users() {
   if (isInitialLoading) return <Loading />;
   if (!setting) return <ErrorComponent />;
 
-  const { userKeys, congs } = setting;
+  const { congs } = setting;
   return (
     <div className="max-w-4xl space-y-4">
       {mutation.isPending && <Loading />}
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="justify-between w-50 text-muted-foreground"
-          >
-            {userId ? userKeys.find((user) => user.id === userId)?.displayName : "選擇一位使用者"}
-            <ChevronsUpDown className="opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="p-0 w-50">
-          <Command
-            filter={(value, search) => {
-              const name = userKeys.find((u) => u.id === value)?.displayName;
-              if (name?.includes(search)) return 1;
-              return 0;
-            }}
-          >
-            <CommandInput placeholder="輸入使用者..." className="h-9" />
-            <CommandEmpty>找不到使用者</CommandEmpty>
-            <CommandList>
-              <CommandGroup>
-                {userKeys.map((user) => (
-                  <CommandItem
-                    key={user.id}
-                    className={cn(!user.active && "opacity-50")}
-                    value={user.id}
-                    onSelect={(currentValue) => {
-                      setUserId(currentValue);
-                      setOpen(false);
-                    }}
-                  >
-                    {user.displayName}
-                    <Check className={cn("ml-auto", userId === user.id ? "opacity-100" : "opacity-0")} />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+      <div className="w-50">
+        <UsersCombobox value={userId} onSelect={setUserId} />
+      </div>
       {isUserLoading && <Loading />}
       {user && schedule && congs && (
         <>
@@ -155,7 +113,7 @@ function Users() {
               <UserForm key={user.id} editUserObj={user} congs={congs} />
             </TabsContent>
             <TabsContent value="schedule">
-              <ScheduleForm key={user.id} editScheduleObj={schedule} setting={setting} />
+              <ScheduleForm key={user.id} editScheduleObj={schedule} setting={setting} userId={user.id} />
             </TabsContent>
           </Tabs>
           {openDel && (
