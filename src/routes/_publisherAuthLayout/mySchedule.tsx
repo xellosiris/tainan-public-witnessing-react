@@ -30,7 +30,7 @@ function PersonalSchedule() {
 
   return (
     <div className="max-w-md">
-      <ScheduleForm editScheduleObj={schedule} setting={setting} />
+      <ScheduleForm editScheduleObj={schedule} setting={setting} userId={userId} />
     </div>
   );
 }

@@ -24,7 +24,6 @@ export const Route = createLazyFileRoute("/_assistantAuthLayout/users")({
 
 function Users() {
   const [userId, setUserId] = useState<string>("");
-  const [open, setOpen] = useState(false);
   const [openDel, setOpenDel] = useState(false);
   const queryClient = useQueryClient();
   const results = useQueries({

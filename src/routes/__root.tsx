@@ -36,6 +36,7 @@ export default function Layout() {
     queryKey: ["setting"],
     queryFn: getSetting,
   });
+
   return (
     <>
       <header
@@ -52,7 +53,7 @@ export default function Layout() {
           >
             <MenuIcon className="size-5" />
           </Button>
-          {setting.name} {import.meta.env.DEV && "(開發模式)"}
+          {setting?.name} {import.meta.env.DEV && "(開發模式)"}
         </div>
         {displayName}
       </header>
