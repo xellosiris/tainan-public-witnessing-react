@@ -16,13 +16,9 @@ import { Route as OverseerAuthLayoutRouteImport } from './routes/_overseerAuthLa
 import { Route as AssistantAuthLayoutRouteImport } from './routes/_assistantAuthLayout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PublisherAuthLayoutVacantShiftsRouteImport } from './routes/_publisherAuthLayout/vacantShifts'
+import { Route as PublisherAuthLayoutMyShiftsRouteImport } from './routes/_publisherAuthLayout/myShifts'
+import { Route as PublisherAuthLayoutMyScheduleRouteImport } from './routes/_publisherAuthLayout/mySchedule'
 
-const PublisherAuthLayoutMyShiftsLazyRouteImport = createFileRoute(
-  '/_publisherAuthLayout/myShifts',
-)()
-const PublisherAuthLayoutMyScheduleLazyRouteImport = createFileRoute(
-  '/_publisherAuthLayout/mySchedule',
-)()
 const OverseerAuthLayoutSitesLazyRouteImport = createFileRoute(
   '/_overseerAuthLayout/sites',
 )()
@@ -56,24 +52,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublisherAuthLayoutMyShiftsLazyRoute =
-  PublisherAuthLayoutMyShiftsLazyRouteImport.update({
-    id: '/myShifts',
-    path: '/myShifts',
-    getParentRoute: () => PublisherAuthLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_publisherAuthLayout/myShifts.lazy').then((d) => d.Route),
-  )
-const PublisherAuthLayoutMyScheduleLazyRoute =
-  PublisherAuthLayoutMyScheduleLazyRouteImport.update({
-    id: '/mySchedule',
-    path: '/mySchedule',
-    getParentRoute: () => PublisherAuthLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_publisherAuthLayout/mySchedule.lazy').then(
-      (d) => d.Route,
-    ),
-  )
 const OverseerAuthLayoutSitesLazyRoute =
   OverseerAuthLayoutSitesLazyRouteImport.update({
     id: '/sites',
@@ -120,28 +98,40 @@ const PublisherAuthLayoutVacantShiftsRoute =
     path: '/vacantShifts',
     getParentRoute: () => PublisherAuthLayoutRoute,
   } as any)
+const PublisherAuthLayoutMyShiftsRoute =
+  PublisherAuthLayoutMyShiftsRouteImport.update({
+    id: '/myShifts',
+    path: '/myShifts',
+    getParentRoute: () => PublisherAuthLayoutRoute,
+  } as any)
+const PublisherAuthLayoutMyScheduleRoute =
+  PublisherAuthLayoutMyScheduleRouteImport.update({
+    id: '/mySchedule',
+    path: '/mySchedule',
+    getParentRoute: () => PublisherAuthLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/mySchedule': typeof PublisherAuthLayoutMyScheduleRoute
+  '/myShifts': typeof PublisherAuthLayoutMyShiftsRoute
   '/vacantShifts': typeof PublisherAuthLayoutVacantShiftsRoute
   '/shifts': typeof AssistantAuthLayoutShiftsLazyRoute
   '/users': typeof AssistantAuthLayoutUsersLazyRoute
   '/overview': typeof OverseerAuthLayoutOverviewLazyRoute
   '/setting': typeof OverseerAuthLayoutSettingLazyRoute
   '/sites': typeof OverseerAuthLayoutSitesLazyRoute
-  '/mySchedule': typeof PublisherAuthLayoutMyScheduleLazyRoute
-  '/myShifts': typeof PublisherAuthLayoutMyShiftsLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/mySchedule': typeof PublisherAuthLayoutMyScheduleRoute
+  '/myShifts': typeof PublisherAuthLayoutMyShiftsRoute
   '/vacantShifts': typeof PublisherAuthLayoutVacantShiftsRoute
   '/shifts': typeof AssistantAuthLayoutShiftsLazyRoute
   '/users': typeof AssistantAuthLayoutUsersLazyRoute
   '/overview': typeof OverseerAuthLayoutOverviewLazyRoute
   '/setting': typeof OverseerAuthLayoutSettingLazyRoute
   '/sites': typeof OverseerAuthLayoutSitesLazyRoute
-  '/mySchedule': typeof PublisherAuthLayoutMyScheduleLazyRoute
-  '/myShifts': typeof PublisherAuthLayoutMyShiftsLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -149,52 +139,52 @@ export interface FileRoutesById {
   '/_assistantAuthLayout': typeof AssistantAuthLayoutRouteWithChildren
   '/_overseerAuthLayout': typeof OverseerAuthLayoutRouteWithChildren
   '/_publisherAuthLayout': typeof PublisherAuthLayoutRouteWithChildren
+  '/_publisherAuthLayout/mySchedule': typeof PublisherAuthLayoutMyScheduleRoute
+  '/_publisherAuthLayout/myShifts': typeof PublisherAuthLayoutMyShiftsRoute
   '/_publisherAuthLayout/vacantShifts': typeof PublisherAuthLayoutVacantShiftsRoute
   '/_assistantAuthLayout/shifts': typeof AssistantAuthLayoutShiftsLazyRoute
   '/_assistantAuthLayout/users': typeof AssistantAuthLayoutUsersLazyRoute
   '/_overseerAuthLayout/overview': typeof OverseerAuthLayoutOverviewLazyRoute
   '/_overseerAuthLayout/setting': typeof OverseerAuthLayoutSettingLazyRoute
   '/_overseerAuthLayout/sites': typeof OverseerAuthLayoutSitesLazyRoute
-  '/_publisherAuthLayout/mySchedule': typeof PublisherAuthLayoutMyScheduleLazyRoute
-  '/_publisherAuthLayout/myShifts': typeof PublisherAuthLayoutMyShiftsLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/mySchedule'
+    | '/myShifts'
     | '/vacantShifts'
     | '/shifts'
     | '/users'
     | '/overview'
     | '/setting'
     | '/sites'
-    | '/mySchedule'
-    | '/myShifts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/mySchedule'
+    | '/myShifts'
     | '/vacantShifts'
     | '/shifts'
     | '/users'
     | '/overview'
     | '/setting'
     | '/sites'
-    | '/mySchedule'
-    | '/myShifts'
   id:
     | '__root__'
     | '/'
     | '/_assistantAuthLayout'
     | '/_overseerAuthLayout'
     | '/_publisherAuthLayout'
+    | '/_publisherAuthLayout/mySchedule'
+    | '/_publisherAuthLayout/myShifts'
     | '/_publisherAuthLayout/vacantShifts'
     | '/_assistantAuthLayout/shifts'
     | '/_assistantAuthLayout/users'
     | '/_overseerAuthLayout/overview'
     | '/_overseerAuthLayout/setting'
     | '/_overseerAuthLayout/sites'
-    | '/_publisherAuthLayout/mySchedule'
-    | '/_publisherAuthLayout/myShifts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -233,20 +223,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_publisherAuthLayout/myShifts': {
-      id: '/_publisherAuthLayout/myShifts'
-      path: '/myShifts'
-      fullPath: '/myShifts'
-      preLoaderRoute: typeof PublisherAuthLayoutMyShiftsLazyRouteImport
-      parentRoute: typeof PublisherAuthLayoutRoute
-    }
-    '/_publisherAuthLayout/mySchedule': {
-      id: '/_publisherAuthLayout/mySchedule'
-      path: '/mySchedule'
-      fullPath: '/mySchedule'
-      preLoaderRoute: typeof PublisherAuthLayoutMyScheduleLazyRouteImport
-      parentRoute: typeof PublisherAuthLayoutRoute
     }
     '/_overseerAuthLayout/sites': {
       id: '/_overseerAuthLayout/sites'
@@ -290,6 +266,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublisherAuthLayoutVacantShiftsRouteImport
       parentRoute: typeof PublisherAuthLayoutRoute
     }
+    '/_publisherAuthLayout/myShifts': {
+      id: '/_publisherAuthLayout/myShifts'
+      path: '/myShifts'
+      fullPath: '/myShifts'
+      preLoaderRoute: typeof PublisherAuthLayoutMyShiftsRouteImport
+      parentRoute: typeof PublisherAuthLayoutRoute
+    }
+    '/_publisherAuthLayout/mySchedule': {
+      id: '/_publisherAuthLayout/mySchedule'
+      path: '/mySchedule'
+      fullPath: '/mySchedule'
+      preLoaderRoute: typeof PublisherAuthLayoutMyScheduleRouteImport
+      parentRoute: typeof PublisherAuthLayoutRoute
+    }
   }
 }
 
@@ -322,16 +312,15 @@ const OverseerAuthLayoutRouteWithChildren =
   OverseerAuthLayoutRoute._addFileChildren(OverseerAuthLayoutRouteChildren)
 
 interface PublisherAuthLayoutRouteChildren {
+  PublisherAuthLayoutMyScheduleRoute: typeof PublisherAuthLayoutMyScheduleRoute
+  PublisherAuthLayoutMyShiftsRoute: typeof PublisherAuthLayoutMyShiftsRoute
   PublisherAuthLayoutVacantShiftsRoute: typeof PublisherAuthLayoutVacantShiftsRoute
-  PublisherAuthLayoutMyScheduleLazyRoute: typeof PublisherAuthLayoutMyScheduleLazyRoute
-  PublisherAuthLayoutMyShiftsLazyRoute: typeof PublisherAuthLayoutMyShiftsLazyRoute
 }
 
 const PublisherAuthLayoutRouteChildren: PublisherAuthLayoutRouteChildren = {
+  PublisherAuthLayoutMyScheduleRoute: PublisherAuthLayoutMyScheduleRoute,
+  PublisherAuthLayoutMyShiftsRoute: PublisherAuthLayoutMyShiftsRoute,
   PublisherAuthLayoutVacantShiftsRoute: PublisherAuthLayoutVacantShiftsRoute,
-  PublisherAuthLayoutMyScheduleLazyRoute:
-    PublisherAuthLayoutMyScheduleLazyRoute,
-  PublisherAuthLayoutMyShiftsLazyRoute: PublisherAuthLayoutMyShiftsLazyRoute,
 }
 
 const PublisherAuthLayoutRouteWithChildren =

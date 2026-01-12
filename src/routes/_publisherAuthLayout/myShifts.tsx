@@ -3,12 +3,12 @@ import ShiftCard from "@/components/card/ShiftCard";
 import { Calendar } from "@/components/ui/calendar";
 import { getPersonalShiftByMonth } from "@/services/shift";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { zhTW } from "react-day-picker/locale";
 
-export const Route = createLazyFileRoute("/_publisherAuthLayout/myShifts")({
+export const Route = createFileRoute("/_publisherAuthLayout/myShifts")({
   component: PersonalShifts,
 });
 

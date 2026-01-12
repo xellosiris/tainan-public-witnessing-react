@@ -3,9 +3,9 @@ import ScheduleForm from "@/components/form/ScheduleForm";
 import { getSchedule } from "@/services/schedule";
 import { getSetting } from "@/services/setting";
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/_publisherAuthLayout/mySchedule")({
+export const Route = createFileRoute("/_publisherAuthLayout/mySchedule")({
   component: PersonalSchedule,
 });
 
